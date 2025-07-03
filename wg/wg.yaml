@@ -1,0 +1,709 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.1
+  title: Cylonix Sase Wireguard manager API Spec
+  license:
+    name: MIT
+servers:
+  - url: http://wg.cylonix.io/v1
+paths:
+  /users:
+    get:
+      summary: List all the wireguard users
+      operationId: listWgUsers
+      tags:
+        - user
+      requestBody:
+        description: |
+          List user details of the namespaces. If no namespace is passed in, all
+          namespaces of all users will be collected.
+        required: false
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/wgNamespace"
+      responses:
+        200:
+          description: list all the users of namespace
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/wgUser"
+        500:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /user/stats:
+    get:
+      summary: get specific user stats
+      operationId: getUserStats
+      tags:
+        - user
+      requestBody:
+        description: request body for get user stats
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/wgUser"
+      responses:
+        200:
+          description: return the user stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wgUserStats"
+        500:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /health:
+    get:
+      summary: always return Ok status
+      operationId: getHealthStatus
+      tags:
+        - health
+      responses:
+        200:
+          description: the response status is meaningless
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/healthStatus"
+  /sysinfo:
+    get:
+      summary: always return all the system level status
+      operationId: getSystemInfo
+      tags:
+        - system
+      responses:
+        200:
+          description: system information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/sysInfo"
+
+  /user:
+    get:
+      summary: get specific user details
+      operationId: getUserDetail
+      tags:
+        - user
+      requestBody:
+        description: request body for get user detail info
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/wgUser"
+      responses:
+        200:
+          description: return the user detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wgUserDetail"
+        500:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: create peers
+      operationId: createUser
+      tags:
+        - user
+      requestBody:
+        description: request body for create peers
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/wgUser"
+      responses:
+        200:
+          description: success
+        400:
+          description: parameter error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: user exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: create the users failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: delete a set of peers
+      description: ""
+      operationId: deleteUser
+      tags:
+        - user
+      requestBody:
+        description: request body for create a new user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/wgUser"
+      responses:
+        200:
+          description: success
+        500:
+          description: delete users failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /namespace/stats:
+    get:
+      summary: get all the namespaces
+      operationId: listNamespacesStats
+      tags:
+        - namespace
+      requestBody:
+        description: request body for create a new namespace
+        required: false
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/wgNamespace"
+      responses:
+        200:
+          description: list all the namespaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InterfaceStats"
+        500:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /namespace/userstats:
+    get:
+      summary: get all user stats with the same namespace
+      operationId: get_namespace_all_user_stats
+      tags:
+        - namespace
+      requestBody:
+        description: request body for get all user stats in the same namespace
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/wgNamespace"
+      responses:
+        200:
+          description: user stats of the namespace
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/wgUserStats"
+        500:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /namespace:
+    get:
+      summary: get all the namespaces
+      operationId: listNamespaces
+      tags:
+        - namespace
+      requestBody:
+        description: request body for create a new namespace
+        required: false
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/wgNamespace"
+      responses:
+        200:
+          description: list all the namespaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/wgNamespaceDetail"
+        500:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: create a new namespace
+      operationId: createNamespace
+      tags:
+        - namespace
+      requestBody:
+        description: request body for create a new namespace
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/wgNamespace"
+      responses:
+        200:
+          description: success
+        400:
+          description: parameter error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: create the namespace failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: delete a existing namespace
+      operationId: deleteNamespace
+      tags:
+        - namespace
+      requestBody:
+        description: request body for delete an existing namespace
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/wgNamespace"
+      responses:
+        200:
+          description: success
+        400:
+          description: parameter error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: delete the namespace failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Error:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    healthStatus:
+      properties:
+        status:
+          type: string
+    fileSystem:
+      properties:
+        mount:
+          type: string
+        free:
+          type: integer
+          format: int64
+        avail:
+          type: integer
+          format: int64
+        total:
+          type: integer
+          format: int64
+    loadAvg:
+      properties:
+        one:
+          type: integer
+        five:
+          type: integer
+        fifteen:
+          type: integer
+    network:
+      properties:
+        name:
+          type: string
+        addrs:
+          type: array
+          items:
+            type: string
+
+    networkStats:
+      properties:
+        name:
+          type: string
+        rxBytes:
+          type: integer
+          format: int64
+        txBytes:
+          type: integer
+          format: int64
+        rxPackets:
+          type: integer
+          format: int64
+        txPackets:
+          type: integer
+          format: int64
+        rxErrors:
+          type: integer
+          format: int64
+        txErrors:
+          type: integer
+          format: int64
+    memory:
+      properties:
+        total:
+          type: integer
+          format: int64
+        free:
+          type: integer
+          format: int64
+    sysInfo:
+      required:
+        - "diskUsage"
+      properties:
+        fileSystem:
+          type: array
+          items:
+            $ref: "#/components/schemas/fileSystem"
+        loadAvg:
+          $ref: "#/components/schemas/loadAvg"
+        network:
+          type: array
+          items:
+            $ref: "#/components/schemas/network"
+        networkStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/networkStats"
+        memory:
+          $ref: "#/components/schemas/memory"
+
+    wgNamespace:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        ip:
+          type: string
+        version:
+          description: the version of the wg server, it is better to use integer than string
+          type: integer
+        cylonixdAccessKey:
+          description: the access key for wg-agent to run cylonixd, it is different for each tenant/name
+          type: string
+        prefix:
+          type: integer
+        pop:
+          type: string
+        private_key:
+          description: base64 based private key, generate if null
+          type: string
+        public_key:
+          description: base64 based public key
+          type: string
+        port:
+          type: integer
+          description: wirguard interface listening port
+        vxlan:
+          $ref: "#/components/schemas/vxlanSetting"
+        labels:
+          type: array
+          items:
+            required:
+              - "key"
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        allowedIPs:
+          type: array
+          items:
+            type: string
+            description: It need not avaiable in wg-agent, but supervisor use the same data struct.
+        subnetRouterDeviceID:
+          type: string
+          description: We can set the device ID for the WG in one namespace, which will be use to build a tcp subnet router in this WG
+        priority:
+          type: integer
+          description: The priority of the wg in this namespace
+
+    vxlanSetting:
+      required:
+        - ip
+        - vid
+        - dstport
+        - remote
+        - gw
+        - underlayIf
+        - underlayGw
+      properties:
+        ip:
+          type: string
+        vid:
+          type: integer
+        dstport:
+          type: integer
+        remote:
+          type: string
+        gw:
+          type: string
+        underlayIf:
+          type: string
+        underlayGw:
+          type: string
+
+    wgNamespaceDetail:
+      required:
+        - name
+        - pubkey
+        - listenPort
+        - vxlanId
+        - ip
+      properties:
+        name: # basically, it's the device name
+          type: string
+        pubkey:
+          type: string
+        pri_key:
+          type: string
+        listenPort:
+          type: integer
+        vxlanId:
+          type: integer
+        ip:
+          type: string
+        fwmark:
+          type: integer
+        routeTable:
+          type: string
+    InterfaceStats:
+      required:
+        - rx_packets
+        - tx_packets
+        - rx_bytes
+        - tx_bytes
+        - rx_errors
+        - tx_errors
+        - rx_dropped
+        - tx_dropped
+        - multicast
+        - collisions
+        - rx_length_errors
+        - rx_over_errors
+        - rx_crc_errors
+        - rx_frame_errors
+        - rx_fifo_errors
+        - rx_missed_errors
+        - tx_aborted_errors
+        - tx_carrier_errors
+        - tx_fifo_errors
+        - tx_heartbeat_errors
+        - tx_window_errors
+        - rx_compressed
+        - tx_compressed
+        - rx_nohandler
+      properties:
+        name:
+          type: string
+        rx_packets:
+          type: integer
+          format: int64
+        tx_packets:
+          type: integer
+          format: int64
+        rx_bytes:
+          type: integer
+          format: int64
+        tx_bytes:
+          type: integer
+          format: int64
+        rx_errors:
+          type: integer
+          format: int64
+        tx_errors:
+          type: integer
+          format: int64
+        rx_dropped:
+          type: integer
+          format: int64
+        tx_dropped:
+          type: integer
+          format: int64
+        multicast:
+          type: integer
+          format: int64
+        collisions:
+          type: integer
+          format: int64
+        rx_length_errors:
+          type: integer
+          format: int64
+        rx_over_errors:
+          type: integer
+          format: int64
+        rx_crc_errors:
+          type: integer
+          format: int64
+        rx_frame_errors:
+          type: integer
+          format: int64
+        rx_fifo_errors:
+          type: integer
+          format: int64
+        rx_missed_errors:
+          type: integer
+          format: int64
+        tx_aborted_errors:
+          type: integer
+          format: int64
+        tx_carrier_errors:
+          type: integer
+          format: int64
+        tx_fifo_errors:
+          type: integer
+          format: int64
+        tx_heartbeat_errors:
+          type: integer
+          format: int64
+        tx_window_errors:
+          type: integer
+          format: int64
+        rx_compressed:
+          type: integer
+          format: int64
+        tx_compressed:
+          type: integer
+          format: int64
+        rx_nohandler:
+          type: integer
+          format: int64
+    wgUser:
+      required:
+        - id
+        - device_id
+        - name
+        - namespace
+        - pubkey
+      properties:
+        id:
+          type: string
+        device_id:
+          type: string
+        name:
+          type: string
+        namespace:
+          type: string
+        pubkey:
+          type: string
+        allowed_ips:
+          type: array
+          items:
+            type: string
+        labels:
+          type: array
+          items:
+            type: string
+    wgUserDetail:
+      required:
+        - name
+        - id
+        - device_id
+        - last_handshake_time
+        - rx_bytes
+        - tx_bytes
+      properties:
+        id:
+          type: string
+        device_id:
+          type: string
+        name:
+          type: string
+        namespace:
+          type: string
+        pubkey:
+          type: string
+        ip:
+          type: string
+        allowed_ips:
+          type: string
+        last_handshake_time:
+          type: integer
+          format: int64
+        rx_bytes:
+          type: integer
+          format: int64
+        tx_bytes:
+          type: integer
+          format: int64
+    wgUserStats:
+      required:
+        - name
+        - namespace
+        - id
+        - pubkey
+        - device_id
+        - last_handshake_time
+        - tx_bytes
+        - rx_bytes
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        device_id:
+          type: string
+        pubkey:
+          type: string
+        namespace:
+          type: string
+        last_handshake_time:
+          type: integer
+          format: int64
+        tx_bytes:
+          type: integer
+          format: int64
+        rx_bytes:
+          type: integer
+          format: int64

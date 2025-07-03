@@ -1,0 +1,4029 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "headscale/v1/headscale.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "HeadscaleService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/apikey": {
+      "get": {
+        "operationId": "HeadscaleService_ListApiKeys",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListApiKeysResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user",
+            "description": "__BEGIN_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "nodeIdList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uint64"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterValue",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "description": "__END_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      },
+      "post": {
+        "summary": "--- ApiKeys start ---",
+        "operationId": "HeadscaleService_CreateApiKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateApiKeyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateApiKeyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/apikey/expire": {
+      "post": {
+        "operationId": "HeadscaleService_ExpireApiKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ExpireApiKeyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ExpireApiKeyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/apikey/refresh/{prefix}": {
+      "post": {
+        "operationId": "HeadscaleService_RefreshApiKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RefreshApiKeyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "prefix",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/apikey/{prefix}": {
+      "delete": {
+        "operationId": "HeadscaleService_DeleteApiKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteApiKeyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "prefix",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/debug/node": {
+      "post": {
+        "summary": "--- Node start ---",
+        "operationId": "HeadscaleService_DebugCreateNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DebugCreateNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1DebugCreateNodeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node": {
+      "get": {
+        "operationId": "HeadscaleService_ListNodes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListNodesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "nodeIdList",
+            "description": "__BEGIN_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uint64"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterValue",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "description": "__END_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/backfillips": {
+      "post": {
+        "operationId": "HeadscaleService_BackfillNodeIPs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BackfillNodeIPsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "confirmed",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/create": {
+      "post": {
+        "summary": "__BEGIN_CYLONIX_MOD__",
+        "operationId": "HeadscaleService_CreateNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "node.id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "node.machineKey",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.nodeKey",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.discoKey",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.ipAddresses",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.user.id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.user.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.user.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "node.user.loginName",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.user.namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.user.network",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.lastSeen",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "node.expiry",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "node.preAuthKey.user",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.key",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.reusable",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.preAuthKey.ephemeral",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.preAuthKey.used",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.preAuthKey.expiration",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "node.preAuthKey.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "node.preAuthKey.aclTags",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.preAuthKey.userDetail.id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.userDetail.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.userDetail.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "node.preAuthKey.userDetail.loginName",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.userDetail.namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.userDetail.network",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.ipv4",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.preAuthKey.ipv6",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "node.registerMethod",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "REGISTER_METHOD_UNSPECIFIED",
+              "REGISTER_METHOD_AUTH_KEY",
+              "REGISTER_METHOD_CLI",
+              "REGISTER_METHOD_OIDC"
+            ],
+            "default": "REGISTER_METHOD_UNSPECIFIED"
+          },
+          {
+            "name": "node.forcedTags",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.invalidTags",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.validTags",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.givenName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.online",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.wireguardOnly",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.stableId",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.endpoints",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.capVersion",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "node.capabilities",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.networkDomain",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.ipnVersion",
+            "description": "version of this code (in version.Long format)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.frontendLogId",
+            "description": "logtail ID of frontend instance",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.backendLogId",
+            "description": "logtail ID of backend instance",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.os",
+            "description": "operating system the client runs on (a version.OS value)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.osVersion",
+            "description": "version of the OS, if available",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.container",
+            "description": "best-effort whether the client is running in a container",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.env",
+            "description": "a hostinfo.EnvType in string form",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.distro",
+            "description": "\"debian\", \"ubuntu\", \"nixos\", ...",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.distroVersion",
+            "description": "\"20.04\", ...",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.distroCodeName",
+            "description": "\"jammy\", \"bullseye\", ...",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.app",
+            "description": "\"k8s-operator\", \"golinks\", ...",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.desktop",
+            "description": "if a desktop was detected on Linux",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.package",
+            "description": "Tailscale package to disambiguate (\"choco\", \"appstore\", etc; \"\" for unknown)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.deviceModel",
+            "description": "mobile phone model (\"Pixel 3a\", \"iPhone12,3\")",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.pushDeviceToken",
+            "description": "macOS/iOS APNs device token for notifications (and Android in the future)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.hostname",
+            "description": "name of the host the client runs on",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.shieldsUp",
+            "description": "indicates whether the host is blocking incoming connections",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.shareeNode",
+            "description": "indicates this node exists in netmap because it's owned by a shared-to user",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.noLogsNoSupport",
+            "description": "indicates that the user has opted out of sending logs and support",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.wireIngress",
+            "description": "indicates that the node would like to be wired up server-side",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.ingressEnabled",
+            "description": "if the node has any funnel endpoint enabled",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.allowsUpdate",
+            "description": "indicates that the node has opted-in to admin-console-drive remote updates",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.machine",
+            "description": "the current host's machine type (uname -m)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.goArch",
+            "description": "GOARCH value (of the built binary)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.goArchVar",
+            "description": "GOARM, GOAMD64, etc (of the built binary)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.goVersion",
+            "description": "Go version binary was built with",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.routableIps",
+            "description": "set of IP ranges this client can route (netip.Prefix as strings)",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.hostinfo.requestTags",
+            "description": "set of ACL tags this node wants to claim",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.hostinfo.wolMacs",
+            "description": "MAC address(es) to send Wake-on-LAN packets to wake this node",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.hostinfo.netInfo.mappingVariesByDestIp",
+            "description": "whether the network mapping varies by destination IP",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.hairPinning",
+            "description": "whether hair pinning works",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.workingIpv6",
+            "description": "whether the host has IPv6 internet connectivity",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.osHasIpv6",
+            "description": "whether the OS supports IPv6 at all",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.workingUdp",
+            "description": "whether the host has UDP internet connectivity",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.workingIcmpv4",
+            "description": "whether ICMPv4 works",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.havePortMap",
+            "description": "whether we have an existing portmap open",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.upnp",
+            "description": "whether UPnP appears present on the LAN",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.pmp",
+            "description": "whether NAT-PMP appears present on the LAN",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.pcp",
+            "description": "whether PCP appears present on the LAN",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.netInfo.preferredDerp",
+            "description": "preferred DERP region ID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "node.hostinfo.netInfo.linkType",
+            "description": "current link type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.netInfo.derpLatency",
+            "description": "DERP latency map\n\nThis is a request variable of the map type. The query format is \"map_name[key]=value\", e.g. If the map name is Age, the key type is string, and the value type is integer, the query parameter is expressed as Age[\"bob\"]=18",
+            "in": "query",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "node.hostinfo.netInfo.firewallMode",
+            "description": "Linux-specific firewall mode",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.sshHostKeys",
+            "description": "SSH host keys if advertised",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "node.hostinfo.cloud",
+            "description": "cloud provider",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.userspace",
+            "description": "if the client is running in userspace (netstack) mode",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.userspaceRouter",
+            "description": "if the client's subnet router is running in userspace mode",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.appConnector",
+            "description": "if the client is running the app-connector service",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "node.hostinfo.servicesHash",
+            "description": "opaque hash of the most recent list of tailnet services",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.location.country",
+            "description": "country code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.location.countryCode",
+            "description": "ISO country code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.location.city",
+            "description": "city name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.location.cityCode",
+            "description": "city code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "node.hostinfo.location.latitude",
+            "description": "latitude coordinate",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "node.hostinfo.location.longitude",
+            "description": "longitude coordinate",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "node.hostinfo.location.priority",
+            "description": "priority for location preference",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/register": {
+      "post": {
+        "operationId": "HeadscaleService_RegisterNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RegisterNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "description": "__CYLONIX_MOD_",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/{nodeId}": {
+      "get": {
+        "operationId": "HeadscaleService_GetNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nodeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      },
+      "delete": {
+        "operationId": "HeadscaleService_DeleteNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nodeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      },
+      "put": {
+        "operationId": "HeadscaleService_UpdateNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nodeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "update.machineKey",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.nodeKey",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.discoKey",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.ipAddresses",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.user.id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.user.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.user.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "update.user.loginName",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.user.namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.user.network",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.lastSeen",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "update.expiry",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "update.preAuthKey.user",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.key",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.reusable",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.preAuthKey.ephemeral",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.preAuthKey.used",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.preAuthKey.expiration",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "update.preAuthKey.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "update.preAuthKey.aclTags",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.preAuthKey.userDetail.id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.userDetail.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.userDetail.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "update.preAuthKey.userDetail.loginName",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.userDetail.namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.userDetail.network",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.ipv4",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.preAuthKey.ipv6",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "update.registerMethod",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "REGISTER_METHOD_UNSPECIFIED",
+              "REGISTER_METHOD_AUTH_KEY",
+              "REGISTER_METHOD_CLI",
+              "REGISTER_METHOD_OIDC"
+            ],
+            "default": "REGISTER_METHOD_UNSPECIFIED"
+          },
+          {
+            "name": "update.forcedTags",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.invalidTags",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.validTags",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.givenName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.online",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.wireguardOnly",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.stableId",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.endpoints",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.capVersion",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "update.capabilities",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.networkDomain",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.ipnVersion",
+            "description": "version of this code (in version.Long format)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.frontendLogId",
+            "description": "logtail ID of frontend instance",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.backendLogId",
+            "description": "logtail ID of backend instance",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.os",
+            "description": "operating system the client runs on (a version.OS value)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.osVersion",
+            "description": "version of the OS, if available",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.container",
+            "description": "best-effort whether the client is running in a container",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.env",
+            "description": "a hostinfo.EnvType in string form",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.distro",
+            "description": "\"debian\", \"ubuntu\", \"nixos\", ...",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.distroVersion",
+            "description": "\"20.04\", ...",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.distroCodeName",
+            "description": "\"jammy\", \"bullseye\", ...",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.app",
+            "description": "\"k8s-operator\", \"golinks\", ...",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.desktop",
+            "description": "if a desktop was detected on Linux",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.package",
+            "description": "Tailscale package to disambiguate (\"choco\", \"appstore\", etc; \"\" for unknown)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.deviceModel",
+            "description": "mobile phone model (\"Pixel 3a\", \"iPhone12,3\")",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.pushDeviceToken",
+            "description": "macOS/iOS APNs device token for notifications (and Android in the future)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.hostname",
+            "description": "name of the host the client runs on",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.shieldsUp",
+            "description": "indicates whether the host is blocking incoming connections",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.shareeNode",
+            "description": "indicates this node exists in netmap because it's owned by a shared-to user",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.noLogsNoSupport",
+            "description": "indicates that the user has opted out of sending logs and support",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.wireIngress",
+            "description": "indicates that the node would like to be wired up server-side",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.ingressEnabled",
+            "description": "if the node has any funnel endpoint enabled",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.allowsUpdate",
+            "description": "indicates that the node has opted-in to admin-console-drive remote updates",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.machine",
+            "description": "the current host's machine type (uname -m)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.goArch",
+            "description": "GOARCH value (of the built binary)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.goArchVar",
+            "description": "GOARM, GOAMD64, etc (of the built binary)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.goVersion",
+            "description": "Go version binary was built with",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.routableIps",
+            "description": "set of IP ranges this client can route (netip.Prefix as strings)",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.hostinfo.requestTags",
+            "description": "set of ACL tags this node wants to claim",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.hostinfo.wolMacs",
+            "description": "MAC address(es) to send Wake-on-LAN packets to wake this node",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.hostinfo.netInfo.mappingVariesByDestIp",
+            "description": "whether the network mapping varies by destination IP",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.hairPinning",
+            "description": "whether hair pinning works",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.workingIpv6",
+            "description": "whether the host has IPv6 internet connectivity",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.osHasIpv6",
+            "description": "whether the OS supports IPv6 at all",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.workingUdp",
+            "description": "whether the host has UDP internet connectivity",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.workingIcmpv4",
+            "description": "whether ICMPv4 works",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.havePortMap",
+            "description": "whether we have an existing portmap open",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.upnp",
+            "description": "whether UPnP appears present on the LAN",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.pmp",
+            "description": "whether NAT-PMP appears present on the LAN",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.pcp",
+            "description": "whether PCP appears present on the LAN",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.netInfo.preferredDerp",
+            "description": "preferred DERP region ID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "update.hostinfo.netInfo.linkType",
+            "description": "current link type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.netInfo.derpLatency",
+            "description": "DERP latency map\n\nThis is a request variable of the map type. The query format is \"map_name[key]=value\", e.g. If the map name is Age, the key type is string, and the value type is integer, the query parameter is expressed as Age[\"bob\"]=18",
+            "in": "query",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "update.hostinfo.netInfo.firewallMode",
+            "description": "Linux-specific firewall mode",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.sshHostKeys",
+            "description": "SSH host keys if advertised",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "update.hostinfo.cloud",
+            "description": "cloud provider",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.userspace",
+            "description": "if the client is running in userspace (netstack) mode",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.userspaceRouter",
+            "description": "if the client's subnet router is running in userspace mode",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.appConnector",
+            "description": "if the client is running the app-connector service",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "update.hostinfo.servicesHash",
+            "description": "opaque hash of the most recent list of tailnet services",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.location.country",
+            "description": "country code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.location.countryCode",
+            "description": "ISO country code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.location.city",
+            "description": "city name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.location.cityCode",
+            "description": "city code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "update.hostinfo.location.latitude",
+            "description": "latitude coordinate",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "update.hostinfo.location.longitude",
+            "description": "longitude coordinate",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "update.hostinfo.location.priority",
+            "description": "priority for location preference",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "addCapabilities",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "delCapabilities",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/{nodeId}/expire": {
+      "post": {
+        "operationId": "HeadscaleService_ExpireNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ExpireNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nodeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/{nodeId}/rename/{newName}": {
+      "post": {
+        "operationId": "HeadscaleService_RenameNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RenameNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nodeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "newName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/{nodeId}/routes": {
+      "get": {
+        "operationId": "HeadscaleService_GetNodeRoutes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetNodeRoutesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nodeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/{nodeId}/tags": {
+      "post": {
+        "operationId": "HeadscaleService_SetTags",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SetTagsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nodeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/HeadscaleServiceSetTagsBody"
+            }
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/node/{nodeId}/user": {
+      "post": {
+        "operationId": "HeadscaleService_MoveNode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MoveNodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nodeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "user",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/policy": {
+      "get": {
+        "summary": "--- Policy start ---",
+        "operationId": "HeadscaleService_GetPolicy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      },
+      "put": {
+        "operationId": "HeadscaleService_SetPolicy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SetPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SetPolicyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/preauthkey": {
+      "get": {
+        "operationId": "HeadscaleService_ListPreAuthKeys",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListPreAuthKeysResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "idList",
+            "description": "__BEGIN_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uint64"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterValue",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "description": "__END_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      },
+      "post": {
+        "summary": "--- PreAuthKeys start ---",
+        "operationId": "HeadscaleService_CreatePreAuthKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreatePreAuthKeyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreatePreAuthKeyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/preauthkey/expire": {
+      "post": {
+        "operationId": "HeadscaleService_ExpirePreAuthKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ExpirePreAuthKeyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ExpirePreAuthKeyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/routes": {
+      "get": {
+        "summary": "--- Route start ---",
+        "operationId": "HeadscaleService_GetRoutes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetRoutesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user",
+            "description": "__BEGIN_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "idList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uint64"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterValue",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "description": "__END_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/routes/{routeId}": {
+      "delete": {
+        "operationId": "HeadscaleService_DeleteRoute",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteRouteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/routes/{routeId}/disable": {
+      "post": {
+        "operationId": "HeadscaleService_DisableRoute",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DisableRouteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/routes/{routeId}/enable": {
+      "post": {
+        "operationId": "HeadscaleService_EnableRoute",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1EnableRouteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/user": {
+      "get": {
+        "operationId": "HeadscaleService_ListUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user",
+            "description": "__BEGIN_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "idList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uint64"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterValue",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "description": "__END_CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      },
+      "post": {
+        "operationId": "HeadscaleService_CreateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/user/network": {
+      "put": {
+        "operationId": "HeadscaleService_UpdateUserNetworkDomain",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateUserNetworkDomainResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/user/{name}": {
+      "get": {
+        "summary": "--- User start ---",
+        "operationId": "HeadscaleService_GetUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      },
+      "delete": {
+        "operationId": "HeadscaleService_DeleteUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    },
+    "/api/v1/user/{oldName}/rename/{newName}": {
+      "post": {
+        "operationId": "HeadscaleService_RenameUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RenameUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "oldName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "newName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "network",
+            "description": "__CYLONIX_MOD__",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "HeadscaleService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "HeadscaleServiceSetTagsBody": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "headscalev1Location": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": "string",
+          "title": "country code"
+        },
+        "countryCode": {
+          "type": "string",
+          "title": "ISO country code"
+        },
+        "city": {
+          "type": "string",
+          "title": "city name"
+        },
+        "cityCode": {
+          "type": "string",
+          "title": "city code"
+        },
+        "latitude": {
+          "type": "number",
+          "format": "double",
+          "title": "latitude coordinate"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "double",
+          "title": "longitude coordinate"
+        },
+        "priority": {
+          "type": "integer",
+          "format": "int32",
+          "title": "priority for location preference"
+        }
+      },
+      "description": "Location represents geographical location data about a Tailscale host."
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1ApiKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastSeen": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "title": "__CYLONIX_MOD__"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "network": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1BackfillNodeIPsResponse": {
+      "type": "object",
+      "properties": {
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1CreateApiKeyRequest": {
+      "type": "object",
+      "properties": {
+        "expiration": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "user": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "network": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "scopeType": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "scopeValue": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1CreateApiKeyResponse": {
+      "type": "object",
+      "properties": {
+        "apiKey": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateNodeResponse": {
+      "type": "object",
+      "properties": {
+        "nodeId": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "v1CreatePreAuthKeyRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "reusable": {
+          "type": "boolean"
+        },
+        "ephemeral": {
+          "type": "boolean"
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "aclTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "key": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "ipv4": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "ipv6": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1CreatePreAuthKeyResponse": {
+      "type": "object",
+      "properties": {
+        "preAuthKey": {
+          "$ref": "#/definitions/v1PreAuthKey"
+        }
+      }
+    },
+    "v1CreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "loginName": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "network": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1CreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1DebugCreateNodeRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1DebugCreateNodeResponse": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/definitions/v1Node"
+        }
+      }
+    },
+    "v1DeleteApiKeyResponse": {
+      "type": "object"
+    },
+    "v1DeleteNodeResponse": {
+      "type": "object"
+    },
+    "v1DeleteRouteResponse": {
+      "type": "object"
+    },
+    "v1DeleteUserResponse": {
+      "type": "object"
+    },
+    "v1DisableRouteResponse": {
+      "type": "object"
+    },
+    "v1EnableRouteResponse": {
+      "type": "object"
+    },
+    "v1ExpireApiKeyRequest": {
+      "type": "object",
+      "properties": {
+        "prefix": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ExpireApiKeyResponse": {
+      "type": "object"
+    },
+    "v1ExpireNodeResponse": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/definitions/v1Node"
+        }
+      }
+    },
+    "v1ExpirePreAuthKeyRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ExpirePreAuthKeyResponse": {
+      "type": "object"
+    },
+    "v1GetNodeResponse": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/definitions/v1Node"
+        }
+      }
+    },
+    "v1GetNodeRoutesResponse": {
+      "type": "object",
+      "properties": {
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Route"
+          }
+        }
+      }
+    },
+    "v1GetPolicyResponse": {
+      "type": "object",
+      "properties": {
+        "policy": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1GetRoutesResponse": {
+      "type": "object",
+      "properties": {
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Route"
+          }
+        }
+      }
+    },
+    "v1GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1Hostinfo": {
+      "type": "object",
+      "properties": {
+        "ipnVersion": {
+          "type": "string",
+          "title": "version of this code (in version.Long format)"
+        },
+        "frontendLogId": {
+          "type": "string",
+          "title": "logtail ID of frontend instance"
+        },
+        "backendLogId": {
+          "type": "string",
+          "title": "logtail ID of backend instance"
+        },
+        "os": {
+          "type": "string",
+          "title": "operating system the client runs on (a version.OS value)"
+        },
+        "osVersion": {
+          "type": "string",
+          "title": "version of the OS, if available"
+        },
+        "container": {
+          "type": "boolean",
+          "title": "best-effort whether the client is running in a container"
+        },
+        "env": {
+          "type": "string",
+          "title": "a hostinfo.EnvType in string form"
+        },
+        "distro": {
+          "type": "string",
+          "description": "\"debian\", \"ubuntu\", \"nixos\", ..."
+        },
+        "distroVersion": {
+          "type": "string",
+          "description": "\"20.04\", ..."
+        },
+        "distroCodeName": {
+          "type": "string",
+          "description": "\"jammy\", \"bullseye\", ..."
+        },
+        "app": {
+          "type": "string",
+          "description": "\"k8s-operator\", \"golinks\", ..."
+        },
+        "desktop": {
+          "type": "boolean",
+          "title": "if a desktop was detected on Linux"
+        },
+        "package": {
+          "type": "string",
+          "title": "Tailscale package to disambiguate (\"choco\", \"appstore\", etc; \"\" for unknown)"
+        },
+        "deviceModel": {
+          "type": "string",
+          "title": "mobile phone model (\"Pixel 3a\", \"iPhone12,3\")"
+        },
+        "pushDeviceToken": {
+          "type": "string",
+          "title": "macOS/iOS APNs device token for notifications (and Android in the future)"
+        },
+        "hostname": {
+          "type": "string",
+          "title": "name of the host the client runs on"
+        },
+        "shieldsUp": {
+          "type": "boolean",
+          "title": "indicates whether the host is blocking incoming connections"
+        },
+        "shareeNode": {
+          "type": "boolean",
+          "title": "indicates this node exists in netmap because it's owned by a shared-to user"
+        },
+        "noLogsNoSupport": {
+          "type": "boolean",
+          "title": "indicates that the user has opted out of sending logs and support"
+        },
+        "wireIngress": {
+          "type": "boolean",
+          "title": "indicates that the node would like to be wired up server-side"
+        },
+        "ingressEnabled": {
+          "type": "boolean",
+          "title": "if the node has any funnel endpoint enabled"
+        },
+        "allowsUpdate": {
+          "type": "boolean",
+          "title": "indicates that the node has opted-in to admin-console-drive remote updates"
+        },
+        "machine": {
+          "type": "string",
+          "title": "the current host's machine type (uname -m)"
+        },
+        "goArch": {
+          "type": "string",
+          "title": "GOARCH value (of the built binary)"
+        },
+        "goArchVar": {
+          "type": "string",
+          "title": "GOARM, GOAMD64, etc (of the built binary)"
+        },
+        "goVersion": {
+          "type": "string",
+          "title": "Go version binary was built with"
+        },
+        "routableIps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "set of IP ranges this client can route (netip.Prefix as strings)"
+        },
+        "requestTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "set of ACL tags this node wants to claim"
+        },
+        "wolMacs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "MAC address(es) to send Wake-on-LAN packets to wake this node"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Service"
+          },
+          "title": "services advertised by this machine"
+        },
+        "netInfo": {
+          "$ref": "#/definitions/v1NetInfo",
+          "title": "network information"
+        },
+        "sshHostKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "SSH host keys if advertised"
+        },
+        "cloud": {
+          "type": "string",
+          "title": "cloud provider"
+        },
+        "userspace": {
+          "type": "boolean",
+          "title": "if the client is running in userspace (netstack) mode"
+        },
+        "userspaceRouter": {
+          "type": "boolean",
+          "title": "if the client's subnet router is running in userspace mode"
+        },
+        "appConnector": {
+          "type": "boolean",
+          "title": "if the client is running the app-connector service"
+        },
+        "servicesHash": {
+          "type": "string",
+          "title": "opaque hash of the most recent list of tailnet services"
+        },
+        "location": {
+          "$ref": "#/definitions/headscalev1Location",
+          "title": "geographical location data about a Tailscale host"
+        }
+      },
+      "description": "Hostinfo contains a summary of a Tailscale host."
+    },
+    "v1ListApiKeysResponse": {
+      "type": "object",
+      "properties": {
+        "apiKeys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ApiKey"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1ListNodesResponse": {
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Node"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1ListPreAuthKeysResponse": {
+      "type": "object",
+      "properties": {
+        "preAuthKeys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PreAuthKey"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1ListUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1User"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1MoveNodeResponse": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/definitions/v1Node"
+        }
+      }
+    },
+    "v1NetInfo": {
+      "type": "object",
+      "properties": {
+        "mappingVariesByDestIp": {
+          "type": "boolean",
+          "title": "whether the network mapping varies by destination IP"
+        },
+        "hairPinning": {
+          "type": "boolean",
+          "title": "whether hair pinning works"
+        },
+        "workingIpv6": {
+          "type": "boolean",
+          "title": "whether the host has IPv6 internet connectivity"
+        },
+        "osHasIpv6": {
+          "type": "boolean",
+          "title": "whether the OS supports IPv6 at all"
+        },
+        "workingUdp": {
+          "type": "boolean",
+          "title": "whether the host has UDP internet connectivity"
+        },
+        "workingIcmpv4": {
+          "type": "boolean",
+          "title": "whether ICMPv4 works"
+        },
+        "havePortMap": {
+          "type": "boolean",
+          "title": "whether we have an existing portmap open"
+        },
+        "upnp": {
+          "type": "boolean",
+          "title": "whether UPnP appears present on the LAN"
+        },
+        "pmp": {
+          "type": "boolean",
+          "title": "whether NAT-PMP appears present on the LAN"
+        },
+        "pcp": {
+          "type": "boolean",
+          "title": "whether PCP appears present on the LAN"
+        },
+        "preferredDerp": {
+          "type": "integer",
+          "format": "int32",
+          "title": "preferred DERP region ID"
+        },
+        "linkType": {
+          "type": "string",
+          "title": "current link type"
+        },
+        "derpLatency": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "format": "double"
+          },
+          "title": "DERP latency map"
+        },
+        "firewallMode": {
+          "type": "string",
+          "title": "Linux-specific firewall mode"
+        }
+      },
+      "title": "NetInfo contains information about the host's network state"
+    },
+    "v1Node": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "machineKey": {
+          "type": "string"
+        },
+        "nodeKey": {
+          "type": "string"
+        },
+        "discoKey": {
+          "type": "string"
+        },
+        "ipAddresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/v1User"
+        },
+        "lastSeen": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiry": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "preAuthKey": {
+          "$ref": "#/definitions/v1PreAuthKey"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "registerMethod": {
+          "$ref": "#/definitions/v1RegisterMethod"
+        },
+        "forcedTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "invalidTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "validTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "givenName": {
+          "type": "string"
+        },
+        "online": {
+          "type": "boolean"
+        },
+        "wireguardOnly": {
+          "type": "boolean",
+          "title": "__CYLONIX_MOD__"
+        },
+        "stableId": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "__CYLONIX_MOD__"
+        },
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1RouteSpec"
+          },
+          "title": "__CYLONIX_MOD__"
+        },
+        "capVersion": {
+          "type": "integer",
+          "format": "int64",
+          "title": "__CYLONIX_MOD__"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "__CYLONIX_MOD__"
+        },
+        "networkDomain": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "hostinfo": {
+          "$ref": "#/definitions/v1Hostinfo",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1PreAuthKey": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "reusable": {
+          "type": "boolean"
+        },
+        "ephemeral": {
+          "type": "boolean"
+        },
+        "used": {
+          "type": "boolean"
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "aclTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "userDetail": {
+          "$ref": "#/definitions/v1User",
+          "title": "__CYLONIX_MOD_"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "ipv4": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "ipv6": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1RefreshApiKeyResponse": {
+      "type": "object"
+    },
+    "v1RegisterMethod": {
+      "type": "string",
+      "enum": [
+        "REGISTER_METHOD_UNSPECIFIED",
+        "REGISTER_METHOD_AUTH_KEY",
+        "REGISTER_METHOD_CLI",
+        "REGISTER_METHOD_OIDC"
+      ],
+      "default": "REGISTER_METHOD_UNSPECIFIED"
+    },
+    "v1RegisterNodeResponse": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/definitions/v1Node"
+        }
+      }
+    },
+    "v1RenameNodeResponse": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/definitions/v1Node"
+        }
+      }
+    },
+    "v1RenameUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1Route": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "node": {
+          "$ref": "#/definitions/v1Node"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "advertised": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "isPrimary": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "network": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1RouteSpec": {
+      "type": "object",
+      "properties": {
+        "prefix": {
+          "type": "string"
+        },
+        "advertised": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "isPrimary": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1Service": {
+      "type": "object",
+      "properties": {
+        "proto": {
+          "type": "string",
+          "title": "ServiceProto (e.g., \"tcp\", \"udp\")"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int64",
+          "title": "port number"
+        },
+        "description": {
+          "type": "string",
+          "title": "description of the service"
+        }
+      },
+      "description": "Service represents a service running on a node."
+    },
+    "v1SetPolicyRequest": {
+      "type": "object",
+      "properties": {
+        "policy": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "network": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    },
+    "v1SetPolicyResponse": {
+      "type": "object",
+      "properties": {
+        "policy": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1SetTagsResponse": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "$ref": "#/definitions/v1Node"
+        }
+      }
+    },
+    "v1UpdateNodeResponse": {
+      "type": "object"
+    },
+    "v1UpdateUserNetworkDomainResponse": {
+      "type": "object"
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "loginName": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        },
+        "network": {
+          "type": "string",
+          "title": "__CYLONIX_MOD__"
+        }
+      }
+    }
+  }
+}

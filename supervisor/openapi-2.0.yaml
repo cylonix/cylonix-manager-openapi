@@ -1,0 +1,6322 @@
+swagger: "2.0"
+basePath: "/v1"
+info:
+  description: api for cylonix supervisor
+  version: 1.0.1
+  title: supervisor
+  contact:
+    email: dev@cylonix.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+security:
+  - ApiKey: []
+  - AdminKey: []
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /namespaces:
+    get:
+      summary: List full namespaces
+      operationId: listFullNamespaces
+      tags:
+        - resource
+      parameters:
+        - in: query
+          name: filter_name
+          type: string
+          description: namespace filter name, such as name, short name, full name, nameInWg used for query.
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: default value 1
+        - in: query
+          name: page_size
+          type: integer
+          required: false
+      responses:
+        200:
+          description: list of full namespaces
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/FullNamespace"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a full namespace
+      operationId: create_full_namespace
+      tags:
+        - resource
+      parameters:
+        - in: body
+          name: namespaceInfo
+          description: the namespace information in detail
+          schema:
+            $ref: "#/definitions/NamespaceInstanceInput"
+      responses:
+        200:
+          description: create the namespace successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the namespace list
+      operationId: delete_full_namespace_list
+      tags:
+        - resource
+      parameters:
+        - in: body
+          name: namespaces_delete
+          required: true
+          description: the namespaces id list to be deleted
+          schema:
+            $ref: "#/definitions/NamespaceListDeleteInput"
+      responses:
+        200:
+          description: delete the namespaces list successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /namespaces/{instance_id}:
+    get:
+      summary: get namespace information per instance id
+      operationId: get_full_namespace
+      tags:
+        - resource
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the instance id for the namespace
+          type: string
+      responses:
+        200:
+          description: |
+            get the namespace info based on the instance id.
+          schema:
+            $ref: "#/definitions/FullNamespace"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    put:
+      summary: update the namespace instance
+      operationId: update_full_namespace
+      tags:
+        - resource
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the updated instance id for the namespace
+          type: string
+        - in: body
+          name: namespace_update
+          description: the updated namespace information in detail
+          schema:
+            $ref: "#/definitions/NamespaceInstanceUpdate"
+      responses:
+        200:
+          description: update the namespace instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the namespace instance
+      operationId: delete_full_namespace
+      tags:
+        - resource
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the namespace instance to be delete
+          type: string
+      responses:
+        200:
+          description: delete the namespace successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /user/config/wg/origin/{namespace}:
+    get:
+      summary: |
+        Get the origin wg resource for the namespace
+      operationId: list_origin_wg_resource
+      tags:
+        - resource
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+      responses:
+        200:
+          description: return all the wg resource info belong to this namespace
+          schema:
+            $ref: "#/definitions/WgNamespaceConfigList"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+    post:
+      summary: |
+        Create a wg-resource for the namespace
+      operationId: post_origin_wg_resource
+      tags:
+        - resource
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: wg_config
+          description: Create a Wg Resource
+          required: true
+          schema:
+            $ref: "#/definitions/WgNamespaceConfig"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /user/config/wg/origin/{namespace}/{resource_id}:
+    get:
+      summary: |
+        Get one wg-resource
+      operationId: get_origin_wg_resource
+      tags:
+        - resource
+      parameters:
+        - in: path
+          name: namespace
+          required: true
+          description: the customer namespace
+          type: string
+        - in: path
+          name: resource_id
+          required: true
+          description: resource ID for wg-resource
+          type: string
+      responses:
+        200:
+          description: return the wg-resource belong to this namespace
+          schema:
+            $ref: "#/definitions/WgNamespaceConfig"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+    put:
+      summary: |
+        Update one wg-resource
+      operationId: put_origin_wg_resource
+      tags:
+        - resource
+      parameters:
+        - in: path
+          name: namespace
+          required: true
+          description: the customer namespace
+          type: string
+        - in: path
+          name: resource_id
+          required: true
+          description: resource ID for wg-resource
+          type: string
+        - in: body
+          name: wg_config
+          description: Change Wg Resource
+          required: true
+          schema:
+            $ref: "#/definitions/WgNamespaceConfigInput"
+      responses:
+        200:
+          description: return the wg-resource belong to this namespace
+          schema:
+            $ref: "#/definitions/WgNamespaceConfig"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+    delete:
+      summary: delete a wg resource for a specific namespace
+      operationId: delete_origin_wg_resource
+      tags:
+        - resource
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: path
+          name: resource_id
+          required: true
+          description: resource ID for wg-resource
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /system/config/wg/origin:
+    get:
+      summary: list all wg instance.
+      operationId: get_wg_instance_list
+      tags:
+        - wg
+      parameters:
+        - in: query
+          name: filter_name
+          type: string
+          description: wg filter name, such as name, conn string, lan addr etc. used for query.
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: default value 1
+        - in: query
+          name: page_size
+          type: integer
+          required: false
+      responses:
+        200:
+          description: |
+            get all the wg instances info, including id, name, rest api, access-point,
+            rest api url for all namespaces.
+          schema:
+            $ref: "#/definitions/WgInstanceList"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a wg instance
+      operationId: create_wg_instance
+      tags:
+        - wg
+      parameters:
+        - in: body
+          name: wg_instance
+          description: the wg instance in detail
+          schema:
+            $ref: "#/definitions/WgInstanceInput"
+      responses:
+        200:
+          description: create the wg instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the wg list
+      operationId: delete_wg_list
+      tags:
+        - wg
+      parameters:
+        - in: body
+          name: wg_delete
+          required: true
+          description: the wg id list to be deleted
+          schema:
+            $ref: "#/definitions/WgInstanceDeleteInput"
+      responses:
+        200:
+          description: delete the wg list successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /system/config/wg/origin/{instance_id}:
+    get:
+      summary: get one instance per the instance id.
+      operationId: get_wg_instance
+      tags:
+        - wg
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the wg instance id for return
+          type: string
+      responses:
+        200:
+          description: |
+            get the instances info based on the instance id,
+            rest api url for all namespaces.
+          schema:
+            $ref: "#/definitions/WgInstance"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    put:
+      summary: update the wg instance
+      operationId: update_wg_instance
+      tags:
+        - wg
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the updated wg instance id
+          type: string
+        - in: body
+          name: wg_instance
+          description: the wg instance in detail
+          schema:
+            $ref: "#/definitions/WgInstanceModify"
+      responses:
+        200:
+          description: update the wg instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the wg instance
+      operationId: delete_wg_instance
+      tags:
+        - wg
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the deleted wg instance id
+          type: string
+      responses:
+        200:
+          description: delete the wg instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /config/system/fw:
+    get:
+      summary: list the config of all fw instances.
+      operationId: get_fw_list
+      tags:
+        - fw
+      parameters:
+        - in: query
+          name: filter_name
+          type: string
+          description: fw filter name, such as name, pop, tenant, host addr etc. used for query.
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: default value 1
+        - in: query
+          name: page_size
+          type: integer
+          required: false
+      responses:
+        200:
+          description: |
+            get all the fw info, including id, name, ip, access-pop,
+            rest api url for all namespaces.
+          schema:
+            $ref: "#/definitions/FwConfigList"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a fw config
+      operationId: create_fw
+      tags:
+        - fw
+      parameters:
+        - in: body
+          name: fw_create
+          description: the fw instance in detail
+          schema:
+            $ref: "#/definitions/FwConfig"
+      responses:
+        200:
+          description: create the fw config successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the fw list
+      operationId: delete_fw_list
+      tags:
+        - fw
+      parameters:
+        - in: body
+          required: true
+          name: fw_delete
+          description: the fw id list to be deleted
+          schema:
+            $ref: "#/definitions/FwConfigDeleteInput"
+      responses:
+        200:
+          description: delete the fw list successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /config/system/fw/{instance_id}:
+    get:
+      summary: get the config of fw instance per the instance id.
+      operationId: get_fw
+      tags:
+        - fw
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the fw instance id for return
+          type: string
+      responses:
+        200:
+          description: |
+            get the fw info based on the instance id,
+            rest api url for all namespaces.
+          schema:
+            $ref: "#/definitions/FwConfig"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    put:
+      summary: update the fw config
+      operationId: update_fw
+      tags:
+        - fw
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the updated fw instance id
+          type: string
+        - in: body
+          name: fw_update
+          description: the fw instance in detail
+          schema:
+            $ref: "#/definitions/FwConfig"
+      responses:
+        200:
+          description: update the fw instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the fw config
+      operationId: delete_fw
+      tags:
+        - fw
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the deleted fw instance id
+          type: string
+      responses:
+        200:
+          description: delete the fw instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /config/system/fw/{instance_id}/tenant/{tenant}:
+    put:
+      summary: add fw to the tenant
+      operationId: add_user_fw
+      tags:
+        - fw
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the fw instance id
+          type: string
+        - name: tenant
+          in: path
+          required: true
+          description: the tenant name
+          type: string
+      responses:
+        200:
+          description: add the fw to tenant successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+    delete:
+      summary: add fw to the tenant
+      operationId: delete_user_fw
+      tags:
+        - fw
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the fw instance id
+          type: string
+        - name: tenant
+          in: path
+          required: true
+          description: the tenant name
+          type: string
+      responses:
+        200:
+          description: add the fw to tenant successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /config/system/pop:
+    get:
+      summary: list all pop instance.
+      operationId: get_pop_list
+      tags:
+        - pop
+      parameters:
+        - in: query
+          name: filter_name
+          type: string
+          description: pop filter name, such as name, grpc_endpoint, city, wan addr, underlay addr etc. used for query.
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: default value 1
+        - in: query
+          name: page_size
+          type: integer
+          required: false
+      responses:
+        200:
+          description: |
+            get all the pop instances info,
+            rest api url for all namespaces.
+          schema:
+            $ref: "#/definitions/PopConfigList"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a pop instance
+      operationId: create_pop
+      tags:
+        - pop
+      parameters:
+        - in: body
+          name: pop_create
+          description: the pop instance in detail
+          schema:
+            $ref: "#/definitions/PopConfigInput"
+      responses:
+        200:
+          description: create the pop instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the pop list
+      operationId: delete_pop_list
+      tags:
+        - pop
+      parameters:
+        - in: body
+          name: pop_delete
+          required: true
+          description: the pop id list to be deleted
+          schema:
+            $ref: "#/definitions/PopConfigDeleteInput"
+      responses:
+        200:
+          description: delete the pop list successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /config/system/pop/{instance_id}:
+    get:
+      summary: get pop instance per the instance id.
+      operationId: get_pop
+      tags:
+        - pop
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the pop instance id for return
+          type: string
+      responses:
+        200:
+          description: |
+            get the instances info based on the instance id,
+            rest api url for all namespaces.
+          schema:
+            $ref: "#/definitions/PopConfigOutput"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    put:
+      summary: update the pop instance
+      operationId: update_pop
+      tags:
+        - pop
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the updated pop instance id
+          type: string
+        - in: body
+          name: pop_update
+          description: the pop instance in detail
+          schema:
+            $ref: "#/definitions/PopConfigModify"
+      responses:
+        200:
+          description: update the pop instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the pop instance
+      operationId: delete_pop
+      tags:
+        - pop
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          description: the deleted pop instance id
+          type: string
+      responses:
+        200:
+          description: delete the pop instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /config/system/{namespace}/pop/apply:
+    post:
+      summary: apply the pop list for the user
+      operationId: pop_apply
+      tags:
+        - pop
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: pop_list
+          description: the pop list to be applied under the user
+          schema:
+            $ref: "#/definitions/PopApplyInput"
+      responses:
+        200:
+          description: apply the pops under the user successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the pop list from the user
+      operationId: pop_remove_from_user
+      tags:
+        - pop
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: pop_list
+          description: the pop list to be removed from the user
+          schema:
+            $ref: "#/definitions/PopApplyInput"
+      responses:
+        200:
+          description: remove the pops from the user successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /config/system/zone/summary:
+    get:
+      summary: get the summary of all of the zones.
+      operationId: get_zone_summary
+      tags:
+        - zones
+      responses:
+        200:
+          description: |
+            get the sumary of all the zones
+          schema:
+            $ref: "#/definitions/ZoneSummary"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /system/link/stats:
+    get:
+      summary: get the detailed information of all of system link
+      operationId: get_link_stats
+      tags:
+        - system
+      parameters:
+        - in: query
+          name: link_type
+          type: string
+          required: true
+          description: the type of the link
+          enum: [public, sase, gre, tenant, iplc]
+        - in: query
+          name: interval
+          type: string
+          pattern: '^([1-9]|[1-5][0-9]|60)m$'
+          description: the latest interval of the link stats would be return, such as 1m, 5m, 15m
+        - in: query
+          name: tenant_name
+          type: string
+          description: the name of the tenant, it is set only when link_type is tenant, such as cylonix.io
+        - in: query
+          name: filter_name
+          type: string
+          description: filter name, such as name, pop, tenant, host addr etc. used for query.
+        - in: query
+          name: offset
+          type: integer
+          description: default value 0
+        - in: query
+          name: size
+          type: integer
+      responses:
+        200:
+          description: |
+            get the link stats based on the link type,
+          schema:
+            $ref: "#/definitions/LinkStatsOutputList"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /pods:
+    get:
+      summary: get all pods
+      operationId: get_pods
+      description: each pod is consist of the instances of the same location
+      tags:
+        - instance
+      responses:
+        200:
+          description: list of pods
+          schema:
+            $ref: "#/definitions/Pods"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /login/direct:
+    post:
+      operationId: user_login
+      summary: login to as a user for a tenant
+      security:
+        - {}
+      description: login as a single user
+      tags:
+        - login
+      parameters:
+        - in: body
+          name: user_login_info
+          description: change password in the body
+          required: true
+          schema:
+            $ref: "#/definitions/UserLoginInfo"
+      responses:
+        200:
+          $ref: "#/responses/AdminApiKey"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          description: backend error
+          schema:
+            $ref: "#/definitions/InternalError"
+  /login:
+    get:
+      operationId: login
+      summary: login in as admin sase admin access
+      security:
+        - {}
+      description: |
+        Login as sase admin. User will be redirected to OIDC provider to login
+      tags:
+        - login
+      responses:
+        307:
+          description: "307 response"
+          headers:
+            Location:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+        500:
+          $ref: "#/responses/InternalError"
+  /auth:
+    get:
+      operationId: api_auth
+      summary: auth the rest api call with api-key
+      description: |
+        used in nginx to the auth the rest api from the front end
+      tags:
+        - login
+      responses:
+        200:
+          description: auth success
+          schema:
+            type: string
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /login/oidc/callback:
+    get:
+      operationId: oidc_callback
+      summary: callback from oidc
+      tags:
+        - login
+      security:
+        - {}
+      description: |
+        callback from oidc for admin auth
+      parameters:
+        - in: query
+          name: code
+          type: string
+          description: code
+        - in: query
+          name: state
+          type: string
+      responses:
+        "302":
+          description: Login success return the api key to be set in cookie
+          headers:
+            Location:
+              type: "string"
+            Set-Cookie:
+              type: "string"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /logout:
+    get:
+      operationId: logout
+      summary: Logout admin from sase-supervisor and the oidc provider.
+      description: |
+        Logout admin from sase-supervisor and the oidc provider.
+      tags:
+        - login
+      parameters:
+        - in: query
+          name: token
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+        302:
+          description: Logout success. Redirect to the login page
+          headers:
+            Location:
+              type: "string"
+            Set-Cookie:
+              type: "string"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /ali/ecs/instance/info:
+    get:
+      operationId: ali_ecs_instance
+      summary: get ali dashboard metrics
+      description: get ali dashboard metrics
+      tags:
+        - ali_metrics
+      parameters:
+        - in: query
+          name: region_id
+          type: string
+      responses:
+        200:
+          description: return metric list
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ECSInstance"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          description: keycloak not valid
+          x-go-name: backend-invalid
+          schema:
+            $ref: "#/definitions/InternalError"
+  /ali/ecs/instance:
+    get:
+      operationId: ali_ecs_instance_list
+      summary: get ali dashboard metrics
+      description: get ali dashboard metrics
+      tags:
+        - ali_metrics
+      responses:
+        200:
+          description: return metric list
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ECSInstance"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          description: keycloak not valid
+          x-go-name: backend-invalid
+          schema:
+            $ref: "#/definitions/InternalError"
+  /ali/ecs/dashboard:
+    get:
+      operationId: ali_ecs_dashboard
+      summary: get ali dashboard metrics
+      description: get ali dashboard metrics
+      tags:
+        - ali_metrics
+      parameters:
+        - in: query
+          name: instance_id
+          type: string
+        - in: query
+          name: metric_name
+          type: string
+        - in: query
+          name: start_time
+          type: string
+        - in: query
+          name: end_time
+          type: string
+        - in: query
+          name: period
+          type: string
+        - in: query
+          name: page_size
+          type: string
+      responses:
+        200:
+          description: return metric list
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ECSMetric"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          description: keycloak not valid
+          x-go-name: backend-invalid
+          schema:
+            $ref: "#/definitions/InternalError"
+  /instances:
+    get:
+      summary: List all instances.
+      operationId: get_instances
+      tags:
+        - instance
+      responses:
+        200:
+          description: |
+            all the instances info, including type, name, uuid, status,
+            rest api url for all namespaces.
+          schema:
+            $ref: "#/definitions/NamespacesInstances"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /pops:
+    get:
+      summary: List all pops
+      operationId: listPops
+      tags:
+        - pops
+      responses:
+        200:
+          description: all the pops infos, such as ip, location, cpu, mem, network bandwidth
+          schema:
+            $ref: "#/definitions/Pops"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /system/interface/:
+    get:
+      summary: get all the system level interfaces
+      description: |
+        all the connected interface are system level interfaces, such as the underlay interface
+        pop interface and so on.
+
+      operationId: get_system_interfaces
+      tags:
+        - system
+      responses:
+        200:
+          description: return all system interfaces
+          schema:
+            $ref: "#/definitions/Interfaces"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: Configure the system interfaces
+      operationId: set_system_interfaces
+      tags:
+        - system
+      parameters:
+        - in: body
+          description: the interfaces which will be set
+          name: "interfaces"
+          schema:
+            $ref: "#/definitions/Interfaces"
+
+      responses:
+        200:
+          description: configure all the interfaces successfully.
+        201:
+          description: configure partial interfaces successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /system/nat/:
+    get:
+      summary: get the system NAT settings
+      description: |
+        get the system level nat settings such as output interface, static nat mapping
+
+      operationId: get_system_nat
+      tags:
+        - system
+      responses:
+        200:
+          description: return all nat settings
+          schema:
+            $ref: "#/definitions/Nat"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: Configure the global nat
+      operationId: set_system_nat
+      tags:
+        - system
+      parameters:
+        - in: body
+          name: nat
+          description: the nat setting to be merged into a global one
+          schema:
+            $ref: "#/definitions/Nat"
+      responses:
+        200:
+          description: set all the nat settings successfully.
+        201:
+          description: set partial nat settings successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete all or partial global nat
+      operationId: delete_system_nat
+      tags:
+        - system
+      parameters:
+        - in: body
+          name: nat
+          description: nat setting to be purged
+          schema:
+            $ref: "#/definitions/Nat"
+      responses:
+        200:
+          description: delete all the nat settings successfully.
+        201:
+          description: delete partial nat settings successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /system/sys-resources:
+    get:
+      summary: get the system level resources
+      operationId: get_system_resources
+      tags:
+        - resource
+      responses:
+        200:
+          description: return all system level settings
+          schema:
+            $ref: "#/definitions/SystemResource"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /{namespace}/tunnel:
+    get:
+      summary: get tunnels belong to a specific namespace
+      operationId: get_namespace_tunnel
+      tags:
+        - tunnel
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+      responses:
+        200:
+          description: return all the tunnels belong to this namespace
+          schema:
+            $ref: "#/definitions/Tunnels"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a tunnel on a specific pop for a specific namespace
+      operationId: create_namespace_tunnel
+      tags:
+        - tunnel
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: tunnel
+          description: the  tunnel configuration in detail
+          schema:
+            $ref: "#/definitions/Tunnel"
+
+      responses:
+        200:
+          description: create the tunnel successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete a tunnel on a specific pop for a specific namespace
+      operationId: delete_namespace_tunnel
+      tags:
+        - tunnel
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: tunnel
+          description: the  tunnel configuration, only the tunnel id and the pop id are required
+          schema:
+            $ref: "#/definitions/Tunnel"
+      responses:
+        200:
+          description: delete the tunnel successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /namespace/{namespace}/pop/{pop_id}/route:
+    get:
+      summary: get routes belong to a specific namespace
+      operationId: get_namespace_route
+      tags:
+        - route
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - name: pop_id
+          in: path
+          required: true
+          description: the pop instance id
+          type: string
+        - in: query
+          name: filter_name
+          type: string
+          description: |
+            filter the routes with the matched the ip address of destination,
+            or the outgoing interface or ip address
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: default value 1
+        - in: query
+          name: page_size
+          type: integer
+          required: false
+      responses:
+        200:
+          description: return all the routes belong to this namespace
+          schema:
+            $ref: "#/definitions/IPRouteGetOutput"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        400:
+          $ref: "#/responses/BadRequest"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a route on a specific pop for a specific namespace
+      operationId: create_namespace_route
+      tags:
+        - route
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - name: pop_id
+          in: path
+          required: true
+          description: the pop instance id
+          type: string
+        - in: body
+          name: create_routes_input
+          description: the route configuration in detail
+          schema:
+            $ref: "#/definitions/IPRouteCreateInput"
+      responses:
+        200:
+          description: delete the route successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        400:
+          $ref: "#/responses/BadRequest"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete a route on a specific pop for a specific namespace
+      operationId: delete_namespace_route
+      tags:
+        - route
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - name: pop_id
+          in: path
+          required: true
+          description: the pop instance id
+          type: string
+        - in: body
+          name: delete_routes_input
+          description: route configuration, only tunnel id and pop id are required
+          schema:
+            $ref: "#/definitions/IPRouteDeleteInput"
+      responses:
+        200:
+          description: delete the route successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        400:
+          $ref: "#/responses/BadRequest"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /namespace/{namespace}/pop/{pop_id}/route/{route_id}:
+    put:
+      summary: update a route on a specific pop for a specific namespace
+      operationId: update_namespace_route
+      tags:
+        - route
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - name: pop_id
+          in: path
+          required: true
+          description: the pop instance id
+          type: string
+        - name: route_id
+          in: path
+          required: true
+          description: the route id
+          type: string
+        - in: body
+          name: route_update
+          description: the updated route configuration in detail
+          schema:
+            $ref: "#/definitions/IPRouteModifyInput"
+      responses:
+        200:
+          description: delete the route successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        400:
+          $ref: "#/responses/BadRequest"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /{namespace}/instance/{pop_id}:
+    get:
+      summary: |
+        get namespace specific pop information
+      operationId: get_namespace_instance
+      tags:
+        - instance
+      parameters:
+        - in: path
+          name: namespace
+          required: true
+          description: the customer namespace
+          type: string
+        - in: path
+          name: pop_id
+          required: true
+          description: the pop instance id
+          type: string
+      responses:
+        200:
+          description: return all the instance info belong to this namespace
+          schema:
+            $ref: "#/definitions/Instances"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /{namespace}/instance:
+    get:
+      summary: |
+        return all the instances associated to this namespace, including the wg and the cilium
+      operationId: get_namespace_instances
+      tags:
+        - instance
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+      responses:
+        200:
+          description: return all the instances info belong to this namespace
+          schema:
+            $ref: "#/definitions/Instances"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: |
+        create an instance for a pop, wg or fw.
+      operationId: create_namespace_instance
+      tags:
+        - instance
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: instances
+          schema:
+            $ref: "#/definitions/Instances"
+      responses:
+        200:
+          description: created the instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete a instance on a specific machine for a specific namespace
+      operationId: delete_namespace_instance
+      tags:
+        - instance
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: instances
+          schema:
+            $ref: "#/definitions/Instances"
+      responses:
+        200:
+          description: delete the instance successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /{namespace}/policy:
+    post:
+      summary: |
+        create a vpp policy. there are two passes for each route lookup.
+        the first pass is based on destination, the second pass is optional
+        based on source address.
+      operationId: create_namespace_policy
+      tags:
+        - policy
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: policies
+          schema:
+            $ref: "#/definitions/Policies"
+      responses:
+        200:
+          description: create the policy successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    put:
+      summary: |
+        Update vpp policy
+      operationId: update_namespace_policy
+      tags:
+        - policy
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: policies
+          schema:
+            $ref: "#/definitions/Policies"
+      responses:
+        200:
+          description: Update the policy successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete a policy for a specific namespace
+      operationId: delete_namespace_policy
+      tags:
+        - policy
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: policies
+          schema:
+            $ref: "#/definitions/Policies"
+      responses:
+        200:
+          description: delete the policy successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /{namespace}/app_route:
+    get:
+      summary: |
+        Get the application route list per the namespace.
+      operationId: get_namespace_app_routes
+      tags:
+        - route
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: query
+          name: filter_name
+          type: string
+          description: filter the route with the matched wg-name or host ip address
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: default value 1
+        - in: query
+          name: page_size
+          type: integer
+          required: false
+      responses:
+        200:
+          description: get the routes list successfully.
+          schema:
+            $ref: "#/definitions/AppRoutesOutput"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: |
+        Create/Update a application route.
+      operationId: create_namespace_app_route
+      tags:
+        - route
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          required: true
+          name: app_routes
+          schema:
+            $ref: "#/definitions/AppRoutes"
+      responses:
+        200:
+          description: create the routes successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: Delete app routes for a specific namespace
+      operationId: delete_namespace_app_route
+      tags:
+        - route
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          required: true
+          name: app_routes
+          schema:
+            $ref: "#/definitions/AppRoutes"
+      responses:
+        200:
+          description: delete the routes successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /derper/{derper_region_id}/node:
+    # Need not list derp node, it will be done in list/get derp region
+    post:
+      summary: create a derp node
+      operationId: create_derper_node
+      tags:
+        - derper
+      parameters:
+        - name: derper_region_id
+          in: path
+          required: true
+          description: the customer derp region id
+          type: string
+        - in: body
+          name: derper-node
+          description: the derp node in detail
+          schema:
+            $ref: "#/definitions/DerpNodeInput"
+      responses:
+        200:
+          description: create the derp node successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /derper/{derper_region_id}/node/{derper_node_id}:
+    get:
+      summary: get single derp node info
+      operationId: get_derper_node
+      tags:
+        - derper
+      parameters:
+        - name: derper_region_id
+          in: path
+          required: true
+          description: the customer derp region id
+          type: string
+        - name: derper_node_id
+          in: path
+          required: true
+          description: the customer derp node id
+          type: string
+      responses:
+        200:
+          $ref: "#/definitions/DerpNodeOutput"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    put:
+      summary: modify a derp node
+      operationId: put_derper_node
+      tags:
+        - derper
+      parameters:
+        - name: derper_region_id
+          in: path
+          required: true
+          description: the customer derp region id
+          type: string
+        - name: derper_node_id
+          in: path
+          required: true
+          description: the customer derp node id
+          type: string
+        - in: body
+          name: derper-node
+          description: the derp node in detail
+          schema:
+            $ref: "#/definitions/DerpNodeModify"
+      responses:
+        200:
+          description: delete the derp node successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete a derp node
+      operationId: delete_derper_node
+      tags:
+        - derper
+      parameters:
+        - name: derper_region_id
+          in: path
+          required: true
+          description: the customer derp region id
+          type: string
+        - name: derper_node_id
+          in: path
+          required: true
+          description: the customer derp node id
+          type: string
+      responses:
+        200:
+          description: delete the derp node successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /derper/region:
+    get:
+      summary: list derp region info
+      operationId: list_derper_region
+      tags:
+        - derper
+      parameters:
+        - in: query
+          name: filter_name
+          type: string
+          description: derper filter name, such as region name/code used for query.
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: default value 1
+        - in: query
+          name: page_size
+          type: integer
+          required: false
+      responses:
+        200:
+          description: return all the derper region
+          schema:
+            $ref: "#/definitions/DerpRegionOutputList"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a derp region
+      operationId: create_derper_region
+      tags:
+        - derper
+      parameters:
+        - in: body
+          name: derper_region
+          description: the derp region in detail
+          schema:
+            $ref: "#/definitions/DerpRegionInput"
+      responses:
+        200:
+          description: create the derp region successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete the derper region list
+      operationId: delete_derper_region_list
+      tags:
+        - derper
+      parameters:
+        - in: body
+          required: true
+          name: derper_delete
+          description: the derper region id list to be deleted
+          schema:
+            $ref: "#/definitions/DerpRegionDeleteInput"
+      responses:
+        200:
+          description: delete the derper region list successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /derper/region/{derper_region_id}:
+    get:
+      summary: get single derp region info
+      operationId: get_derper_region
+      tags:
+        - derper
+      parameters:
+        - name: derper_region_id
+          in: path
+          required: true
+          description: the customer derp region id
+          type: string
+      responses:
+        200:
+          description: Get one derper region
+          schema:
+            $ref: "#/definitions/DerpRegionOutput"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    put:
+      summary: modify single derp region info
+      operationId: put_derper_region
+      tags:
+        - derper
+      parameters:
+        - name: derper_region_id
+          in: path
+          required: true
+          description: the customer derp region id
+          type: string
+        - in: body
+          name: derper_region
+          description: the derp region in detail
+          schema:
+            $ref: "#/definitions/DerpRegionModify"
+      responses:
+        200:
+          $ref: "#/definitions/DerpRegionOutput"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete a derp region
+      operationId: delete_derper_region
+      tags:
+        - derper
+      parameters:
+        - name: derper_region_id
+          in: path
+          required: true
+          description: the customer derp region id
+          type: string
+      responses:
+        200:
+          description: delete the derp region successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /{namespace}/qos_policy:
+    get:
+      summary: |
+        get qos policy belong to a specific namespace,
+      operationId: get_namespace_qos_policy_list
+      tags:
+        - qos_policy
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+      responses:
+        200:
+          description: return all the qos policy belong to this namespace
+          schema:
+            $ref: "#/definitions/QosPolicies"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a qos policy for a specific namespace
+      operationId: create_namespace_qos_policy
+      tags:
+        - qos_policy
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: qos_policy_input
+          description: the qos policy configuration in detail
+          schema:
+            $ref: "#/definitions/QosPolicyInput"
+      responses:
+        200:
+          description: created the qos policy successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /{namespace}/qos_policy/{policy_id}:
+    get:
+      summary: |
+        get the detail information for one specific qos policy
+      operationId: get_namespace_qos_policy
+      tags:
+        - qos_policy
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - name: policy_id
+          in: path
+          required: true
+          description: the policy id
+          type: string
+      responses:
+        200:
+          description: return the qos policy for this policy id
+          schema:
+            $ref: "#/definitions/QosPolicy"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    put:
+      summary: |
+        Update qos policy for a specific namespace
+      operationId: update_namespace_qos_policy
+      tags:
+        - qos_policy
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - name: policy_id
+          in: path
+          required: true
+          description: the changed policy id
+          type: string
+        - in: body
+          name: qos_policy_input
+          schema:
+            $ref: "#/definitions/QosPolicyInput"
+      responses:
+        200:
+          description: Update the qos policy successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      summary: delete a qos policy for a specific namespace
+      operationId: delete_namespace_qos_policy
+      tags:
+        - qos_policy
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - name: policy_id
+          in: path
+          required: true
+          description: the deleted policy id
+          type: string
+      responses:
+        200:
+          description: delete the qos policy successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /{namespace}/qos_config:
+    get:
+      summary: get qos config of the namespace
+      operationId: get_namespace_qos_config
+      tags:
+        - qos_config
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+      responses:
+        200:
+          description: return the qos config belong to this namespace
+          schema:
+            $ref: "#/definitions/QosConfig"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create a qos config for a specific namespace
+      operationId: create_namespace_qos_config
+      tags:
+        - qos_config
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+        - in: body
+          name: qos_config
+          description: the qos config in detail
+          schema:
+            $ref: "#/definitions/QosConfig"
+      responses:
+        200:
+          description: create the qos configuration successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /{namespace}/resources:
+    get:
+      description: |-
+        Return all the resources associated with this tenant including:
+        - pop resources:
+          - nat information
+          - namespace information
+          - vrf information
+          - connection information
+        - wg resources:
+          - wg agent information
+        - firewall resources:
+          - firewall information
+        - IP address resources:
+          customer can customize IP resources for it's own network
+        - Topology resources:
+          point and the arc of the graph
+      operationId: get_namespace_resources
+      tags:
+        - resource
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace, it is the user name
+          type: string
+      responses:
+        200:
+          description: return all the resources of the namespace/user
+          schema:
+            $ref: "#/definitions/Resources"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /{namespace}/resource/wg-resource:
+    get:
+      summary: |
+        Get the wg resource for the namespace.
+      operationId: get_namespace_resource_wg_resource
+      tags:
+        - resource
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+      responses:
+        200:
+          description: return all the wg resource info belong to this namespace
+          schema:
+            $ref: "#/definitions/WgNamespaceResourceList"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /resource/{resourceID}:
+    get:
+      summary: |
+        return the resource content by providing the resource id
+      operationId: get_resource_content
+      tags:
+        - resource
+      parameters:
+        - name: resourceID
+          in: path
+          required: true
+          description: the customer namespace
+          type: string
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: "#/definitions/Resource"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /system/underlay_tunnel:
+    get:
+      summary: get underlay tunnel list
+      operationId: get_underlay_tunnels
+      tags:
+        - system
+      responses:
+        200:
+          description: return all underlay tunnels
+          schema:
+            $ref: "#/definitions/UnderlayTunnelOutputs"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create underlay tunnels
+      operationId: create_underlay_tunnels
+      tags:
+        - system
+      parameters:
+        - in: body
+          name: tunnels
+          description: the tunnel configuration in detail
+          schema:
+            $ref: "#/definitions/UnderlayTunnelInputs"
+      responses:
+        200:
+          description: tunnels are created successfully.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /system/underlay_tunnel/{tunnel_id}:
+    delete:
+      summary: delete a underlay tunnels
+      operationId: delete_underlay_tunnels
+      tags:
+        - system
+      parameters:
+        - name: tunnel_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: tunnels are deleted successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /system/underlay_interface:
+    get:
+      summary: get underlay interface list
+      operationId: get_underlay_interfaces
+      tags:
+        - system
+      responses:
+        200:
+          description: return all underlay interfaces
+          schema:
+            $ref: "#/definitions/UnderlayInterfaceOutputs"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create underlay interfaces
+      operationId: create_underlay_interfaces
+      tags:
+        - system
+      parameters:
+        - in: body
+          name: interfaces
+          description: the tunnel configuration in detail
+          schema:
+            $ref: "#/definitions/UnderlayInterfaceInputs"
+      responses:
+        200:
+          description: create the tunnels successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /system/underlay_interface/{interface_uuid}:
+    delete:
+      summary: delete a underlay interface
+      operationId: delete_underlay_interface
+      tags:
+        - system
+      parameters:
+        - name: interface_uuid
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: delete the interafce successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+
+  /system/underlay_route:
+    get:
+      summary: get underlay route list
+      operationId: get_underlay_routes
+      tags:
+        - system
+      responses:
+        200:
+          description: return all underlay routes
+          schema:
+            $ref: "#/definitions/UnderlayRouteOutputs"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      summary: create underlay routes
+      operationId: create_underlay_routes
+      tags:
+        - system
+      parameters:
+        - in: body
+          name: routes
+          description: the route configuration in detail
+          schema:
+            $ref: "#/definitions/UnderlayRouteInputs"
+      responses:
+        200:
+          description: create the routes successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /system/underlay_route/{route_uuid}:
+    delete:
+      summary: delete a underlay route
+      operationId: delete_underlay_route
+      tags:
+        - system
+      parameters:
+        - name: route_uuid
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: delete the interafce successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+  /system/log:
+    get:
+      summary: List the log with offset and page
+      operationId: list_log
+      tags:
+        - system
+      responses:
+        200:
+          description: return log list
+          schema:
+            $ref: "#/definitions/LogOutputList"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+    post:
+      summary: receive the webhook log from grafana
+      operationId: post_log
+      tags:
+        - system
+      parameters:
+        - in: body
+          name: log
+          schema:
+            $ref: "#/definitions/LogInput"
+      responses:
+        200:
+          description: create the log successfully.
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /system/log/{log_id}:
+    get:
+      summary: Get one log in detail
+      operationId: get_log
+      tags:
+        - system
+      parameters:
+        - name: log_id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: return one log
+          schema:
+            $ref: "#/definitions/LogOutput"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+    put:
+      summary: Change one log
+      operationId: put_log
+      tags:
+        - system
+      parameters:
+        - in: path
+          name: log_id
+          required: true
+          type: string
+        - in: body
+          name: log
+          description: Modify the log
+          schema:
+            $ref: "#/definitions/LogModify"
+      responses:
+        200:
+          description: success
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /system/alert:
+    get:
+      summary: list all of the alert in system.
+      operationId: get_alert_list
+      tags:
+        - system
+      parameters:
+        - in: query
+          name: filter_name
+          type: string
+          description: alert filter name, such as name, severity, host etc.
+        - in: query
+          name: offset
+          type: integer
+          description: default value 0
+        - in: query
+          name: size
+          type: integer
+      responses:
+        200:
+          description: |
+            get the detailed information of all of the alerts
+          schema:
+            $ref: "#/definitions/SystemAlertList"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/UnauthorizedError"
+        500:
+          $ref: "#/responses/InternalError"
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      $ref: "#/definitions/BadRequest"
+  InternalError:
+    description: Internal error
+    schema:
+      $ref: "#/definitions/InternalError"
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
+  AdminApiKey:
+    description: Admin API key generated by backend.
+    headers:
+      X-API-Key:
+        type: string
+        description: API key for backend and frontend
+      X-API-Key-TTL:
+        type: integer
+        description: time to live value, will disable the key when timeouts
+    schema:
+      $ref: '#/definitions/AdminApiKey'
+securityDefinitions:
+  ApiKey:
+    type: apiKey
+    in: header
+    name: X-API-Key
+  AdminKey:
+    type: apiKey
+    in: header
+    name: X-API-Key
+definitions:
+  ErrorCode:
+    type: string
+    enum:
+      - err_bad_params
+      - err_bad_user_info
+      - err_bad_user_profile
+      - err_company_exists
+      - err_company_not_exists
+      - err_db_access
+      - err_derper_region_exists
+      - err_derper_region_not_exists
+      - err_derper_node_not_exists
+      - err_derper_node_exists
+      - err_device_exists
+      - err_device_not_exists
+      - err_internal_err
+      - err_invalid_default_gw_addr
+      - err_invalid_grpc_endpoint
+      - err_invalid_host_addr
+      - err_invalid_lan_addr
+      - err_invalid_management_interface_addr
+      - err_invalid_prefix_len
+      - err_invalid_sms_code
+      - err_invalid_underlay_addr
+      - err_invalid_wan_addr
+      - err_json_transform
+      - err_label_exists
+      - err_label_not_exists
+      - err_no_param_changed
+      - err_no_underlay_addr_on_pop
+      - err_no_vrf_info_on_user
+      - err_no_wg_connected_to_pop
+      - err_operation_not_supported
+      - err_password_policy_not_met
+      - err_phone_registered
+      - err_phone_unregistered
+      - err_phone_unfinished
+      - err_policy_exists
+      - err_policy_not_exists
+      - err_pop_applied_in_user
+      - err_pop_config_channel_full
+      - err_pop_exists
+      - err_pop_not_exists
+      - err_pop_not_applied_in_user
+      - err_qos_policy_exists
+      - err_qos_policy_not_exists
+      - err_qos_policy_in_using
+      - err_qos_config_not_exists
+      - err_registered
+      - err_fw_exists
+      - err_fw_in_using_on_user
+      - err_fw_not_exists
+      - err_target_exists
+      - err_target_not_exists
+      - err_update_info_failed
+      - err_user_exists
+      - err_user_not_exists
+      - err_user_profile_not_exists
+      - err_wg_exists
+      - err_wg_not_exists
+  BadRequest:
+    type: object
+    description: bad request from client
+    required:
+      - Title
+      - Detail
+    properties:
+      Title:
+        $ref: '#/definitions/ErrorCode'
+      Detail:
+        type: string
+
+  InternalError:
+    type: object
+    description: service internal error with rfc7807 compliance
+    required:
+      - Title
+      - Detail
+    properties:
+      Title:
+        $ref: '#/definitions/ErrorCode'
+      Detail:
+        type: string
+
+  Label:
+    type: object
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+  AdminApiKey:
+    description: API key generated by backend.
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+      ttl:
+        description: time to disable key
+        type: integer
+  WgNamespace:
+      description: WG should share the same yaml file, instead of multiple copies
+      required:
+        - name
+        - IP
+      properties:
+        name:
+          type: string
+        version:
+          description: the version of the wg server, it is better to use integer than string
+          type: integer
+        cylonixdAccessKey:
+          description: the access key for wg-agent to run cylonixd, it is different for each tenant/name
+          type: string
+        IP:
+          type: string
+        pop:
+          type: string
+        rest:
+          type: string
+        status:
+          $ref: "#/definitions/Status"
+        prefix:
+          type: integer
+        private_key:
+          description: base64 based private key, generate if null
+          type: string
+        port:
+          type: integer
+          description: wirguard interface listening port 123
+        priority:
+          type: integer
+          description: The priority of the wg in this namespace
+        vxlan:
+          $ref: "#/definitions/vxlanSetting"
+        AccessPoints:
+          type: array
+          items:
+            type: string
+        labels:
+          type: array
+          items:
+            $ref: "#/definitions/Label"
+        allowedIPs:
+          type: array
+          items:
+            type: string
+            description: It must be ip prefix format. such as 0.0.0.0/0, 0.0.0.0/1, 128.0.0.0/1, 100.64.0.0/10
+        subnetRouterDeviceID:
+          type: string
+          description: We can set the device ID for the WG in one namespace, which will be use to build a tcp subnet router in this WG
+
+  WgNamespaceConfig:
+    description: wg information
+    type: object
+    properties:
+      name:
+       type: string
+      ID:
+       type: string
+       description: resource id
+      config:
+        $ref: "#/definitions/WgNamespace"
+
+  WgNamespaceConfigInput:
+    description: wg configure modified items
+    type: object
+    properties:
+      subnetRouterDeviceIDSet:
+       type: boolean
+      subnetRouterDeviceID:
+       type: string
+      prioritySet:
+       type: boolean
+      priority:
+        type: integer
+        description: The priority of the wg in this namespace
+      allowedIPsSet:
+       type: boolean
+      allowedIPs:
+        type: array
+        items:
+          type: string
+      cylonixdAccessKey:
+        description: the access key for wg-agent to run cylonixd, it is different for each tenant/name
+        type: string
+      cylonixdAccessKeySet:
+        type: boolean
+
+  WgNamespaceConfigList:
+    type: array
+    items:
+      $ref: "#/definitions/WgNamespaceConfig"
+
+  ECSMetric:
+    description: metric for ali ECS host
+    properties:
+      timestamp:
+        type: integer
+      Value:
+        type: number
+      Minimum:
+        type: number
+      Maximum:
+        type: number
+      Average:
+        type: number
+  ECSInstance:
+    description: metric for ali ECS host
+    properties:
+      CreationTime:
+        type: string
+      Status:
+        type: string
+      InstanceName:
+        type: string
+      InstanceID:
+        type: string
+      Memory:
+        type: integer
+      Cpu:
+        type: integer
+  AliRegion:
+    description: metric for ali ECS host
+    properties:
+      RegionEndpoint:
+        type: string
+      LocalName:
+        type: string
+      RegionId:
+        type: string
+  FwNamespace:
+      description: Fw should share the same yaml file, instead of multiple copies
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        pop:
+          type: string
+        connStr:
+          type: string
+  SystemInfo:
+      type: object
+      properties:
+        hostname:
+          type: string
+        mem:
+          type: integer
+        cpu:
+          type: object
+          properties:
+            core:
+              type: integer
+            model:
+              type: string
+            frequency:
+              type: integer
+        disk:
+          type: object
+          properties:
+            model:
+              type: string
+              enum:
+                - hdd
+                - ssd
+            capacity:
+              type: integer
+  NatInterface:
+      type: object
+      properties:
+        name:
+          type: string
+        inside:
+          type: boolean
+        outside:
+          type: boolean
+        outputFeature:
+          type: boolean
+  NatAddressPool:
+      type: object
+      properties:
+        name:
+          type: string
+        vrf:
+          type: integer
+        firstIp:
+          type: string
+        lastIp:
+          type: string
+        twice_nat:
+          type: boolean
+        defaultGw:
+          type: string
+  NatLocalIp:
+      type: object
+      properties:
+        vrf:
+          type: integer
+        localIp:
+          type: string
+        localPort:
+          type: integer
+        probability:
+          type: integer
+  NatStaticMapping:
+      type: object
+      properties:
+        eip:
+          type: string
+        eintf:
+          type: string
+        eport:
+          type: integer
+        local_ips:
+          type: array
+          items:
+            $ref: "#/definitions/NatLocalIp"
+        proto:
+          type: string
+        twiceMode:
+          type: string
+        tip:
+          type: string
+        affinity:
+          type: integer
+  NatIdentityMapping:
+      type: object
+      properties:
+        vrf:
+          type: integer
+        intf:
+          type: string
+        ip:
+          type: string
+        proto:
+          type: string
+        port:
+          type: integer
+  Dnat44:
+      type: object
+      properties:
+        label:
+          type: string
+        staticMapping:
+          type: array
+          items:
+            $ref: "#/definitions/NatStaticMapping"
+        identityMapping:
+          type: array
+          items:
+            $ref: "#/definitions/NatIdentityMapping"
+  Nat:
+      type: object
+      properties:
+        forwardEnable:
+          type: boolean
+        interfaces:
+          type: array
+          items:
+            $ref: "#/definitions/NatInterface"
+        NatAddressPools:
+          type: array
+          items:
+            $ref: "#/definitions/NatAddressPool"
+        dnat:
+          type: array
+          items:
+            $ref: "#/definitions/Dnat44"
+  Acl:
+      type: object
+      required:
+        - "name"
+        - "rules"
+      properties:
+        name:
+          description: "acl name, used to identify one acl"
+          type: string
+        rules:
+          type: array
+          items:
+            $ref: "#/definitions/AclRule"
+        interfaces:
+          $ref: "#/definitions/AclInterfaces"
+  AclInterfaces:
+      type: object
+      description: define a acl rule
+      properties:
+        egress:
+          type: array
+          items:
+            type: string
+        ingress:
+          type: array
+          items:
+            type: string
+  AclRule:
+      type: object
+      description: define a acl rule
+      required:
+        - "action"
+      properties:
+        action:
+          type: string
+          enum:
+            - deny
+            - permit
+            - reflect
+        ip:
+          $ref: "#/definitions/AclIPRule"
+        icmp:
+          $ref: "#/definitions/AclICMPRule"
+        tcp:
+          $ref: "#/definitions/AclTCPRule"
+        udp:
+          $ref: "#/definitions/AclUDPRule"
+  AclIPRule:
+      type: object
+      properties:
+        destinationNetwork:
+          type: string
+        sourceNetwork:
+          type: string
+        protocol:
+          type: string
+          enum:
+            - icmp
+            - tcp
+            - udp
+            - auto
+  AclICMPRule:
+      type: object
+      properties:
+        icmpv6:
+          type: boolean
+        icmpCodeRange:
+          type: object
+          properties:
+            first:
+              type: integer
+            last:
+              type: integer
+        icmpRuleRange:
+          type: object
+          properties:
+            first:
+              type: integer
+            last:
+              type: integer
+  AclTCPRule:
+      type: object
+      properties:
+        DestinationPortRange:
+          $ref: "#/definitions/ACLRuleIpRulePortRange"
+        SourcePortRange:
+          $ref: "#/definitions/ACLRuleIpRulePortRange"
+        tcpFlagsMask:
+          type: integer
+        tcpFlagsValue:
+          type: integer
+  ACLRuleIpRulePortRange:
+      type: object
+      properties:
+        lower:
+          type: integer
+        upper:
+          type: integer
+  AclUDPRule:
+      type: object
+      properties:
+        DestinationPortRange:
+          $ref: "#/definitions/ACLRuleIpRulePortRange"
+        SourcePortRange:
+          $ref: "#/definitions/ACLRuleIpRulePortRange"
+  ABF:
+      type: object
+      required:
+        - "index"
+        - "aclName"
+        - "attachedInterfaces"
+        - "forwardingPaths"
+      properties:
+        index:
+          type: integer
+        aclName:
+          type: string
+        attachedInterfaces:
+          type: array
+          items:
+            $ref: "#/definitions/AbfAttachedInterface"
+        forwardingPaths:
+          type: array
+          items:
+            $ref: "#/definitions/AbfForwardingPath"
+  AbfAttachedInterface:
+      type: object
+      required:
+        - "inputInterface"
+        - "isIPv6"
+      properties:
+        inputInterface:
+          type: string
+        isIPv6:
+          type: boolean
+        priority:
+          type: integer
+  AbfForwardingPath:
+      type: object
+      properties:
+        nexpHop:
+          type: string
+        interfaceName:
+          type: string
+        weight:
+          type: integer
+        perference:
+          type: integer
+        dvr:
+          type: boolean
+  Interface:
+      type: object
+      required:
+        - "name"
+        - "vrf"
+        - "cidr"
+      properties:
+        name:
+          type: string
+        ID:
+          type: string
+        intfType:
+          type: string
+          enum: ["dpdk", "veth", "loop"]
+          description: interface type, default is dpdk
+        cidr:
+          type: array
+          items:
+            type: string
+        vrf:
+          type: integer
+        bandwidth:
+          type: integer
+        status:
+          type: string
+        hwaddr:
+          description: it's random by default or not set
+          type: string
+        isTapInject:
+          type: string
+          enum:
+           - "yes"
+           - "no"
+          description: Before tap-inject feature is completed, the default valuse is no
+  Interfaces:
+      type: array
+      items:
+        $ref: "#/definitions/Interface"
+  Network:
+      type: object
+      properties:
+        outside_nets:
+          type: array
+          items:
+            $ref: "#/definitions/Interface"
+        inside_nets:
+          type: array
+          items:
+            $ref: "#/definitions/Interface"
+  ConnectionInfo:
+      type: object
+      required:
+        - grpc
+      properties:
+        grpc:
+          type: string
+        rest:
+          type: string
+        etcd:
+          type: string
+  Pop:
+      type: object
+      description: pop global information that's not specific to a namespace
+      required:
+        - ID
+        - name
+      properties:
+        ID:
+          type: string
+        name:
+          type: string
+        rest:
+          description: proxy URI for the pop
+          type: string
+        status:
+          $ref: "#/definitions/Status"
+        topo:
+          $ref: "#/definitions/Topo"
+        network:
+          $ref: "#/definitions/Network"
+        systemInfo:
+          $ref: "#/definitions/SystemInfo"
+        connection_info:
+          $ref: "#/definitions/ConnectionInfo"
+  Pops:
+      type: array
+      items:
+        $ref: "#/definitions/Pop"
+  ConnectionAddr:
+      type: object
+      properties:
+        ip:
+          type: string
+        port:
+          type: integer
+  Tunnel:
+      type: object
+      required:
+        - ID
+      properties:
+        ID:
+          type: string
+        name:
+          type: string
+        pop_id:
+          type: string
+        peer:
+          $ref: "#/definitions/ConnectionAddr"
+        src:
+          $ref: "#/definitions/ConnectionAddr"
+        vrf:
+          type: integer
+        vni:
+          type: integer
+        bvi:
+          type: string
+        remote:
+          description: the name of the vm(pop, wg, fw) instance
+          type: string
+        Mode:
+          type: string
+          enum: [path-selection, match-all, bandwidth-first]
+          description: It is derived from pop tunnel configure and can only be path-selection, match-all, bandwidth-first
+  Tunnels:
+      type: array
+      items:
+        $ref: "#/definitions/Tunnel"
+  GreInfo:
+      type: object
+      required:
+        - src
+        - peer
+      properties:
+        peer:
+          $ref: "#/definitions/ConnectionAddr"
+        src:
+          $ref: "#/definitions/ConnectionAddr"
+        outerVrf:
+          type: integer
+        sessionId:
+          type: integer
+        remote:
+          type: string
+
+  WgIntfPeer:
+      type: object
+      required:
+        - endpoint
+        - publicKey
+      properties:
+        name:
+          type: string
+        publicKey:
+          type: string
+        endpoint:
+          $ref: "#/definitions/ConnectionAddr"
+        allowedIps:
+          type: array
+          items:
+            type: string
+        keepalive:
+          type: integer
+        remote:
+          type: string
+
+  WgIntfInfo:
+      type: object
+      required:
+        - src
+        - privateKey
+      properties:
+        src:
+          $ref: "#/definitions/ConnectionAddr"
+        listenPort:
+          type: integer
+        privateKey:
+          type: string
+        outerVrf:
+          type: integer
+        peers:
+          type: array
+          items:
+            $ref: "#/definitions/WgIntfPeer"
+
+  Vrrp:
+      type: object
+      required:
+        - name
+        - intf
+        - vrid
+        - vip
+      properties:
+        name:
+          type: string
+        intf:
+          type: string
+        vrid:
+          type: integer
+        interval:
+          type: integer
+          description: VR advertisement interval in milliseconds, should be => 10 and <= 655350.
+        priority:
+          type: integer
+        vip:
+          type: string
+
+  L2Fib:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        hwaddr:
+          type: string
+        intf:
+          type: string
+        bridgedomain:
+          type: string
+
+  L3Tunnel:
+      type: object
+      required:
+        - name
+      properties:
+        tunnelType:
+          type: string
+          enum: [GRE, WG]
+          description: Default is gre, need to extension for ipip/wg
+        ID:
+          type: string
+        name:
+          type: string
+        vrf:
+          type: integer
+        cidr:
+          type: array
+          items:
+            type: string
+        greInfo:
+          $ref: "#/definitions/GreInfo"
+        wgInfo:
+          $ref: "#/definitions/WgIntfInfo"
+  IPRoute:
+      type: object
+      properties:
+        ID:
+          type: string
+        vrf:
+          type: integer
+          format: uint32
+        dest:
+          type: string
+        via:
+          type: string
+        dev:
+          type: string
+        dstVrf:
+          type: integer
+          format: uint32
+        pathType:
+          type: string
+          enum:
+           - normal
+           - src-lookup
+        isAppRoute:
+            type: boolean
+            description: app route can not be delete when supervisor restart
+  InstanceIPRoutes:
+      type: object
+      properties:
+        instance_id:
+          type: string
+        routes:
+          type: array
+          items:
+            $ref: "#/definitions/IPRoute"
+
+  IPRouteCreateInput:
+      type: object
+      properties:
+        routes:
+          type: array
+          items:
+            $ref: "#/definitions/IPRoute"
+
+  IPRouteGetOutput:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: the total number of the ip route in system for instance id and namespace
+        route_list:
+          type: array
+          items:
+            $ref: "#/definitions/IPRoute"
+
+  IPRouteModifyInput:
+    type: object
+    properties:
+      vrf:
+        type: integer
+        format: uint32
+      vrf_set:
+        type: boolean
+        description: vrf only can be updated when it is set to true
+      via:
+        type: string
+      via_set:
+        type: boolean
+        description: via interface only can be updated when it is set to true
+      dev:
+        type: string
+      dev_set:
+        type: boolean
+        description: dev interface only can be updated when it is set to true
+      dstVrf:
+        type: integer
+        format: uint32
+      dstVrf_set:
+        type: boolean
+        description: destination vrf only can be updated when it is set to true
+      pathType:
+        type: string
+        enum:
+          - normal
+          - src-lookup
+      pathType_set:
+        type: boolean
+        description: path type only can be updated when it is set to true
+
+  Routes:
+      type: array
+      items:
+        $ref: "#/definitions/InstanceIPRoutes"
+
+  IPRouteDeleteInput:
+    type: object
+    description: the delete route ids
+    required:
+      - "ids"
+    properties:
+      ids:
+        type: array
+        description: the array of delete route id
+        minItems: 1
+        items:
+          type: string
+  Bvi:
+      type: object
+      properties:
+        ID:
+          type: integer
+        name:
+          type: string
+        interfaces:
+          type: array
+          items:
+            type: string
+        loop:
+          $ref: "#/definitions/Interface"
+  PopInstance:
+    description: |
+      All the tunnel interfaces are put into the same bvi and hence
+      the traffic will be forwarded in layer2 instead of layer 3.
+    type: object
+    required:
+      - ID
+      - name
+    properties:
+      instanceType:
+        type: string
+        enum:
+          - cpe
+          - pop
+          - natonly
+      scope:
+        type: string
+        description: |
+          The pop instance scope, the system wide or customer specific, if customer specific,
+          the value should be a namespace, if pop, the value should be a "system"
+      ID:
+        type: string
+      name:
+        type: string
+      rest:
+        type: string
+      status:
+        $ref: "#/definitions/Status"
+      vrf:
+        type: integer
+      bvis:
+        type: array
+        items:
+          $ref: "#/definitions/Bvi"
+      routes:
+        type: array
+        items:
+          $ref: "#/definitions/IPRoute"
+      tunnels:
+        type: array
+        items:
+          $ref: "#/definitions/Tunnel"
+      l3Tunnels:
+        type: array
+        items:
+          $ref: "#/definitions/L3Tunnel"
+      vrrps:
+        type: array
+        items:
+          $ref: "#/definitions/Vrrp"
+      l2Fibs:
+        type: array
+        items:
+          $ref: "#/definitions/L2Fib"
+      appRoutes:
+        type: array
+        description: |
+            The app routes for the POP. To program to all pop's when it is added.
+            And it will not be deleted when supervisor starts with an empty app
+            route list in init configure file.
+        items:
+          $ref: "#/definitions/AppRoute"
+      nats:
+        type: array
+        items:
+          $ref: "#/definitions/PopNat"
+      nameservers:
+        description: DNS server list per pop/namespace
+        type: array
+        items:
+          type: string
+      qosSetInterface:
+          type: object
+          $ref: "#/definitions/QosSetInterface"
+      qosPolicers:
+          type: object
+          $ref: "#/definitions/QosPolicies"
+  PopNat:
+    description: define the nats info in user namespace, it only can refer to the system pop defined nats
+    type: object
+    required:
+      - ID
+      - name
+      - comment
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+      comment:
+        description: comment the pop nat, will displayed in sase mgr web page
+        type: string
+  Wg:
+    description: wg information
+    type: object
+    properties:
+      ID:
+        type: string
+      name:
+       type: string
+      pop:
+        type: string
+      rest:
+        type: string
+      status:
+        $ref: "#/definitions/Status"
+      instances:
+        description: namespace instances on this wg
+        type: array
+        items:
+          $ref: "#/definitions/WgNamespace"
+  FwInstance:
+    description: |
+      todo: need to implement this later
+    type: object
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+      pop:
+        type: string
+      rest:
+        type: string
+      status:
+        $ref: "#/definitions/Status"
+  Instances:
+    type: object
+    description: instances for a namespace
+    properties:
+      pop_instance:
+        type: array
+        items:
+          $ref: "#/definitions/PopInstance"
+      wg_instance:
+        type: array
+        items:
+          $ref: "#/definitions/WgNamespace"
+      fw_instance:
+        type: array
+        items:
+          $ref: "#/definitions/FwInstance"
+  NamespaceInstances:
+    type: object
+    description: instances of a namespace
+    required:
+      - namespace
+    properties:
+      namespace:
+        type: string
+      instances:
+        $ref: "#/definitions/Instances"
+  NamespacesInstances:
+    type: array
+    description: instances for a list of namespaces
+    items:
+      $ref: "#/definitions/NamespaceInstances"
+  UserLoginInfo:
+    type: object
+    required:
+      - username
+      - password
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+      namespace:
+        type: string
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+
+  Pod:
+    type: object
+    description: |
+      Instances of the same master pop grouped as a pod.
+      Break it up if the response gets too big.
+    required:
+      - pop
+    properties:
+      pop:
+        description: pop is multi-tenant and the master for the pod
+        $ref: "#/definitions/Pop"
+      pop_instance:
+        description: the user/namespace pop instances of the same pop
+        type: array
+        items:
+          $ref: "#/definitions/PopInstance"
+      fw_instance:
+        type: array
+        items:
+          $ref: "#/definitions/FwConfig"
+      l3Tunnels:
+        type: array
+        items:
+          $ref: "#/definitions/L3Tunnel"
+      wg:
+        type: array
+        description: wg is multi-tenant. Multiple wg can be deployed in one pod
+        items:
+          $ref: "#/definitions/Wg"
+      vrrps:
+        type: array
+        description: VRRP for underlay interfaces, it will support the active/standby mode.
+        items:
+          $ref: "#/definitions/Vrrp"
+      l2Fibs:
+        type: array
+        items:
+          $ref: "#/definitions/L2Fib"
+  Pods:
+    type: array
+    description:  |
+      Instances of the same master pop grouped as a pod.
+      Break it up if the response gets too big.
+    items:
+      $ref: "#/definitions/Pod"
+  Policies:
+      type: array
+      items:
+        $ref: "#/definitions/Policy"
+  Policy:
+      type: object
+      properties:
+        name:
+          type: string
+        domainName:
+          type: string
+        ID:
+          type: string
+        appID:
+          description: used to determin if we want to a separate table
+          type: string
+        epID:
+          description: not use it currently
+          type: string
+        appAddrs:
+          type: array
+          items:
+            type: string
+        epAddrs:
+          type: array
+          items:
+            type: string
+        action:
+          description: deny for deny, and id for next hop
+          type: string
+        policyIDInManager:
+          description: It is the policy id in sase-manager. We can use it to trace all app routes related to the diverse policy.
+          type: string
+        pathSelectionMode:
+          type: string
+          enum: [global, single]
+          description: If it is empty string, we will process it as single mode to keep compatiable with the previsous codes.
+
+  AppRoute:
+      type: object
+      description: When a device is added, supervisor need to update the routes (*/32) in all pop.
+      properties:
+        name:
+          type: string
+        ID:
+          type: string
+        cidr:
+          type: string
+        wgName:
+          description: The wg name for the current device/route, it is better to use name than ID.
+          type: string
+  AppRoutes:
+      type: array
+      items:
+        $ref: "#/definitions/AppRoute"
+
+  AppRoutesOutput:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+        description: the total number of the app route in system
+      route_list:
+        type: array
+        items:
+          $ref: "#/definitions/AppRoute"
+
+  QosPolicyInput:
+      type: object
+      description: the input parameters of PUT and POST qos policy operation.
+      properties:
+        name:
+          type: string
+        bandwidth:
+          type: integer
+
+  QosPolicy:
+      type: object
+      description: the definition of one qos policy item.
+      properties:
+        ID:
+          type: string
+        name:
+          type: string
+        bandwidth:
+          type: integer
+  QosPolicies:
+      type: array
+      items:
+        $ref: "#/definitions/QosPolicy"
+
+  QosConfig:
+      type: object
+      description: the definition of the qos config for one specific namespace.
+      properties:
+        downstreamPolicyName:
+          type: string
+        upstreamPolicyName:
+          type: string
+
+  QosSetInterface:
+    type: object
+    description: the definition of the qos and applied interface for one specific namespace.
+    properties:
+      downstreamPolicyName:
+        type: string
+      upstreamPolicyName:
+        type: string
+      downstreamInterface:
+        type: string
+      upstreamInterface:
+        type: string
+
+  vxlanSetting:
+      description: WG should share the same yaml file, instead of multiple copies
+      required:
+        - ip
+        - vid
+        - dstport
+        - remote
+        - gw
+        - underlayIf
+        - underlayGw
+      properties:
+        ip:
+          type: string
+        vid:
+          type: integer
+        dstport:
+          type: integer
+        remote:
+          type: string
+        gw:
+          type: string
+
+        underlayIf:
+          type: string
+        underlayGw:
+          type: string
+  UserPopResource:
+      description: user pop instance means the user configuration on a specific pop
+      type: object
+      required:
+        - ID
+        - instanceID
+        - instanceName
+        - userName
+        - active
+        - config
+      properties:
+        ID:
+          type: string
+        instanceID:
+          type: string
+        instanceName:
+          type: string
+        userName:
+          type: string
+        active:
+          type: boolean
+        config:
+          $ref:  "#/definitions/PopInstance"
+  RealPopResource:
+      description: real pop here means the pop instance outgoing point, for example, the NAT
+      type: object
+      properties:
+        ID:
+          type: string
+        instanceID:
+          type: string
+        addrPool:
+          $ref: "#/definitions/NatAddressPool"
+        intfc:
+          description: interfaces of of the nat
+          $ref: "#/definitions/NatInterface"
+  GlobalPopResource:
+      type: object
+      properties:
+        ID:
+          type: string
+        Name:
+          type: string
+        NatIDs:
+          type: array
+          items:
+            type: string
+        Users:
+          type: array
+          items:
+            type: string
+        Connections:
+          type: array
+          items:
+            type: string
+  PopResource:
+      type: object
+      properties:
+        userPopResources:
+          type: array
+          items:
+            $ref: "#/definitions/UserPopResource"
+        realPopResources:
+          type: array
+          items:
+            $ref: "#/definitions/RealPopResource"
+  WgNamespaceResource:
+      type: object
+      required:
+        - "ID"
+        - "name"
+        - "active"
+      properties:
+        ID:
+          type: string
+        name:
+          type: string
+        active:
+          type: boolean
+        namespace:
+            $ref: "#/definitions/WgNamespace"
+  FwNamespaceResource:
+      type: object
+      required:
+        - "ID"
+        - "name"
+      properties:
+        ID:
+          type: string
+        name:
+          type: string
+        RebootCnt:
+          type: integer
+        isActive:
+          type: boolean
+        namespace:
+            $ref: "#/definitions/FwNamespace"
+
+  WgNamespaceResourceList:
+    description: namespace instances list
+    type: array
+    items:
+      $ref: "#/definitions/WgNamespaceResource"
+
+  WgResource:
+      type: object
+      properties:
+        ID:
+          type: string
+        InstanceID:
+          type: string
+        InstanceName:
+          type: string
+        Conn:
+          type: string
+        AccessPoints:
+          type: array
+          items:
+            type: string
+        Namespaces:
+          type: array
+          items:
+            type: string
+        Version:
+          description: the version of the wg server, it is better to use integer than string
+          type: integer
+  WgInstance:
+    type: object
+    description: |
+      the wg config
+    required:
+      - "ID"
+      - "name"
+      - "conn"
+      - "access_points"
+    properties:
+      ID:
+        description: wg id, used to identify one wg
+        example: ef386a82-acf1-5be6-bc62-60a83e08d69c
+        type: string
+      name:
+        description: the name of the wg
+        type: string
+      version:
+        description: the version of the wg server, it is better to use integer than string
+        type: integer
+      pop:
+        description: the pop which the wg connected to
+        example: pop-hz-1
+        type: string
+      conn:
+        description: the restapi connection string of wg instance, supervisor connects the wg via conn string
+        example: http://172.30.60.61:8080
+        type: string
+      lan_addr:
+        description: the ip address of lan interface on wg
+        format: ip
+        type: string
+      access_points:
+        description: the access point list which is used to connecte with end user
+        example: ["192.168.0.81"]
+        type: array
+        items:
+          type: string
+      default_interface:
+        type: string
+        description: the default interface for underlay vxlan tunnel
+      default_gw:
+        type: string
+        description: the default gateway for underlay vxlan tunnel
+      host_name:
+        type: string
+        description: the host name of the server which deploy the wg
+      create_time:
+        type: string
+        format: date-time
+        description: the time when the wg is created
+      update_time:
+        type: string
+        format: date-time
+        description: the time when the wg is updated
+
+  WgInstanceList:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+      wg_instances:
+        type: array
+        items:
+          $ref: "#/definitions/WgInstance"
+
+  WgInstanceDeleteInput:
+    type: object
+    description: the delete wg instance ids
+    required:
+      - "ids"
+    properties:
+      ids:
+        type: array
+        description: the array of delete wg instance id
+        minItems: 1
+        items:
+          type: string
+
+  WgInstanceInput:
+    type: object
+    description: the parameters to create the wg instance
+    required:
+      - "name"
+      - "conn"
+      - "access_points"
+    properties:
+      name:
+        description: the name of the wg
+        type: string
+      version:
+        description: the version of the wg server, it is better to use integer than string
+        type: integer
+      pop:
+        description: the pop which the wg connected to
+        example: pop-hz-1
+        type: string
+      conn:
+        description: the restapi connection string of wg instance, supervisor connects the wg via conn string
+        example: http://172.30.60.61:8080
+        type: string
+      lan_addr:
+        description: the ip address of lan interface on wg
+        format: ip
+        type: string
+      access_points:
+        description: the access point list which is used to connecte with end user
+        example: ["192.168.0.81"]
+        minItems: 1
+        type: array
+        items:
+          type: string
+      default_interface:
+        type: string
+        description: the default interface for underlay vxlan tunnel
+      default_gateway:
+        type: string
+        description: the default gateway for underlay vxlan tunnel
+      host_name:
+        type: string
+        description: the host name of the server which deploy the wg
+
+  WgInstanceModify:
+    type: object
+    description: the parameters to update the wg instance
+    properties:
+      pop:
+        description: the pop which the wg connected to
+        example: pop-hz-1
+        type: string
+      pop_set:
+        description: pop only can be updated when it is set to true
+        type: boolean
+      version:
+        description: the version of the wg server, it is better to use integer than string
+        type: integer
+      version_set:
+        description: pop only can be updated when it is set to true
+        type: boolean
+      conn:
+        description: the restapi connection string of wg instance, supervisor connects the wg via conn string
+        example: http://172.30.60.61:8080
+        type: string
+      conn_set:
+        description: conn only can be updated when it is set to true
+        type: boolean
+      lan_addr:
+        description: the ip address of lan interface on wg
+        format: ip
+        type: string
+      lan_addr_set:
+        description: lan_addr only can be updated when it is set to true
+        type: boolean
+      access_points:
+        description: the access point list which is used to connecte with end user
+        example: ["192.168.0.81"]
+        type: array
+        items:
+          type: string
+      access_points_set:
+        description: access_points only can be updated when it is set to true
+        type: boolean
+      default_interface:
+        type: string
+        description: the default interface for underlay vxlan tunnel
+      default_interface_set:
+        description: default_interface only can be updated when it is set to true
+        type: boolean
+      default_gw:
+        type: string
+        description: the default gateway for underlay vxlan tunnel
+      default_gw_set:
+        description: default_gateway only can be updated when it is set to true
+        type: boolean
+      host_name:
+        type: string
+        description: the host name of the server which deploy the wg
+      host_name_set:
+        description: host_name only can be updated when it is set to true
+        type: boolean
+
+  FwConfig:
+    description: |
+      The firewall config. Supports multi-tenancy.
+    type: object
+    properties:
+      ID:
+        type: string
+        description: fw id, used to identify one fw
+        example: 7d4336ce-0fd0-506e-9bca-a434a96ad5fe
+      name:
+        type: string
+        description: fw name, used to identify one fw
+      pop:
+        type: string
+        description: the pop which the fw is connected to
+      host_addr:
+        type: string
+        format: ip
+        description: the ip address of host interface of the fw
+      create_time:
+        type: string
+        format: date-time
+        description: the time when the pop is created
+      update_time:
+        type: string
+        format: date-time
+        description: the time when the pop is updated
+
+  FwConfigList:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+      fws:
+        type: array
+        items:
+          $ref: "#/definitions/FwConfig"
+
+  FwConfigDeleteInput:
+    type: object
+    description: the delete fw ids
+    required:
+      - "ids"
+    properties:
+      ids:
+        type: array
+        description: the array of delete fw id
+        minItems: 1
+        items:
+          type: string
+
+  PopConfig:
+    description: the configuration of the pop
+    type: object
+    properties:
+      ID:
+        type: string
+        description: pop id, used to identify one pop
+        example: f9e3d14e-53a2-5c00-b5b5-0a51c5e24869
+      name:
+        type: string
+        description: pop name, used to identify one pop
+      grpc_endpoint:
+        type: string
+        description: >-
+          the grpc endpoint which is used to connected to vpp-agent
+          supporting connection type tcp, tcp4, tcp6, unix
+        example: tcp://1.1.1.1:9111
+      restapi:
+        type: string
+        description: the restapi link which is used to connected to pop, not used currently
+      city:
+        type: string
+        description: the location of the city where the pop deployed
+      zone:
+        type: string
+        description: the location of the zone where the pop deployed
+      bandwidth:
+        type: integer
+        description: the maximum allowed bandwidth of the pop
+      latitude:
+        type: number
+        format: float
+        description: the latitude of the location
+      longitude:
+        type: number
+        format: float
+        description: the longitude of the location
+      wan_addr:
+        type: string
+        format: ip
+        description: the ip address of wan interface, normally it is the ip address of GigabitEthernet7/1/0
+      underlay_addr:
+        type: string
+        format: ip
+        description: the ip address of underlay interface, normally it is the ip address of GigabitEthernet7/2/0
+      default_gw:
+        type: string
+        format: ip
+        description: the ip address of the default gateway on the pop
+      management_intf_addr:
+        type: string
+        format: ip
+        description: the ip address of the management interface of pop
+      intf_type:
+          type: string
+          enum: ["dpdk", "veth", "loop"]
+          description: interface type, default is dpdk
+      prefix_len:
+        type: integer
+        format: int32
+        description: the ip prefix length
+      topo_level:
+        type: integer
+        format: int32
+        description: the level of topology in graph for dashboard draw
+      topo_axis_x:
+        type: integer
+        format: int32
+        description: the axis x of topology in graph for dashboard draw
+      topo_axis_y:
+        type: integer
+        format: int32
+        description: the axis y of topology in graph for dashboard draw
+      public_cloud:
+        type: string
+        description: the public cloud where the pop is deployed at
+      admin_down:
+        type: boolean
+        description: the pop is admin down or not
+      admin_down_time:
+        type: string
+        format: date-time
+        description: the time when the pop is admin down
+      max_throughput:
+        type: integer
+        description: the max throughput supported on this pop per month, unit GigaByte
+      create_time:
+        type: string
+        format: date-time
+        description: the time when the pop is created
+      update_time:
+        type: string
+        format: date-time
+        description: the time when the pop is updated in latest
+
+  PopConfigOutput:
+    description: the configuration of the pop
+    type: object
+    required:
+      - "ID"
+      - "name"
+      - "grpc_endpoint"
+      - "wan_addr"
+      - "underlay_addr"
+      - "default_gw"
+      - "management_intf_addr"
+      - "prefix_len"
+      - "create_time"
+      - "update_time"
+    properties:
+      ID:
+        type: string
+        description: pop id, used to identify one pop
+        example: f9e3d14e-53a2-5c00-b5b5-0a51c5e24869
+      name:
+        type: string
+        description: pop name, used to identify one pop
+      grpc_endpoint:
+        type: string
+        description: the grpc endpoint which is used to connected to vpp-agent, support connection type tcp, tcp4, tcp6, unix
+        example: tcp://1.1.1.1:9111
+      restapi:
+        type: string
+        description: the restapi link which is used to connected to pop, not used currently
+      city:
+        type: string
+        description: the location of the city where the pop deployed
+      zone:
+        type: string
+        description: the location of the zone where the pop deployed
+      bandwidth:
+        type: integer
+        description: the maximum allowed bandwidth of the pop
+      latitude:
+        type: number
+        format: float
+        description: the latitude of the location
+      longitude:
+        type: number
+        format: float
+        description: the longitude of the location
+      wan_addr:
+        type: string
+        format: ip
+        description: the ip address of wan interface, normally it is the ip address of GigabitEthernet7/1/0
+      underlay_addr:
+        type: string
+        format: ip
+        description: the ip address of underlay interface, normally it is the ip address of GigabitEthernet7/2/0
+      default_gw:
+        type: string
+        format: ip
+        description: the ip address of the default gateway on the pop
+      management_intf_addr:
+        type: string
+        format: ip
+        description: the ip address of the management interface of pop VM
+      prefix_len:
+        type: integer
+        format: int32
+        description: the ip prefix length
+      topo_level:
+        type: integer
+        format: int32
+        description: the level of topology in graph for dashboard draw
+      topo_axis_x:
+        type: integer
+        format: int32
+        description: the axis x of topology in graph for dashboard draw
+      topo_axis_y:
+        type: integer
+        format: int32
+        description: the axis y of topology in graph for dashboard draw
+      public_cloud:
+        type: string
+        description: the public cloud where the pop is deployed at
+      admin_down:
+        type: boolean
+        description: pop is admin down or not
+      max_throughput:
+        type: integer
+        description: the max throughput supported on this pop per month
+      intf_type:
+          type: string
+          enum: ["dpdk", "veth", "loop"]
+          description: interface type, default is dpdk
+      create_time:
+        type: string
+        format: date-time
+        description: the time when the pop is created
+      update_time:
+        type: string
+        format: date-time
+        description: the time when the pop is updated in latest
+
+  PopConfigList:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+        description: the total number of the configured pop list
+      pop_list:
+        type: array
+        items:
+          $ref: "#/definitions/PopConfigOutput"
+
+  PopConfigDeleteInput:
+    type: object
+    description: the delete pop ids
+    required:
+      - "ids"
+    properties:
+      ids:
+        type: array
+        description: the array of delete pop id
+        minItems: 1
+        items:
+          type: string
+
+  PopApplyInput:
+    type: object
+    description: the pop list to be applied for the user
+    required:
+      - "pops"
+    properties:
+      pops:
+        type: array
+        description: the array of the applied pop list
+        minItems: 1
+        items:
+          type: string
+
+  PopConfigInput:
+    type: object
+    description: the pop input information to setup new pop
+    required:
+      - "name"
+      - "grpc_endpoint"
+      - "wan_addr"
+      - "underlay_addr"
+      - "default_gw"
+      - "management_intf_addr"
+      - "prefix_len"
+    properties:
+      name:
+        type: string
+        description: pop name, used to identify one pop
+      grpc_endpoint:
+        type: string
+        description: the grpc endpoint which is used to connected to vpp-agent, support connection type tcp, tcp4, tcp6, unix
+        example: tcp://1.1.1.1:9111
+      restapi:
+        type: string
+        description: the restapi link which is used to connected to pop, not used currently
+      city:
+        type: string
+        description: the location of the city where the pop deployed
+      zone:
+        type: string
+        description: the location of the zone where the pop deployed
+      bandwidth:
+        type: integer
+        description: the maximum allowed bandwidth of the pop
+      latitude:
+        type: number
+        format: float
+        description: the latitude of the location
+      longitude:
+        type: number
+        format: float
+        description: the longitude of the location
+      wan_addr:
+        type: string
+        format: ip
+        description: the ip address of wan interface, normally it is the ip address of GigabitEthernet7/1/0
+      underlay_addr:
+        type: string
+        format: ip
+        description: the ip address of underlay interface, normally it is the ip address of GigabitEthernet7/2/0
+      default_gw:
+        type: string
+        format: ip
+        description: the ip address of the default gateway on the pop
+      management_intf_addr:
+        type: string
+        format: ip
+        description: the ip address of the management interface of pop VM
+      prefix_len:
+        type: integer
+        format: int32
+        description: the ip prefix length
+      topo_level:
+        type: integer
+        format: int32
+        description: the level of topology in graph for dashboard draw
+      topo_axis_x:
+        type: integer
+        format: int32
+        description: the axis x of topology in graph for dashboard draw
+      topo_axis_y:
+        type: integer
+        format: int32
+        description: the axis y of topology in graph for dashboard draw
+      public_cloud:
+        type: string
+        description: the public cloud where the pop is deployed at
+      admin_down:
+        type: boolean
+        description: the pop is down by admin
+      max_throughput:
+        type: integer
+        description: the max throughput supported on this WG per month
+      intf_type:
+          type: string
+          enum: ["dpdk", "veth", "loop"]
+          description: interface type, default is dpdk
+
+  PopConfigModify:
+    type: object
+    properties:
+      grpc_endpoint:
+        type: string
+        description: the grpc endpoint which can be connected to vpp-agent, support connection type tcp, tcp4, tcp6, unix
+        example: tcp://1.1.1.1:9111
+      grpc_endpoint_set:
+        type: boolean
+        description: grpc_endpoint only can be updated when it is set to true
+      restapi:
+        type: string
+        description: the restapi link which is used to connected to pop, not used currently
+      restapi_set:
+        type: boolean
+        description: restapi only can be updated when it is set to true
+      city:
+        type: string
+        description: the location of the city where the pop deployed
+      city_set:
+        type: boolean
+        description: city only can be updated when it is set to true
+      zone:
+        type: string
+        description: the location of the zone where the pop deployed
+      zone_set:
+        type: boolean
+        description: zone only can be updated when it is set to true
+      bandwidth:
+        type: integer
+        description: the maximum allowed bandwidth of the pop
+      bandwidth_set:
+        type: boolean
+        description: bandwidth only can be updated when it is set to true
+      latitude:
+        type: number
+        format: float
+        description: the latitude of the location
+      latitude_set:
+        type: boolean
+        description: latitude only can be updated when it is set to true
+      longitude:
+        type: number
+        format: float
+        description: the longitude of the location
+      longitude_set:
+        type: boolean
+        description: longitude only can be updated when it is set to true
+      wan_addr:
+        type: string
+        format: ip
+        description: the ip address of wan interface, normally it is the ip address of GigabitEthernet7/1/0
+      wan_addr_set:
+        type: boolean
+        description: wan_addr only can be updated when it is set to true
+      underlay_addr:
+        type: string
+        format: ip
+        description: the ip address of underlay interface, normally it is the ip address of GigabitEthernet7/2/0
+      underlay_addr_set:
+        type: boolean
+        description: underlay_addr only can be updated when it is set to true
+      default_gw:
+        type: string
+        format: ip
+        description: the ip address of the default gateway on the pop
+      default_gw_set:
+        type: boolean
+        description: default_gw only can be updated when it is set to true
+      management_intf_addr:
+        type: string
+        format: ip
+        description: the ip address of the managment interface of pop VM
+      management_intf_addr_set:
+        type: boolean
+        description: management_intf_addr only can be updated when it is set to true
+      prefix_len:
+        type: integer
+        format: int32
+        description: the ip prefix length
+      prefix_len_set:
+        type: boolean
+        description: prefix_len only can be updated when it is set to true
+      topo_level:
+        type: integer
+        format: int32
+        description: the level of topology in graph for dashboard draw
+      topo_level_set:
+        type: boolean
+        description: topo_level only can be updated when it is set to true
+      topo_axis_x:
+        type: integer
+        format: int32
+        description: the axis x of topology in graph for dashboard draw
+      topo_axis_x_set:
+        type: boolean
+        description: topo_axis_x only can be updated when it is set to true
+      topo_axis_y:
+        type: integer
+        format: int32
+        description: the axis y of topology in graph for dashboard draw
+      topo_axis_y_set:
+        type: boolean
+        description: topo_axis_y only can be updated when it is set to true
+      public_cloud:
+        type: string
+        description: the public cloud where the pop is deployed at
+      public_cloud_set:
+        type: boolean
+        description: public_cloud only can be updated when it is set to true
+      admin_down:
+        type: boolean
+        description: the pop is down by admin
+      admin_down_set:
+        type: boolean
+        description: admin_down only can be updated when it is set to true
+      max_throughput:
+        type: integer
+        description: the max throughput supported on this pop per month
+      max_throughput_set:
+        description: max_throughput only can be updated when it is set to true
+        type: boolean
+
+  ZoneConfig:
+    description: the configuration of the zone
+    type: object
+    properties:
+      ID:
+        type: string
+        description: zone id, used to identify one zone
+        example: f9e56456-53a2-5c00-b5b5-0a51c5e24869
+      name:
+        type: string
+        description: zone name, used to identify one zone
+      latitude:
+        type: number
+        format: float
+        description: the latitude of the zone
+      longitude:
+        type: number
+        format: float
+        description: the longitude of the zone
+
+  NodeConnection:
+    type: object
+    required:
+      - "ID"
+      - "status"
+    properties:
+      ID:
+        type: string
+        description: the id of the node
+      name:
+        type: string
+        description: the name of the node
+      ip_addr:
+        type: string
+        format: ip
+        description: the ip address of the connected node
+      status:
+        type: string
+        enum: [disconnected, bad, good, excellent]
+        description: the status of the connection
+
+  ZoneNode:
+    type: object
+    required:
+      - "type"
+      - "ID"
+      - "city"
+      - "latitude"
+      - "longitude"
+      - "status"
+    properties:
+      type:
+        type: string
+        enum: [pop, wg, fw]
+        description: the type of zone nodes
+      name:
+        type: string
+        description: the name of the node
+      ID:
+        type: string
+        description: the id of the node
+      city:
+        type: string
+        description: the city of the node deployed
+      latitude:
+        type: number
+        format: float
+        description: the latitude of the node
+      longitude:
+        type: number
+        format: float
+        description: the longitude of the node
+      connections:
+        type: array
+        items:
+          $ref: "#/definitions/NodeConnection"
+      status:
+        type: string
+        enum: [disconnected, bad, good, excellent]
+        description: the status of the node
+
+  ZoneConnection:
+    type: object
+    required:
+      - "ID"
+      - "status"
+    properties:
+      ID:
+        type: string
+        description: the id of the zone
+      name:
+        type: string
+        description: the name of the zone
+      status:
+        type: string
+        enum: [disconnected, bad, good, excellent]
+        description: the status of the connection
+
+  ZoneStats:
+    description: the statistics of the zones
+    type: object
+    required:
+      - "ID"
+      - "name"
+      - "latitude"
+      - "longitude"
+      - "errors"
+      - "warnings"
+      - "total_nodes"
+      - "nodes"
+      - "status"
+    properties:
+      ID:
+        type: string
+        description: zone id, used to identify one zone
+        example: f9e56456-53a2-5c00-b5b5-0a51c5e24869
+      name:
+        type: string
+        description: zone name, used to identify one zone
+      latitude:
+        type: number
+        format: float
+        description: the latitude of the zone
+      longitude:
+        type: number
+        format: float
+        description: the longitude of the zone
+      errors:
+        type: number
+        format: integer
+        description: the number of errors under the zone
+      warnings:
+        type: number
+        format: integer
+        description: the number of warning under the zone
+      total_nodes:
+        type: number
+        format: integer
+        description: the number of nodes under the zone
+      status:
+        type: string
+        enum: [Shutdown, Started]
+        description: the overview status of the whole zone, used to identify one zone
+      nodes:
+        type: array
+        items:
+          $ref: "#/definitions/ZoneNode"
+      connections:
+        type: array
+        items:
+          $ref: "#/definitions/ZoneConnection"
+
+  ZoneSummary:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+        description: the total zone number of summary list
+      zoneStatslist:
+        type: array
+        items:
+          $ref: "#/definitions/ZoneStats"
+
+  UserResource:
+      type: object
+      properties:
+        ID:
+          type: string
+        Name:
+          type: string
+        WgResources:
+          type: array
+          items:
+            type: string
+        PopResources:
+          type: array
+          items:
+            type: string
+        FwResources:
+          type: array
+          items:
+            type: string
+  PopConnResource:
+      type: object
+      properties:
+        ID:
+          type: string
+        User:
+          type: string
+        FromPopInstance:
+          type: string
+        ToPopInstance:
+          type: string
+        FromInterface:
+          $ref: "#/definitions/Tunnel"
+        ToInterface:
+          $ref: "#/definitions/Tunnel"
+        Peer:
+          type: string
+        Mode:
+          type: string
+          enum: [path-selection, match-all, bandwidth-first]
+          description: It is derived from pop tunnel configure and can only be path-selection, match-all, bandwidth-first
+  NatResource:
+      type: object
+      properties:
+        ID:
+          type: string
+        InstanceID:
+          type: string
+        Intfc:
+          $ref: "#/definitions/NatInterface"
+        AddrPool:
+          $ref: "#/definitions/NatAddressPool"
+  FwResource:
+      type: object
+      properties:
+        foo:
+          type: string
+  IPResource:
+      type: object
+      properties:
+        foo:
+          type: string
+  TopoResource:
+      type: object
+      properties:
+        foo:
+          type: string
+  Resources:
+      type: object
+      description: All the resources are optional
+      properties:
+        popResources:
+          type: array
+          items:
+            $ref: "#/definitions/PopResource"
+        wgResources:
+          type: array
+          items:
+            $ref: "#/definitions/WgNamespaceResource"
+        FwResources:
+          type: array
+          items:
+            $ref: "#/definitions/FwNamespaceResource"
+        ipResources:
+          type: array
+          items:
+            $ref: "#/definitions/IPResource"
+        topoResources:
+          type: array
+          items:
+            $ref: "#/definitions/TopoResource"
+  Resource:
+      description: |
+        All resources of the namespace.
+      type: object
+      properties:
+        resourceType:
+          type: integer
+        userPopResource:
+          $ref: "#/definitions/UserPopResource"
+        realPopResource:
+          $ref: "#/definitions/RealPopResource"
+        wgNamespaceResource:
+          $ref: "#/definitions/WgNamespaceResource"
+        fwNamespaceResource:
+          $ref: "#/definitions/FwNamespaceResource"
+        userResource:
+          $ref: "#/definitions/UserResource"
+        popConnResource:
+          $ref: "#/definitions/PopConnResource"
+        natResource:
+          $ref: "#/definitions/NatResource"
+        globalPopResource:
+          $ref: "#/definitions/GlobalPopResource"
+        wgResource:
+          $ref: "#/definitions/WgResource"
+  SystemResource:
+      type: object
+      properties:
+        userResources:
+          type: array
+          items:
+            $ref: "#/definitions/UserResource"
+        globalPopResources:
+          type: array
+          items:
+            $ref: "#/definitions/GlobalPopResource"
+        wgResources:
+          type: array
+          items:
+            $ref: "#/definitions/WgResource"
+  Namespaces:
+      type: array
+      items:
+        type: string
+
+  DerpNodeInput:
+      type: object
+      required:
+        - "name"
+        - "hostname"
+        - "derpPort"
+        - "stunPort"
+      properties:
+        # regionID:
+        #  type: integer
+        #  description: It is the region ID in DerpRegion
+        name:
+         type: string
+         description: |
+          Name is a unique node name (across all regions).
+          It is not a host name.
+          It's typically of the form "1b", "2a", "3b", etc. (region ID + suffix within that region)
+        ipv4:
+          type: string
+          description: |
+            IPv4 optionally forces an IPv4 address to be used, instead of DNS.
+            If empty, A record(s) from DNS lookups of HostName are used.
+            If the string is not an IPv4 address, IPv4 is not used; the
+            conventional string to disable IPv4 (and not use DNS) is
+            "none".
+        hostname:
+          type: string
+        stunPort:
+          type: integer
+        stunOnly:
+          type: boolean
+        derpPort:
+          type: integer
+  DerpNodeModify:
+      type: object
+      properties:
+        ipv4:
+          type: string
+        ipv4Set:
+          type: boolean
+        hostName:
+          type: string
+        hostNameSet:
+          type: boolean
+        stunPort:
+          type: integer
+        stunPortSet:
+          type: boolean
+        stunOnly:
+          type: boolean
+        stunOnlySet:
+          type: boolean
+        derpPort:
+          type: integer
+        derpPortSet:
+          type: boolean
+
+  DerpNodeOutput:
+    allOf:
+    - $ref: "#/definitions/DerpNodeInput"
+    - type: object
+      required:
+        - "regionID"
+        - "UUID"
+      properties:
+        regionID:
+          type: integer
+          description: It is the region ID in DerpRegion
+        UUID:
+          type: string
+          description: UUID of derp region, it will be derived by Region Code
+        createTime:
+          type: string
+          format: datetime
+        updateTime:
+          type: string
+          format: datetime
+
+  DerpNode:
+    type: object
+    properties:
+      regionID:
+        type: integer
+        description: It is the region ID in DerpRegion
+      name:
+        type: string
+        description: |
+          Name is a unique node name (across all regions).
+          It is not a host name.
+          It's typically of the form "1b", "2a", "3b", etc. (region ID + suffix within that region)
+      ipv4:
+        type: string
+        description: |
+          IPv4 optionally forces an IPv4 address to use, instead of using DNS.
+          If empty, A record(s) from DNS lookups of HostName are used.
+          If the string is not an IPv4 address, IPv4 is not used; the
+      hostname:
+        type: string
+      stunPort:
+        type: integer
+      stunOnly:
+        type: boolean
+      derpPort:
+        type: integer
+      createTime:
+        type: string
+        format: datetime
+      updateTime:
+        type: string
+        format: datetime
+      UUID:
+        type: string
+
+  DerpRegionInput:
+      type: object
+      required:
+        - "regionID"
+        - "regionCode"
+      properties:
+        regionID:
+          type: integer
+          description: RegionIDs must be non-zero, positive
+        regionCode:
+          type: string
+          description:  |
+            RegionCode is a short name for the region. It's usually a popular
+            city or airport code in the region: "nyc", "sf", "sin", "fra", etc.
+        regionName:
+          type: string
+          description: |
+            RegionName is a long English name for the region: "New York City",
+            "San Francisco", "Singapore", "Frankfurt", etc.
+
+  DerpRegionModify:
+      type: object
+      description: need not set regionCode for it can not be modified
+      properties:
+        regionID:
+          type: integer
+        regionIDSet:
+          type: boolean
+        regionName:
+          type: string
+        regionNameSet:
+          type: boolean
+
+  DerpRegionOutput:
+    allOf:
+    - $ref: "#/definitions/DerpRegionInput"
+    - type: object
+      properties:
+        uuid:
+          type: string
+          description: UUID of derp region, it will be derived by Region Code
+        createTime:
+          type: string
+          format: datetime
+        updateTime:
+          type: string
+          format: datetime
+        nodes:
+          type: array
+          items:
+            $ref: "#/definitions/DerpNodeOutput"
+      required:
+        - "uuid"
+        - "createTime"
+        - "updateTime"
+
+  DerpRegionOutputList:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+      regions:
+        type: array
+        items:
+          $ref: "#/definitions/DerpRegionOutput"
+
+  DerpRegion:
+    type: object
+    properties:
+      UUID:
+        type: string
+      regionID:
+        type: integer
+        description: RegionIDs must be non-zero, positive
+      regionCode:
+        type: string
+        description:  |
+          RegionCode is a short name for the region. It's usually a popular
+          city or airport code in the region: "nyc", "sf", "sin", "fra", etc.
+      regionName:
+        type: string
+        description: |
+          RegionName is a long English name for the region: "New York City",
+          "San Francisco", "Singapore", "Frankfurt", etc.
+      createTime:
+        type: string
+        format: datetime
+      updateTime:
+        type: string
+        format: datetime
+      nodes:
+        type: array
+        items:
+          $ref: "#/definitions/DerpNode"
+
+  DerpRegionDeleteInput:
+    type: object
+    description: the delete derp region ids
+    required:
+      - "ids"
+    properties:
+      ids:
+        type: array
+        description: the array of delete derp region id
+        minItems: 1
+        items:
+          type: string
+
+  MeshNetworkMode:
+    type: string
+    enum: [mesh, mesh_without_relay, mesh_with_gateway, intranet, full]
+    description: |-
+      Mesh networking modes:
+      mesh_only          - No gateway provisioned. Only mesh networking support.
+      mesh_without_relay - Mesh network without relay.
+      mesh_with_gateway  - Mesh network with gateway (not exit-node) support.
+      intranet           - No internet access. Gateway and relays are supported.
+                           Gateway is used to enforce internet locked down.
+                           All internet traffic is dropped.
+      full               - The whole thing.
+
+  FullNamespace:
+      type: object
+      required:
+        - name
+        - ID
+      properties:
+        name:
+          type: string
+          description: Namespace/Tenant Name, it will be printable string.
+          example: cylonix.io
+        ID:
+          type: string
+          description: UUID, allocated by supervisor
+        mode:
+          $ref: '#/definitions/MeshNetworkMode'
+        shortName:
+          type: string
+          description: Short Name for login, it will be chinese string (GB2312, BIG5)
+          example: Infiniblock INC.
+        fullName:
+          type: string
+          example: Infiniblock INC.
+        vrf:
+          type: integer
+          description: VRF ID, it will allocated by supervisor and write it into database for each tenant.
+          example: 104 - personal-user, 105 - innfiniblock.io
+        numID:
+          type: string
+          description: Unique numberable ID, it will be easier to identity a tenant/namespace than name/uuid
+          example: 800-0000-0104
+        nameInKc:
+          type: string
+          description: For some reason, there is some limitation for tenant.
+        nameInWg:
+          type: string
+          description: The ID send to WG server. In wg server, the vrf name vrf_namespace_vrfid (such as vrf_cylonix.io_105) should be limited in 15 characters.
+        relayServers:
+          type: array
+          description: Customer Relays, we support user to provide their relay servers.
+          items:
+            type: string
+            description: derper region code, such as "hz", "sh", "hk" and etc.
+        features:
+          type: object
+          $ref: "#/definitions/FeatureConfig"
+          description: The features configure for this tenant
+        createTime:
+          type: string
+          format: date-time
+          description: the time when the namespace is created
+        updateTime:
+          type: string
+          format: date-time
+          description: the time when the namespace is updated
+
+  NamespaceInstanceInput:
+    type: object
+    description: the namespace instance information for the new namespace create
+    required:
+      - "name"
+      - "mode"
+      - "vrf"
+      - "nameInKc"
+      - "nameInWg"
+      - "relayServers"
+    properties:
+      name:
+        type: string
+        description: Namespace/Tenant Name, it will be printable string.
+        example: cylonix.io
+      mode:
+        $ref: '#/definitions/MeshNetworkMode'
+      shortName:
+        type: string
+      fullName:
+        type: string
+      vrf:
+        type: integer
+        description: VRF ID, it will allocated by supervisor and write it into database for each tenant.
+      numId:
+        type: string
+        description: Unique numberable ID, it will be easier to identity a tenant/namespace than name/uuid
+        example: 800-0000-0104
+      nameInKc:
+        type: string
+        description: For some reason, there is some limitation for tenant.
+      nameInWg:
+        type: string
+        description: The ID send to WG server. In wg server, the vrf name vrf_namespace_vrfid (such as vrf_cylonix.io_105) should be limited in 15 characters.
+      relayServers:
+        type: array
+        description: Customer Relays, we support user to provide their relay servers.
+        items:
+          type: string
+          minItems: 1
+          description: derper region code, such as "hz", "sh", "hk" and etc.
+
+  NamespaceInstanceUpdate:
+    type: object
+    description: the namespace instance information for the namespace update
+    properties:
+      mode:
+        $ref: '#/definitions/MeshNetworkMode'
+      modeSet:
+        type: boolean
+        description: mode only can be updated when it is set to true
+      shortName:
+        type: string
+        description: Short Name for login, it will be chinese string (GB2312, BIG5)
+      shortNameSet:
+        type: boolean
+        description: short name only can be updated when it is set to true
+      fullName:
+        type: string
+      fullNameSet:
+        type: boolean
+        description: fullName only can be updated when it is set to true
+      vrf:
+        type: integer
+        description: VRF ID, it will allocated by supervisor and write it into database for each tenant.
+      vrfSet:
+        type: boolean
+        description: vrf only can be updated when it is set to true
+      numId:
+        type: string
+        description: Unique numberable ID, it will be easier to identity a tenant/namespace than name/uuid
+        example: 800-0000-0104
+      numIdSet:
+        type: boolean
+        description: numId only can be updated when it is set to true
+      nameInKc:
+        type: string
+        description: For some reason, there is some limitation for tenant.
+      nameInKcSet:
+        type: boolean
+        description: nameInKc only can be updated when it is set to true
+      nameInWg:
+        type: string
+        description: The ID send to WG server. In wg server, the vrf name vrf_namespace_vrfid (such as vrf_cylonix.io_105) should be limited in 15 characters.
+      nameInWgSet:
+        type: boolean
+        description: nameInWg only can be updated when it is set to true
+      relayServers:
+        type: array
+        description: Customer Relays, we support user to provide their relay servers.
+        items:
+          type: string
+          minItems: 1
+      relayServersSet:
+        type: boolean
+        description: relayServers only can be updated when it is set to true
+
+  NamespaceListDeleteInput:
+    type: object
+    description: the delete namespace instance ids
+    required:
+      - "ids"
+    properties:
+      ids:
+        type: array
+        description: the array of delete namespace instance id
+        minItems: 1
+        items:
+          type: string
+
+  PolicyConfig:
+      type: object
+      properties:
+        pathSelectionMode:
+          type: string
+          enum: [global, single]
+          description: default is global, it will not create src-lookup table for destination routes
+
+  FeatureConfig:
+      type: object
+      properties:
+         policy:
+          type: object
+          $ref: "#/definitions/PolicyConfig"
+
+  Topo:
+      type: object
+      required:
+        - name
+        - city
+        - lat
+        - lng
+        - bandwidth
+      properties:
+        name:
+          type: string
+        ID:
+          type: string
+        city:
+          type: string
+        zone:
+          type: string
+        lat:
+          type: number
+          format: float
+        lng:
+          type: number
+          format: float
+        bandwidth:
+          type: integer
+        links:
+          type: array
+          items:
+            type: string
+  Status:
+      type: string
+      enum: [Offline, Connecting, Online, Warning, Error, Admin]
+      example: Online
+
+  UnderlayTunnelInputs:
+      type: array
+      items:
+        $ref: "#/definitions/UnderlayTunnelInput"
+  UnderlayTunnelOutputs:
+      type: array
+      items:
+        $ref: "#/definitions/UnderlayTunnelInternal"
+  UnderlayTunnelDeleteItems:
+      type: array
+      items:
+        $ref: "#/definitions/UnderlayTunnelDeleteItem"
+  UnderlayTunnelDeleteItem:
+      type: object
+      required:
+      - tunnelId
+      properties:
+        tunnelId:
+          type: integer
+        name:
+          type: string
+  UnderlayTunnelPeerInput:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        uuid:
+          type: string
+  UnderlayTunnelPeerInternal:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        uuid:
+          type: string
+        tunnelId:
+          type: integer
+        address:
+          type: string
+          description: GRE interface address
+        interfaceName:
+          type: string
+        tunnelAddr:
+          type: string
+          description: src/dst address of the GRE tunnel
+        popName:
+          type: string
+        popId:
+          type: string
+        popIndex:
+          type: integer
+
+  LinkStatsData:
+    type: object
+    properties:
+      dropRatio:
+        type: number
+        format: double
+        minimum: 0.0
+        maximum: 100.0
+        description: the drop ratio in latest
+      averageResponseDelay:
+        type: number
+        format: double
+        description: the average packet delay in latest
+      maximumResponseDelay:
+        type: number
+        format: double
+        description: the maximum packet delay in latest
+      minimumResponseDelay:
+        type: number
+        format: double
+        description: the minimum packet delay in latest
+      SLA:
+        type: number
+        format: double
+        description: the SLA value of the network in last day
+      bandwidthUsagePercent:
+        type: number
+        format: double
+        description: the maximum bandwidth usage for 5 minutes in last day
+      responseDelayBaseline:
+        type: number
+        format: double
+        description: the baseline for packet response delay
+      throughput:
+        type: number
+        format: double
+        description: the throughput for last day, unit is bytes
+      downSeconds:
+        type: number
+        format: integer
+        description: the time how long link down last
+      packetDropErrors:
+        type: number
+        format: integer
+        description: the count how many packet drop error occurs
+      responseDelayErrors:
+        type: number
+        format: integer
+        description: the count how many response delay error occurs
+      queryResult:
+        type: string
+        enum: [success, notFound, queryError, clientError]
+        description: the result of query link stats
+
+  LinkEndPoint:
+    type: object
+    properties:
+      ID:
+        type: string
+        description: the uuid of the end point
+      name:
+        type: string
+        description: the name of the end pooint
+      ip:
+        type: string
+        format: ip
+        description: the ip of the end point
+
+  LinkStatsOutput:
+      type: object
+      required:
+        - "ID"
+      properties:
+        ID:
+          type: string
+          description: the uuid of the link
+        name:
+          type: string
+          description: the name of the link
+        type:
+          type: string
+          enum: [public, sase, gre, tenant, iplc]
+          description: the type of the link
+        runningStatus:
+          type: string
+          enum: [active, inactive]
+          description: the running status of the link
+        createTime:
+          type: string
+          format: datetime
+          description: the time when the link is created
+        updateTime:
+          type: string
+          format: datetime
+          description: the time when the link is updated in latest
+        from:
+          type: object
+          $ref: "#/definitions/LinkEndPoint"
+          description: the name of the from endpoint
+        to:
+          type: object
+          $ref: "#/definitions/LinkEndPoint"
+          description: the name of the to endpoint
+        stats:
+          type: object
+          $ref: "#/definitions/LinkStatsData"
+          description: the detailed link stats data
+
+  LinkStatsOutputList:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+        description: the total number of the link stats
+      statsList:
+        type: array
+        items:
+          $ref: "#/definitions/LinkStatsOutput"
+
+  ResourceUsageAlertIndexItem:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+          description: the index of the item in time range
+        timestamp:
+          type: string
+          description: the timestamp of the item
+        cpuAlerts:
+          type: integer
+          description: the number of cpu alerts under this time range
+        diskAlerts:
+          type: integer
+          description: the number of disk alerts under this time range
+        memoryAlerts:
+          type: integer
+          description: the number of memory alerts under this time range
+
+  NetworkThroughputItem:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+          description: the index of the item in time range
+        timestamp:
+          type: string
+          description: the timestamp of the item
+        value:
+          type: integer
+          description: the value of the throughput under this time range
+        usagePercent:
+          type: number
+          description: the usage percent of the whole throughput
+
+  NetworkThroughputList:
+    type: array
+    items:
+      type: object
+      $ref: "#/definitions/NetworkThroughputItem"
+
+  AggregateWindowParameter:
+    type: object
+    properties:
+      range:
+        type: string
+        enum: [1mo, 1w, 1d, 3d]
+        description: the time range for the network throughput, such as 1 month, 1 week, 1day, 3day
+      interval:
+        type: string
+        enum: [1h, 1d]
+        description: the data to be aggregated base on this inteval during the aggregateWindowRange
+
+  AggregateNetworkThroughputStats:
+    type: object
+    properties:
+      params:
+        type: object
+        $ref: "#/definitions/AggregateWindowParameter"
+      wgMap:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/NetworkThroughputList"
+      tenantMap:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/NetworkThroughputList"
+      cloudMap:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/NetworkThroughputList"
+      linkMap:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/NetworkThroughputList"
+      totalList:
+        $ref: "#/definitions/NetworkThroughputList"
+      incrementTotalList:
+        $ref: "#/definitions/NetworkThroughputList"
+
+  NetworkLinkAlertIndexItem:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+          description: the index of the item in time range
+        timestamp:
+          type: string
+          description: the timestamp of the item
+        packet_drops:
+          type: integer
+          description: the number of packet drop alerts under this time range
+        link_downs:
+          type: integer
+          description: the number of link down alerts under this time range
+        response_delays:
+          type: integer
+          description: the number of response time over baseline alerts under this time range
+
+  NetworkResourcesStats:
+    type: object
+    properties:
+      resources:
+        type: object
+        additionalProperties:
+          type: integer
+      resourcesSLA:
+        type: object
+        additionalProperties:
+          type: number
+          format: double
+      nodes:
+        type: object
+        additionalProperties:
+          type: integer
+      alerts:
+        type: object
+        additionalProperties:
+          type: integer
+      networkLinkAlertIndex:
+        type: array
+        items:
+          $ref: "#/definitions/NetworkLinkAlertIndexItem"
+
+  LogOutput:
+      type: object
+      required:
+        - ID
+      properties:
+        ID:
+          type: string
+        summary:
+          type: string
+        status:
+          type: string
+          description: done|alerting; RestAPI can only change this field and backend need to update updateOwner/updateOwnerName
+        createAt:
+          type: string
+        updateAt:
+          type: string
+        updateOwner:
+          type: string
+        updateOwnerName:
+          type: string
+        msgType:
+          type: string
+          description: CPU|MEM|DISK|SERVICE|PING
+        subMsgType:
+          type: string
+          description: For PING, it will be droprate, latency
+        hostname:
+          type: string
+        value:
+          type: number
+          format: float
+        tenant:
+          type: string
+        toIP:
+          type: string
+        toHost:
+          type: string
+          description: only avaiable in ping/link/RestAPI
+        linkType:
+          type: string
+        sysService:
+          type: string
+        restapiName:
+          type: string
+
+  LogOutputList:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+        description: the total number of the log list
+      statsList:
+        type: array
+        items:
+          $ref: "#/definitions/LogOutput"
+
+  LogModify:
+      type: object
+      properties:
+        statusSet:
+          type: boolean
+        status:
+          type: string
+          description: done|alerting; RestAPI can only change this field and backend need to update updateOwner/updateOwnerName
+
+  MsgCounter:
+    type: object
+    properties:
+      total:
+        type: integer
+      offline:
+        type: integer
+      admin:
+        type: integer
+      online:
+        type: integer
+
+  MsgTenantCounter:
+    type: object
+    properties:
+      total:
+        type: integer
+      expired:
+        type: integer
+
+  MsgAlertCounter:
+    type: object
+    properties:
+      total:
+        type: integer
+      unread:
+        type: integer
+
+  MsgAlertAction:
+    type: object
+    properties:
+      action:
+        type: string
+        enum: [silience, inhibite]
+      siliencedBy:
+        type: array
+        items:
+          type: string
+      inhibitedBy:
+        type: array
+        items:
+          type: string
+
+  MsgDeviceAlertCounter:
+    type: object
+    properties:
+      device_type:
+        type: string
+      alertCounterMap:
+        type: object
+        additionalProperties:
+          type: integer
+
+  MsgDeviceHealthStats:
+    type: object
+    properties:
+      score:
+        type: integer
+      deviceStats:
+        type: array
+        items:
+          $ref: "#/definitions/MsgDeviceAlertCounter"
+
+  MsgAlert:
+    type: object
+    properties:
+      ID:
+        type: string
+      type:
+        type: string
+        enum: [ping, http, disk, cpu, memory, bandwidth, service, link, server]
+      sub_type:
+        type: string
+      create_time:
+        type: string
+      update_time:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      severity:
+        type: string
+        enum: [warning, critical, down]
+      priority:
+        type: string
+        enum: [P2, P1, P0]
+      owner:
+        type: string
+      value:
+        type: number
+        format: double
+        description: the run-time value of the data which cross the alert threshold when the alert is issued.
+      host:
+        type: string
+      peer:
+        type: string
+      tenant:
+        type: string
+      status:
+        type: string
+        enum: [Unprocessed, Active, Suppressed, Inactive]
+      category:
+        type: string
+        description: the category of the alert, such as pop, iplc
+      action:
+        $ref: "#/definitions/MsgAlertAction"
+      tag1:
+        type: string
+      tag2:
+        type: string
+
+  SystemAlertList:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int32
+      alerts:
+        type: array
+        items:
+          $ref: "#/definitions/MsgAlert"
+
+  MsgNetworkBwCounter:
+    type: object
+    properties:
+      bandwidth:
+        type: integer
+      maxThroughputOnMonth:
+        type: integer
+        description: the max throughput per every month
+      throughputOnToday:
+        type: integer
+      throughputOnMonth:
+        type: integer
+        description: the throughput since this current month
+      name:
+        type: string
+      rxBw:
+        type: integer
+      txBw:
+        type: integer
+
+  MsgNetworkLinkBwCounter:
+    type: object
+    properties:
+      bandwidth:
+        type: integer
+      throughput:
+        type: integer
+      from:
+        type: string
+      to:
+        type: string
+      rxBw:
+        type: integer
+      txBw:
+        type: integer
+
+  AggregateAlertStats:
+    type: object
+    properties:
+      name:
+        type: string
+      severity:
+        type: string
+      priority:
+        type: string
+      device:
+        type: string
+      is_active:
+        type: boolean
+        description: identify any active alert among all of aggregate alert.
+      total_times:
+        type: integer
+      impacted_devices:
+        type: integer
+      total_last_time:
+        type: integer
+
+  AggregateNetworkScoreStats:
+    type: object
+    properties:
+      score:
+        type: integer
+        description: the score achieved for this timestamp
+      timestamp:
+        type: string
+        description: the timestamp of the item
+
+  MsgTotalCounter:
+    type: object
+    properties:
+      total_health_score:
+        type: integer
+        description: the total health score of the whole system
+      max_downstream_bandwidth:
+        type: integer
+        description: the max bandwidth of downstream supported in whole network, the unit is Mbps
+      max_upstream_bandwidth:
+        type: integer
+        description: the max bandwidth of upstream supported in whole network, the unit is Mbps
+      network_resources:
+        type: integer
+        description: the total number of network resources, include IDC, cloud, local network
+      network_health_score:
+        type: integer
+        description: the total health score of the whole network
+      vpn_users:
+        type: integer
+        description: the total number of connected vpn users
+      vpn_devices:
+        type: integer
+        description: the total number of connected vpn devices
+      total_traffic_limit:
+        type: integer
+        description: the total traffic limit under  this time range, the unit is GiB
+      traffic_usage_percent:
+        type: integer
+      security_health_score:
+        type: integer
+        description: the total health score of the security
+      service_health_score:
+        type: integer
+        description: the total health score of service
+
+  MsgNetworkOverviewCounter:
+    type: object
+    properties:
+      network_health_score:
+        type: integer
+        description: the total health score of the whole network
+      max_downstream_bandwidth:
+        type: integer
+        description: the max bandwidth of downstream supported in whole network, the unit is Mbps
+      max_upstream_bandwidth:
+        type: integer
+        description: the max bandwidth of upstream supported in whole network, the unit is Mbps
+      network_resources:
+        type: integer
+        description: the total number of network resources, include IDC, cloud, local network
+      SLA_achievement:
+        type: number
+        description: the SLA(service-level agreement) achievement
+      down_faults:
+        type: integer
+        description: the total number of traffic or service down fault
+      packet_drop_faults:
+        type: integer
+        description: the total number of traffic drop fault
+      response_delay_faults:
+        type: integer
+        description: the total number of traffic response delay fault
+      security_faults:
+        type: integer
+        description: the total number of traffic security fault
+      network_alerts:
+        type: integer
+        description: the total number of network alert
+
+  NetworkNode:
+    type: object
+    properties:
+      name:
+        type: string
+        description: the name of the node
+      ID:
+        type: string
+        description: the id of the node
+      city:
+        type: string
+        description: the city of the node deployed
+      axis_x:
+        type: number
+        format: integer
+        description: the axis x of the map draw
+      axis_y:
+        type: number
+        format: integer
+        description: the axis y of the map draw
+      status:
+        type: string
+        enum: [offline, online]
+        description: the status of the node
+
+  MsgStatistics:
+    type: object
+    properties:
+      totalOverview:
+        $ref: "#/definitions/MsgTotalCounter"
+      networkOverview:
+        $ref: "#/definitions/MsgNetworkOverviewCounter"
+      networkResources:
+        $ref: "#/definitions/NetworkResourcesStats"
+      server:
+        $ref: "#/definitions/MsgCounter"
+      POP:
+        $ref: "#/definitions/MsgCounter"
+      user:
+        $ref: "#/definitions/MsgCounter"
+      device:
+        $ref: "#/definitions/MsgCounter"
+      tenant:
+        $ref: "#/definitions/MsgTenantCounter"
+      alert:
+        $ref: "#/definitions/MsgAlertCounter"
+      deviceHealth:
+        $ref: "#/definitions/MsgDeviceHealthStats"
+      cloudBw:
+        type: array
+        items:
+          $ref: "#/definitions/MsgNetworkBwCounter"
+      tenantBw:
+        type: array
+        items:
+          $ref: "#/definitions/MsgNetworkBwCounter"
+      linkBw:
+        type: array
+        items:
+          $ref: "#/definitions/MsgNetworkLinkBwCounter"
+      linkStats:
+        $ref: "#/definitions/LinkStatsOutputList"
+      nodes:
+        type: array
+        items:
+          $ref: "#/definitions/NetworkNode"
+      wgBw:
+        type: array
+        items:
+          $ref: "#/definitions/MsgNetworkBwCounter"
+      alerts:
+        type: array
+        items:
+          $ref: "#/definitions/MsgAlert"
+      aggregateNetworkThroughput:
+        $ref: "#/definitions/AggregateNetworkThroughputStats"
+      aggregateAlertSummary:
+        type: array
+        items:
+          $ref: "#/definitions/AggregateAlertStats"
+      resourceUsageAlertIndex:
+        type: array
+        items:
+          $ref: "#/definitions/ResourceUsageAlertIndexItem"
+      aggregateNetworkHealthScore:
+        type: array
+        items:
+          $ref: "#/definitions/AggregateNetworkScoreStats"
+
+  LogInputGlobalTags:
+      type: object
+      properties:
+        statusSet:
+          type: boolean
+        priority:
+          type: string
+          enum:
+            - error
+            - warning
+        # TODO: need to confirm whether the key "type" can work, we can change it in grafana
+        Type:
+          type: string
+          description: CPU|MEM|DISK|SERVICE|PING
+        subType:
+          type: string
+          description: For PING, it will be droprate, latency
+        sysService:
+          type: string
+        restapiName:
+          type: string
+
+  LogInputMatchTags:
+      type: object
+      properties:
+        host:
+          type: string
+        tenant:
+          type: string
+        toIP:
+          type: string
+        Type:
+          type: string
+        url:
+          type: string
+
+  LogInputMatch:
+      type: object
+      properties:
+        value:
+          type: number
+        metric:
+          type: string
+        tags:
+          $ref: "#/definitions/LogInputMatchTags"
+
+  LogInput:
+      type: object
+      properties:
+        title:
+          type: string
+        ruleId:
+          type: integer
+        ruleName:
+          type: string
+        state:
+          type: string
+        evalMatches:
+          type: array
+          items:
+            $ref: "#/definitions/LogInputMatch"
+        tags:
+          $ref: "#/definitions/LogInputGlobalTags"
+        orgId:
+          type: integer
+        dashboardId:
+          type: integer
+        panelId:
+          type: integer
+        ruleUrl:
+          type: string
+        message:
+          type: string
+
+  UnderlayTunnelCosts:
+    description: |-
+      |====================================|
+      |             Bandwith cost          |
+      |====================================|
+      |  bandwidth  | osfp cost | our cost |
+      |------------------------------------|
+      |   100 Gbps  |    1      |     100  |
+      |    40 Gbps  |    1      |     200  |
+      |    10 Gbps  |    1      |     400  |
+      |     1 Gbps  |    1      |     800  |
+      |   100 Mbps  |    1      |     900  |
+      |    10 Mbps  |   10      |    1000  |
+      | 1.544 Mbps  |   64      |    6400  |
+      |   768 Kbps  |  133      |   13300  |
+      |   384 Kbps  |  266      |   26600  |
+      |   128 Kbps  |  781      |   78100  |
+      |====================================|
+    type: object
+    properties:
+      bandwidth:
+        type: integer
+        description: As ospf bandwidth cost, the min value will be higher priority
+      delay:
+        type: integer
+        description: Tunnel link delay
+      reliability:
+        type: integer
+        description: The min value will be higher priority. we can calculate it by (100*(1-drop_packet_rate))
+
+  UnderlayTunnelInput:
+      type: object
+      required:
+        - peers
+      properties:
+        TunnelCosts:
+          $ref: "#/definitions/UnderlayTunnelCosts"
+        peers:
+          type: array
+          description: The length must larger than 1. And it can be drivered into multiple tunnels when the length larger than 2.
+          items:
+            $ref: "#/definitions/UnderlayTunnelPeerInput"
+  UnderlayTunnelInternal:
+      type: object
+      required:
+        - peers
+      properties:
+        name:
+          type: string
+        uuid:
+          type: string
+        delay:
+          type: integer
+          format: int32
+        tunnelId:
+          type: integer
+          description: The ID allocated in ipdrawer by the name (pop-hz-1_pop-sz-1), which is identited by the name.
+        createTime:
+          type: string
+          format: datetime
+        TunnelCosts:
+          $ref: "#/definitions/UnderlayTunnelCosts"
+        peers:
+          type: array
+          items:
+            $ref: "#/definitions/UnderlayTunnelPeerInternal"
+
+  UnderlayInterfaceInternal:
+    type: object
+    required:
+      - cidr
+      - name
+    properties:
+      uuid:
+        type: string
+        description: Reserved
+      popId:
+        type: string
+      popName:
+        type: string
+      cidr:
+        type: string
+      name:
+        type: string
+      label:
+        type: string
+        description: A interface can only set to a label.
+      mode:
+        type: string
+        enum:
+          - loopback
+      readonly:
+        type: boolean
+
+  UnderlayInterfaceInputs:
+    type: array
+    items:
+      $ref: "#/definitions/UnderlayInterfaceInternal"
+
+  UnderlayInterfaceOutputs:
+    type: array
+    items:
+      $ref: "#/definitions/UnderlayInterfaceInternal"
+
+  UnderlayRouteInternal:
+    type: object
+    properties:
+      uuid:
+        type: string
+        description: Reserved
+      popId:
+        type: string
+      popName:
+        type: string
+      dest:
+        type: string
+      via:
+        type: string
+      dev:
+        type: string
+        description: For the GRE tunnel, it need only dev to configure the routes over GRE.
+      proto:
+        type: string
+        enum:
+          - static
+          - dynamic
+      isDirty:
+        type: boolean
+        description: It is only avaiable in update/recalculate the learning routes
+      version:
+        type: integer
+        description: 0 - New, >0 - existing
+
+  UnderlayRouteOutputs:
+    type: array
+    items:
+      $ref: "#/definitions/UnderlayRouteInternal"
+
+  UnderlayRouteInputs:
+    type: array
+    items:
+      $ref: "#/definitions/UnderlayRouteInternal"
+    description: Only cidr/popId/via/dev is used in input

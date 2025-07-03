@@ -1,0 +1,6087 @@
+
+openapi: 3.0.0
+info:
+  description: api for sase manager
+  version: 2.0.0
+  title: sase-manager
+  contact:
+    email: contact@cylonix.org
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+# tags are used for organizing operations
+tags:
+  - name: analysis
+    description: apis for analysis data.
+  - name: labels
+    description: apis for labels
+  - name: policy
+    description: apis for policy
+  - name: user
+    description: apis for user
+
+security:
+  - SysAPIKey: []                    # From sys admin
+  - AdminAPIKey: []                  # From admin of a tenant
+  - UserAPIKey: []                   # From user
+
+paths:
+  /access-key:
+    get:
+      tags:
+        - access_key
+      summary: list all access keys for the tenant or the user
+      operationId: list_access_key
+      description: list access keys
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    $ref: '#/components/schemas/access_key_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      tags:
+        - access_key
+      summary: create access key
+      operationId: create_access_key
+      description: crete access key
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      requestBody:
+        description: incomplete access key informaiton as input
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/access_key'
+      responses:
+        200:
+          description: success with complete access key information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access_key'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /access-key/{access_key_id}:
+    get:
+      tags:
+        - access_key
+      summary: Get one access key information.
+      operationId: get_access_key
+      description: Get one access key information base on the access key ID.
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/access_key_id'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access_key'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - access_key
+      summary: delete an access key
+      operationId: delete_access_key
+      description: delete access key
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/access_key_id'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /analysis/app/events:
+    get:
+      tags:
+        - analysis
+      summary: App events.
+      operationId: list_app_event
+      description: List of app events recorded.
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - in: query
+          name: event_type
+          schema:
+            type: integer
+          required: true
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/app_access_event_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /analysis/app/top/categories:
+    get:
+      tags:
+        - analysis
+      summary: traffic throughput top categories
+      operationId: top_categories
+      description: Top 10 application categories.
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/app_stats'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /analysis/app/top/clouds:
+    get:
+      tags:
+        - analysis
+      summary: Top 10 destination cloud providers
+      operationId: top_clouds
+      description: Top 10 public cloud statistics for destination address.
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/app_cloud'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /analysis/app/top/domains:
+    get:
+      tags:
+        - analysis
+      summary: Top 10 app destinations.
+      operationId: top_domains
+      description: return top 10 desintations and the number of accesses each.
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      responses:
+        200:
+          description: top 10 desintations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/app_stats'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /analysis/app/top/flows:
+    get:
+      tags:
+        - analysis
+      summary: Top 10 category by app.
+      operationId: top_flows
+      description: Return the traffic for top 10 app category.
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      responses:
+        200:
+          description: top 10 flows
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/top_user_flows'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /analysis/monitor/flow:
+    get:
+      tags:
+        - analysis
+      summary: List monitor flow info
+      operationId: list_monitor_flow
+      description: show monitor flows
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      requestBody:
+        $ref: '#/components/requestBodies/monitor_flow_filter'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/monitor_flow_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /analysis/network/topo:
+    get:
+      tags:
+        - analysis
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      summary: The network topology of a tenant or a user.
+      operationId: network_topo
+      description: the network topo data, including the GEO info
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/network_topo'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /analysis/web/category:
+    get:
+      tags:
+        - analysis
+      summary: list web category
+      operationId: list_web_category
+      description: list web site categories found base on dns.
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/web_category_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /device:
+    get:
+      tags:
+        - device
+      summary: get devices
+      operationId: get_devices
+      description: List and filter the devices
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/device_id'
+        - in: query
+          description: filter base on device capability
+          name: capability
+          schema:
+            type: string
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/device_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      tags:
+        - device
+      summary: update device
+      operationId: put_device
+      description: update device
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - in: query
+          name: device_id
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/device_update'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      tags:
+        - device
+      summary: add a new device
+      operationId: post_device
+      description: post device
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/device'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - device
+      summary: delete devices
+      operationId: delete_devices
+      description: delete devices
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - in: query
+          name: also_delete_approval_record
+          schema:
+            type: boolean
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /device/approve:
+    post:
+      operationId: list_device_approval_records
+      summary: get device approval records
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: [] # for tenant allowing user self-approval
+      description: get device approval records
+      tags:
+        - device
+      parameters:
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/approval_state_in_query'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                properties:
+                  total:
+                    type: integer
+                  records:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/device_approval_record'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: approve_devices
+      summary: approve devices
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: approve user devices
+      tags:
+        - device
+      parameters:
+        - $ref: '#/components/parameters/approval_state_in_query_required'
+        - $ref: '#/components/parameters/note_in_query_required'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_device_approval_records
+      summary: delete user device approval records
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: delete user device approval records
+      tags:
+        - device
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /label:
+    get:
+      operationId: list_label
+      tags:
+        - label
+      summary: get a list of labels
+      description: list label
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/name_in_query'
+        - in: query
+          name: category
+          schema:
+            $ref: '#/components/schemas/label_category'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    $ref: '#/components/schemas/label_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      operationId: create_labels
+      tags:
+        - label
+      summary: create labels
+      description: create labels
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      requestBody:
+        $ref: '#/components/requestBodies/label_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_labels
+      tags:
+        - label
+      summary: label delete list
+      description: delete label list
+      security:
+        - AdminAPIKey: []
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      tags:
+        - label
+      security:
+        - AdminAPIKey: []
+      summary: update labels
+      operationId: update_labels
+      description: apply a label update to a list of labels
+      requestBody:
+        description: label object as the update and the id list for the target.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                update:
+                  $ref: '#/components/schemas/label'
+                id_list:
+                  $ref: '#/components/schemas/id_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /label/{label_id}:
+    get:
+      operationId: get_label
+      tags:
+        - label
+      summary: get single label info
+      description: get single label info
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - in: path
+          name: label_id
+          description: the label uuid
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/label'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_label
+      tags:
+        - label
+      summary: delete one label
+      description: delete single label
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - in: path
+          name: label_id
+          description: the label uuid
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_label
+      tags:
+        - label
+      summary: update single label
+      description: update single label
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - in: path
+          name: label_id
+          description: update the label info
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: label object as the parameter.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/label'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login:
+    get:
+      operationId: login
+      summary: direct login i.e. not through 3rd party provider/oauth.
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+        - NoAuth: []
+      description: |
+        Direct login with username/password, phone/sms-code, token/otp et al.
+      tags:
+        - login
+      parameters:
+        - in: query
+          name: login_as_admin
+          schema:
+            type: boolean
+        - $ref: '#/components/parameters/namespace_in_query'
+        - $ref: '#/components/parameters/login_type_in_query_required'
+        - in: query
+          name: login_id
+          schema:
+            type: string
+          description: login id e.g. username, email, phone number, otp token et al.
+        - in: query
+          name: session_id
+          schema:
+            type: string
+          description: session id for login used for client app login
+        - in: query
+          name: credential
+          schema:
+            type: string
+          description: password, sms code, otp code et al.
+        - in: query
+          name: redirect_url
+          schema:
+            type: string
+          description: redirect url after login
+        - in: query
+          name: access_point
+          schema:
+            type: string
+          description: current access point ID
+        - in: query
+          name: access_point_name
+          schema:
+            type: string
+          description: current access point name
+        - in: query
+          name: assign_ip
+          schema:
+            type: string
+          description: |-
+            Assign the specify the ip address to the device. Note this may
+            block device from registering if the ip address is not available.
+        - in: query
+          schema:
+            type: string
+          name: mfa_one_time_code
+          description: |
+            multi-factor-auth one time code. for sms code, use the credential
+            parameter instead.
+        - in: query
+          name: mfa_type
+          schema:
+            $ref: '#/components/schemas/mfa_type'
+          description: |
+            multi-factor-auth type. for sms code, use the credential parameter
+            instead.
+        - $ref: '#/components/parameters/want_vpn_auth_key_in_query'
+      responses:
+        200:
+          $ref: '#/components/responses/login_success'
+        303:
+          $ref: '#/components/responses/see_other'
+        307:
+          description: temporary redirect to a new URL
+          headers:
+            Location:
+              schema:
+                type: 'string'
+            Access-Control-Allow-Origin:
+              schema:
+                type: 'string'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        428:
+          description: Additional authentication required (e.g. one-time code)
+          headers:
+            Authentication-Info:
+              description: additional jsonified additional_auth_info
+              schema:
+                type: 'string'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/additional_auth_info'
+        511:
+          description: network authentication failed
+          headers:
+            Location:
+              schema:
+                type: 'string'
+            Access-Control-Allow-Origin:
+              schema:
+                type: 'string'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      operationId: add_login
+      summary: Add a new login to the current user.
+      description: >
+        Add a new login method of the current user. The current user may have
+        logged in with google but wants to add another username based login.
+        Admin user needs to provide the user ID to add a login to other user.
+        Non-admin user needs to provide code validation to add a new login.
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/code_in_query'
+        - $ref: '#/components/parameters/phone_num_in_query'
+        - $ref: '#/components/parameters/email_in_query'
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_login'
+      responses:
+        200:
+          $ref: '#/components/responses/login_success'
+        303:
+          $ref: '#/components/responses/see_other'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login/confirm-session:
+    post:
+      operationId: confirm_session
+      summary: confirm a login session for an app client session.
+      security:
+        - UserAPIKey: []
+      description: |
+        When app needs to login and connect a device, the user will first login
+        with a session ID and then confirm if to indeed allow connection of the
+        device.
+      tags:
+        - login
+      parameters:
+        - in: query
+          required: true
+          name: session_id
+          schema:
+            type: string
+          description: session id for login used for client app login
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login/oauth/callback:
+    get:
+      operationId: oauth_callback
+      summary: callback after oauth provider authentication
+      security:
+        - NoAuth: []
+      description: callback after oauth provider authentication
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/code_in_query'
+        - $ref: '#/components/parameters/oauth_state_in_query'
+        - $ref: '#/components/parameters/redirect_url'
+      responses:
+        200:
+          $ref: '#/components/responses/login_success'
+        302:
+          $ref: '#/components/responses/found_with_login_success'
+        303:
+          $ref: '#/components/responses/see_other'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      operationId: oauth_callback_post
+      summary: callback after oauth provider authentication (via form post)
+      security:
+        - NoAuth: []
+      description: callback after oauth provider authentication using form POST data (required for Apple Sign In)
+      tags:
+        - login
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: The authorization code
+                state:
+                  type: string
+                  description: The state parameter for CSRF protection
+      responses:
+        200:
+          $ref: '#/components/responses/login_success'
+        302:
+          $ref: '#/components/responses/found_with_login_success'
+        303:
+          $ref: '#/components/responses/see_other'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login/oauth:
+    get:
+      operationId: oauth_logins
+      summary: oauth logins provisioned
+      security:
+        - NoAuth: []
+      description: oauth logins provisioned
+      tags:
+        - login
+      responses:
+        200:
+          $ref: '#/components/responses/oauth_logins'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login/oauth/redirect-url:
+    get:
+      operationId: get_oauth_redirect_url
+      summary: oauth login redirect url information
+      description: |
+        Oauth login can be from github, google et al. The state is used to look
+        up information like provider, admin-login, namespace, app listening port
+        et al. Per oauth spec, we can't directly encode such information in the
+        url as query parameters:
+        https://www.oauth.com/oauth2-servers/redirect-uris/redirect-uri-registration/
+      security:
+        - NoAuth: []
+      parameters:
+        - in: query
+          name: provider
+          schema:
+            type: string
+          description: oauth provider e.g. google, github et al. If not provided,
+            the provider is looked up from the email parameter.
+        - $ref: '#/components/parameters/namespace_in_query'
+        - in: query
+          name: email
+          schema:
+            type: string
+          description: instead of providing a provider input, we can also
+            provide an email address. This is used to look up the provider
+            information.
+        - in: query
+          name: session_id
+          schema:
+            type: string
+          description: session id for login used for client app login
+        - in: query
+          name: login_as_admin
+          schema:
+            type: boolean
+          description: login as administrator or not.
+        - in: query
+          name: app_listening_port
+          schema:
+            type: integer
+          description: app listening port
+        - in: query
+          name: redirect_url
+          description: redirect url for 302 found status
+          schema:
+            type: string
+      tags:
+        - login
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/redirect_url_config'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login/oauth/token:
+    post:
+      operationId: add_oauth_token
+      summary: exchange a new oidc id token to api key.
+      security:
+        - NoAuth: []
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+        - $ref: '#/components/parameters/want_vpn_auth_key_in_query'
+        - in: query
+          name: provider
+          schema:
+            type: string
+          required: true
+          description: oauth provider e.g. google, github et al.
+        - in: query
+          name: session_id
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/id_token'
+      responses:
+        200:
+          $ref: '#/components/responses/login_success'
+        302:
+          $ref: '#/components/responses/found_with_login_success'
+        303:
+          $ref: '#/components/responses/see_other'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login/refresh-token:
+    get:
+      operationId: refresh_token
+      summary: refresh api token
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - login
+      responses:
+        200:
+          $ref: '#/components/responses/login_success'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /logout:
+    get:
+      operationId: logout
+      summary: logout user or admin from sase-manager
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+        - UserAPIKey: []
+        - NoAuth: []
+      description: |
+        logout user
+      tags:
+        - login
+      responses:
+        200:
+          $ref: '#/components/responses/cookie'
+        302:
+          $ref: '#/components/responses/found'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /logs:
+    put:
+      operationId: put_logs
+      summary: |
+        Push logs to sase-manager to save it in DB and send to subscribers.
+      security:
+        - SysAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/log_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /meet:
+    get:
+      operationId: list_meeting
+      summary: list_meeting
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      description: |
+        Get meeting list. To fetch info about a single meeting, simply set the
+        ID to the single entry of the ID list parameter.
+      tags:
+        - meet
+      parameters:
+        - $ref: '#/components/parameters/start_time_in_query'
+        - $ref: '#/components/parameters/end_time_in_query'
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/meeting_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      operationId: create_meeting
+      summary: create_meeting
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      description: create a meeting
+      tags:
+        - meet
+      requestBody:
+        $ref: '#/components/requestBodies/meeting_config_params'
+      responses:
+        200:
+          description: success with meeting ID as the result
+          content:
+            text/plain:
+              schema:
+                type: string
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_meeting
+      summary: update_meeting
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      description: update meeting
+      tags:
+        - meet
+      parameters:
+        - in: query
+          name: meeting_id
+          schema:
+            type: string
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/meeting_update_params'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_meetings
+      summary: delete_meetings
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      description: delete meetings
+      tags:
+        - meet
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /meet/participant/{meeting_id}:
+    get:
+      operationId: list_meeting_participant
+      summary: list_meeting_participant
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      description: get meeting participant list
+      tags:
+        - meet
+      parameters:
+        - $ref: '#/components/parameters/meeting_id_in_path_required'
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/meeting_participant_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      operationId: add_meeting_participant
+      summary: add_meeting_participant
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      description: add meeting particpant
+      tags:
+        - meet
+      parameters:
+        - $ref: '#/components/parameters/meeting_id_in_path_required'
+      requestBody:
+        $ref: '#/components/requestBodies/meeting_participant_add_params'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/meeting_participant'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_meeting_participant
+      summary: update_meeting_participant
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      description: update meeting participant
+      tags:
+        - meet
+      parameters:
+        - $ref: '#/components/parameters/meeting_id_in_path_required'
+      requestBody:
+        $ref: '#/components/requestBodies/meeting_participant_update_params'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/meeting_participant'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_meeting_participants
+      summary: delete_meeting_participants
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      description: delete meeting particpants
+      tags:
+        - meet
+      parameters:
+        - $ref: '#/components/parameters/meeting_id_in_path_required'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /otp:
+    post:
+      operationId: send_code
+      summary: send code to phone or email
+      security:
+        - NoAuth: []
+      description: send code to phone or email
+      tags:
+        - otp
+      parameters:
+        - $ref: '#/components/parameters/phone_num_in_query'
+        - $ref: '#/components/parameters/email_in_query'
+      responses:
+        200:
+          description: code sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/one_time_code_send_result'
+        202:
+          description: returns send again too soon message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/one_time_code_send_result'
+        400:
+          $ref: '#/components/responses/bad_request'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /otp/verify:
+    get:
+      operationId: verify_code
+      summary: verify code for phone or email
+      security:
+        - NoAuth: []
+      description: verify a phone number or email with code
+      tags:
+        - otp
+      parameters:
+        - $ref: '#/components/parameters/phone_num_in_query'
+        - $ref: '#/components/parameters/email_in_query'
+        - $ref: '#/components/parameters/code_in_query_required'
+        - $ref: '#/components/parameters/namespace_in_query'
+        - in: query
+          schema:
+            type: boolean
+          name: want_registration_state
+      responses:
+        200:
+          $ref: '#/components/responses/approval_state_response'
+        400:
+          $ref: '#/components/responses/bad_request'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /policy:
+    post:
+      tags:
+        - policy
+      summary: create policy
+      operationId: create_policy
+      description: crete policy
+      security:
+        - AdminAPIKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/policy'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    get:
+      tags:
+        - policy
+      summary: policy list
+      operationId: list_policy
+      security:
+        - AdminAPIKey: []
+      description: get policy list
+      parameters:
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policy_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+           $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - policy
+      security:
+        - AdminAPIKey: []
+      summary: policy delete list
+      operationId: delete_policy_list
+      description: policy delete list
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /policy/{policy_id}:
+    get:
+      tags:
+        - policy
+      summary: get single policy
+      operationId: get_policy
+      description: get single policy info
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/policy_id_in_path_required'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policy'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - policy
+      summary: delete one policy
+      operationId: delete_policy
+      description: delete single policy
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/policy_id_in_path_required'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      tags:
+        - policy
+      summary: update single policy
+      security:
+        - AdminAPIKey: []
+      operationId: update_policy
+      description: update single policy
+      parameters:
+        - $ref: '#/components/parameters/policy_id_in_path_required'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/policy'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /policy/count:
+    get:
+      tags:
+        - policy
+      security:
+        - AdminAPIKey: []
+      summary: policy count
+      operationId: policy_count
+      description: policy count
+      parameters:
+        - $ref: '#/components/parameters/contain'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: integer
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /policy/pac:
+    get:
+      tags:
+        - policy
+      security:
+        - AdminAPIKey: []
+      summary: get pac file list
+      operationId: get_pac_file_list
+      description: get the internal pac file name list
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pac_file_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /policy/target:
+    get:
+      tags:
+        - policy
+      summary: policy target list
+      operationId: list_policy_target
+      description: get policy target list
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policy_target_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      tags:
+        - policy
+      summary: create policy target
+      operationId: create_policy_target
+      description: create single policy target
+      security:
+        - AdminAPIKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/policy_target'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - policy
+      summary: policy target delete list
+      operationId: delete_policy_target_list
+      description: delete policy target list
+      security:
+        - AdminAPIKey: []
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /policy/target/{target_id}:
+    get:
+      tags:
+        - policy
+      summary: get policy target
+      operationId: get_policy_target
+      description: get single policy target
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/policy_target_id_in_path_required'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policy_target'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - policy
+      summary: get policy target
+      operationId: delete_policy_target
+      description: delete single policy target
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/policy_target_id_in_path_required'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      tags:
+        - policy
+      summary: update policy target
+      operationId: update_policy_target
+      description: update single policy target
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/policy_target_id_in_path_required'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/policy_target'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /policy/template:
+    get:
+      tags:
+        - policy
+      summary: policy template list
+      operationId: list_policy_template
+      description: get policy template list
+      security:
+        - AdminAPIKey: []
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policy_template_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /qrcode:
+    post:
+      operationId: create_qr_code
+      summary: generate a QR code
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+        - NoAuth: []
+      description: generate a QR code
+      tags:
+        - qr_code
+      parameters:
+        - $ref: '#/components/parameters/qr_code_type_in_query_required'
+      requestBody:
+        required: true
+        description: optional detail requester information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/qr_code_requester'
+      responses:
+        200:
+          $ref: '#/components/responses/qr_code_token'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /qrcode/{qr_code_token}:
+    get:
+      operationId: check_qr_code_state
+      summary: check and get the token of qr code login info
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+        - NoAuth: [] # Requester can provide requester ID information.
+      description: |
+        Check QR code state. Returns api key, and user info if login succeeded.
+      tags:
+        - qr_code
+      parameters:
+        - $ref: '#/components/parameters/qr_code_token_in_path_required'
+        - in: query
+          schema:
+            type: string
+          name: requester_id
+          description: Required for the requester to identify itself.
+      responses:
+        200:
+          $ref: '#/components/responses/qr_code_token_data'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_qr_code_token
+      summary: Update the qr code token
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+        - NoAuth: [] # Requester can provide requester information.
+      description: |
+        Update the state to either scanned, or confirmed auth-grant.
+        Confirm by the approver to grant the authorization by the qr code token.
+      tags:
+        - qr_code
+      parameters:
+        - $ref: '#/components/parameters/qr_code_token_in_path_required'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/qr_code_token_data'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/config:
+    post:
+      operationId: add_tenant_config
+      summary: Add config for a tenant.
+      description: set device auto approval setting et al.
+      security:
+        - SysAPIKey: []
+      tags:
+        - tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tenant_config'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_tenant_config
+      summary: update device auto approval setting et al.
+      description: update device auto approval setting et al.
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - tenant
+      parameters:
+        - in: query
+          name: note
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tenant_config'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+    delete:
+      operationId: delete_tenant_configs
+      summary: delete tenant configs
+      description: delete tenant configs
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - tenant
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/config/list:
+    post:
+      operationId: list_tenant_config
+      summary: list tenant device auto approval setting et al.
+      description: |
+        Sysadmin user can get the config for all tenants. Tenant admin can only
+        get the config of its own namespace.
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - tenant
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/tenant_config'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/health:
+    get:
+      tags:
+        - tenant
+      description: get health status of a tenant
+      operationId: get_health_status
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/health_status'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/path-select:
+    get:
+      tags:
+        - tenant
+      description: List the path selection interface in supervisor.
+      operationId: list_path_select
+      security:
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/path_select_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/register:
+    post:
+      operationId: register_tenant
+      summary: Request to register to a company.
+      security:
+        - SysAPIKey: []
+        - NoAuth: []
+      tags:
+        - tenant
+      requestBody:
+        $ref: '#/components/requestBodies/tenant_registration_params'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      security:
+        - SysAPIKey: []
+      operationId: update_tenant_approval_records
+      summary: update tenant registration requests.
+      description: |
+        Update tenant registration requests. The request only handles the deny
+        case. The approve case is handled in the
+        /tenant/register/{tenant_registration_id}
+        since we need to assign the namespace and the user tier settings et al.
+      tags:
+        - tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/approve_params'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_tenant_approval_records
+      summary: delete tenant approval records
+      description: delete tenant approval records
+      security:
+        - SysAPIKey: []
+      tags:
+        - tenant
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/register/{tenant_registration_id}:
+    put:
+      operationId: update_tenant_registration
+      summary: Update tenant registration record.
+      security:
+        - SysAPIKey: []
+      tags:
+        - tenant
+      parameters:
+        - in: path
+          required: true
+          name: tenant_registration_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          required: true
+          name: user_tier_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          required: true
+          name: network_domain
+          schema:
+            type: string
+        - in: query
+          name: note
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tenant_approval'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/register/list:
+    post:
+      operationId: get_tenant_approval_records
+      summary: return company registration state
+      security:
+        - SysAPIKey: []
+        - NoAuth: []
+      description: return company registration state
+      tags:
+        - tenant
+      parameters:
+        - $ref: '#/components/parameters/company_name_in_query'
+        - $ref: '#/components/parameters/email_in_query'
+        - $ref: '#/components/parameters/phone_num_in_query'
+        - $ref: '#/components/parameters/code_in_query'
+        - $ref: '#/components/parameters/approval_state_in_query'
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                properties:
+                  total:
+                    type: integer
+                    description: total available to fetch from the database.
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/tenant_approval'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/register/check-namespace:
+    put:
+      operationId: check_namespace
+      summary: Check if namespace has been used
+      security:
+        - NoAuth: []
+      description: |
+        Check if a tenant handle aka namespace is available. Optional to also
+        check if a company name has been registered or not.
+      tags:
+        - tenant
+      parameters:
+         - $ref: '#/components/parameters/company_name_in_query'
+         - $ref: '#/components/parameters/namespace_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: boolean
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /tenant/summary:
+    get:
+      operationId: get_tenant_summary
+      summary: tenant summary history or latest summary.
+      description: tenant namespace summary
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - tenant
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+        - $ref: '#/components/parameters/days_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/summary_stats_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/list:
+    post:
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      summary: get user list
+      operationId: get_user_list
+      description: >
+        Get user list with various filtering, sorting and paging options.
+        To simply get the user info for a specific user ID, just set the id_list
+        parameter to a single user ID list. A non-admin user can only get its
+        own record.
+      parameters:
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+        - in: query
+          name: with_details
+          description: if to include all the devices et al. default is off.
+          schema:
+            type: boolean
+        - in: query
+          name: from_keycloak
+          description: if to get the users from keycloak backend instead.
+          schema:
+            type: boolean
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/roles:
+    get:
+      security:
+        - AdminAPIKey: []
+      tags:
+        - user
+      summary: get user roles
+      operationId: get_user_roles
+      description: >
+        Get user roles.
+      parameters:
+        - $ref: '#/components/parameters/contain'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/role'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user:
+    delete:
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      summary: delete users
+      operationId: delete_users
+      description: Delete users base on the user ID list.
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query_required'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      security:
+        - AdminAPIKey: []
+      tags:
+        - user
+      summary: create user
+      description: >
+        Create a new user directly. Only admin user can add a user directly.
+        For community users, use the register API to add a new user.
+      operationId: post_user
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+        - $ref: '#/components/parameters/is_admin_in_query'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/{user_id}:
+    put:
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      summary: update single user
+      operationId: update_user
+      description: >
+        Update single user. To create, delete, list a user, please refer to the
+        /user APIs (without the user ID parameter in the path). To register a
+        new user please use the /user/register API.
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_path_required'
+        - $ref: '#/components/parameters/namespace_in_query_required'
+      requestBody:
+        $ref: '#/components/requestBodies/user_update_params'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/access-point/{user_id}:
+    get:
+      operationId: list_access_point
+      summary: |
+        List the access points available for the user.
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_path_required'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access_point_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: change_access_point
+      summary: |
+        Change the access point of the user.
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_path_required'
+        - in: query
+          name: machine_key
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: access_point_name
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access_point'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/check-username:
+    get:
+      operationId: check_username
+      summary: check if username is available
+      security:
+        - NoAuth: []
+      description: check if username is available
+      tags:
+        - user
+      parameters:
+        - '$ref': '#/components/parameters/namespace_in_query'
+        - '$ref': '#/components/parameters/username_in_query_required'
+      responses:
+        200:
+          description: success. return if username is available.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/device-traffic/{user_id}:
+    get:
+      operationId: get_device_traffic
+      summary: get device traffic
+      description: |
+        Get device traffic stats for all devices. Optionally a list of device ID
+        can be passed in to limit the devices to be collected.
+      tags:
+        - user
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_path_required'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/device_traffic_stats'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/friend:
+    get:
+      tags:
+        - user
+      security:
+        - UserAPIKey: []
+      summary: List friends
+      operationId: list_friend
+      description: List user friends
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_friends'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - user
+      security:
+        - UserAPIKey: []
+      summary: Delete friends
+      operationId: delete_friends
+      description: Delete friends of a user
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/friend/request:
+    get:
+      tags:
+        - user
+      security:
+        - UserAPIKey: []
+      summary: list friend request
+      operationId: list_friend_requests
+      description: List friend request
+      parameters:
+        - $ref: '#/components/parameters/contain'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/friend_request_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      tags:
+        - user
+      security:
+        - UserAPIKey: []
+      summary: Create friend request
+      operationId: create_friend_request
+      description: Create a new friend request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/friend_request'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - user
+      security:
+        - UserAPIKey: []
+      summary: delete request info
+      operationId: delete_friend_requests
+      description: |
+        Delete friend requests. Use as_requestor to indicate if to delete the
+        request from the user (as_requester = true) or the request to the user.
+      parameters:
+        - in: query
+          name: as_requester
+          schema:
+            type: boolean
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      tags:
+        - user
+      security:
+        - UserAPIKey: []
+      summary: update friend_requests
+      operationId: update_friend_requests
+      description: update friend_requests
+      requestBody:
+        $ref: '#/components/requestBodies/friend_requests_update_info'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/id-token/{code}:
+    get:
+      operationId: get_id_token
+      summary: provide user information as a json token
+      description: provide user information as a json token to discourse
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: code
+          schema:
+            type: string
+          description: a typical oauth code to exchange for id token
+          required: true
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_id_token'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/network-domain:
+    get:
+      operationId: generate_network_domain
+      summary: generate a new network domain
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - in: query
+          name: want_words_based
+          schema:
+            type: boolean
+          description: |
+            if to generate network domain with words instead of
+            random digits.
+          required: true
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/network-domain/{user_id}/{network_domain}:
+    put:
+      operationId: set_network_domain
+      summary: set user network domain
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_path_required'
+        - in: path
+          name: network_domain
+          schema:
+            type: string
+          description: network domain to set
+          required: true
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/notice/{category}/list:
+    post:
+      operationId: list_notice
+      summary: get alert or alarm notice messages
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: |
+        Get user notice message list. Admin user lists all messages of tenant
+        and non-admin user can only list own messages.
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/notice_category_in_path_required'
+        - $ref: '#/components/parameters/notice_type_in_query'
+        - $ref: '#/components/parameters/start_time_in_query'
+        - $ref: '#/components/parameters/end_time_in_query'
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/notice_level_in_query'
+        - $ref: '#/components/parameters/notice_state_in_query'
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notice_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/notice/{category}:
+    put:
+      operationId: update_notices
+      summary: update state of a list of alert or alarm messages for a user
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: update state of the notices
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/notice_category_in_path_required'
+      requestBody:
+        $ref: '#/components/requestBodies/notice_update_params'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_notices
+      summary: delete alert messages for a user
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: delete user alert messages
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/notice_category_in_path_required'
+        - in: query
+          name: days_old
+          description: delete messages older than this number of days.
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/search:
+    get:
+      operationId: search_user
+      summary: |
+        Search base on username, phone number et al. For security reason
+        only exact match is returned. Admin user should use the list user
+        API to search instead.
+      security:
+         - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/email_in_query'
+        - $ref: '#/components/parameters/phone_num_in_query'
+        - $ref: '#/components/parameters/username_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_short_info'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/username:
+    post:
+      operationId: send_username
+      summary: request to send user's username to the email.
+      security:
+         - NoAuth: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+        - $ref: '#/components/parameters/email_in_query'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/password/reset:
+    post:
+      operationId: reset_password
+      summary: user resets password.
+      security:
+         - NoAuth: []
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/reset_password'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/password/{user_id}:
+    put:
+      operationId: change_password
+      summary: change the user password. returns new password set.
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_path_required'
+        - $ref: "#/components/parameters/code_in_query"
+        - $ref: '#/components/parameters/phone_num_in_query'
+        - $ref: '#/components/parameters/email_in_query'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/change_password'
+      responses:
+        200:
+          description: success
+          content:
+            text/plain:
+              schema:
+                type: string
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/profile-img:
+    get:
+      operationId: get_profile_img
+      summary: get user profile image in base64 format
+      security:
+         - UserAPIKey: []
+         - AdminAPIKey: []
+         - NoAuth: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/username_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_profile'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_profile_img
+      summary: update user profile image stored with base64 format
+      security:
+         - UserAPIKey: []
+         - AdminAPIKey: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/username_in_query'
+      requestBody:
+        $ref: '#/components/requestBodies/user_profile'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_profile_img
+      summary: delete user profile picture
+      security:
+         - UserAPIKey: []
+         - AdminAPIKey: []
+      tags:
+        - user
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/username_in_query'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/register/list:
+    post:
+      security:
+        - AdminAPIKey: []
+        - NoAuth: [] # For a new user to check its approval state by email/phone with code
+      tags:
+        - user
+      summary: get user approval/registration records
+      description: >
+        Get user approval registration records with paging and filtering.
+      operationId: get_user_approvals
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+        - $ref: '#/components/parameters/email_in_query'
+        - $ref: '#/components/parameters/phone_num_in_query'
+        - $ref: '#/components/parameters/code_in_query'
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/is_admin_in_query'
+        - $ref: '#/components/parameters/approval_state_in_query'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                properties:
+                  total:
+                    type: integer
+                    description: total available to fetch from the database.
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/user_approval_info'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+  /user/register:
+    post:
+      security:
+        - AdminAPIKey: []
+        - NoAuth: []
+      tags:
+        - user
+      summary: register a new user
+      description: >
+        Registrer a new user. Security check depends on tenant. e.g. community
+        user may be able to register or add directly but enterprise tenant may
+        only be able to be added by the admin user.
+      operationId: register_user
+      requestBody:
+        $ref: '#/components/requestBodies/user_approval_info'
+      responses:
+        200:
+          description: success
+          content:
+            text/plain:
+              schema:
+                type: string
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_user_approval
+      summary: Set a new state of user approval records
+      security:
+        - AdminAPIKey: []
+      description: Update approval state of a list of users
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/approve_params'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_user_approvals
+      summary: Delete user approval records
+      security:
+        - AdminAPIKey: []
+      description: Delete user approval records.
+      tags:
+        - user
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/status:
+    get:
+      operationId: get_user_status
+      summary: Get the user status
+      security:
+        - UserAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - user
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/summary:
+    get:
+      tags:
+        - user
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      summary: get user summary
+      operationId: get_user_summary
+      description: |
+        Get realtime user data or history data. Query parameter of 0 days means
+        the latest data.
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/days_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/summary_stats_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/summary/device:
+    get:
+      tags:
+        - user
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      summary: get all device summary of user
+      operationId: get_user_device_summary
+      description: get all device summary of user
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/days_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/device_summary'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /vpn/device/list:
+    post:
+      tags:
+        - vpn
+      summary: list all the vpn devices
+      operationId: list_vpn_device
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: |
+        List all the devices in the wireguard VPN domain. To list a single
+        device simply passing in a single ID id-list parameter.
+      parameters:
+        - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wg_device_list'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /vpn/device/{device_id}:
+    get:
+      tags:
+        - vpn
+      summary: list a vpn device
+      operationId: get_vpn_device
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: |
+        List a device in the wireguard VPN domain.
+      parameters:
+        - $ref: '#/components/parameters/device_id_in_path_required'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wg_device'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /vpn/device:
+    post:
+      tags:
+        - vpn
+      summary: create a vpn device
+      operationId: add_vpn_device
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: Crete a vpn device.
+      parameters:
+        - $ref: '#/components/parameters/user_id_in_query'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/wg_device'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - vpn
+      summary: delete vpn devices
+      operationId: delete_vpn_devices
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      description: Delete vpn devices.
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /vpn/wg/list:
+    post:
+      tags:
+        - vpn
+      summary: list wg gateways
+      operationId: list_wg_nodes
+      security:
+        - AdminAPIKey: []
+      description: List wireguard gateways.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                  - items
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/wg_node'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      tags:
+        - vpn
+      summary: delete wg nodes
+      operationId: delete_wg_nodes
+      security:
+        - AdminAPIKey: []
+      description: Delete wiregard gateway nodes
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+components:
+  securitySchemes:
+    AdminAPIKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+      description: from an admin user of the tenant
+    UserAPIKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+      description: from a user
+    SysAPIKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+      description: from system admin
+    NoAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+      description: No authentication is required.
+
+  schemas:
+    access_key:
+      description: access key
+      type: object
+      required:
+        - id
+        - name
+        - user_id
+        - username
+        - key
+        - active
+        - namespace
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          description: access key name
+          type: string
+        user_id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        key:
+          type: string
+        active:
+          type: boolean
+        created_at:
+          type: integer
+          format: int64
+        expires_at:
+          type: integer
+          format: int64
+        accessed_at:
+          type: integer
+          format: int64
+        namespace:
+          type: string
+        note:
+          type: string
+        scope:
+          type: array
+          items:
+            type: string
+          description: Reserved for accesss scope
+    access_key_list:
+      description: Access Key List
+      type: array
+      items:
+        $ref: '#/components/schemas/access_key'
+    access_point:
+      description: access point for the device
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          description: access point, in string format
+          type: string
+          example: wg-ca-1
+        id:
+          type: string
+          format: uuid
+        address:
+          description: ip address of access point
+          type: string
+        exit_node_ip:
+          description: ip address of exit node
+          type: string
+        is_exit_node:
+          type: boolean
+        allowed_ips:
+          type: array
+          description: allowedIPs for this node, it will be 100.64.0.0/10, 8.8.8.8/32 and etc.
+          items:
+            type: string
+        priority:
+          type: integer
+          description: larger is first.
+        version:
+          type: integer
+    access_point_list:
+      type: array
+      items:
+        $ref: '#/components/schemas/access_point'
+    additional_auth_info:
+      type: object
+      required:
+        - auth_options
+        - message
+      properties:
+        auth_options:
+          type: array
+          items:
+            $ref: '#/components/schemas/mfa_type'
+        message:
+          type: string
+    api_key:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        ttl:
+          description: time to live value in seconds
+          type: integer
+    app_access_event:
+      type: object
+      description: App access event
+      properties:
+        id:
+          type: string
+        time:
+          type: integer
+          format: int64
+        user:
+          $ref: '#/components/schemas/tag'
+        device:
+          $ref: '#/components/schemas/tag'
+        ip:
+          type: string
+          format: ip
+        event_type:
+          type: string
+          example: application access
+        target:
+          type: string
+        target_type:
+          type: string
+          example: videos and entertainment
+        action:
+          type: string
+          example: deny
+        comment:
+          type: string
+          example: allow video access base on layer 7 policy
+    app_access_event_list:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/app_access_event'
+    app_cloud:
+      type: object
+      properties:
+        cloud:
+          type: string
+          example: 'Amazon cloud'
+        count:
+          type: integer
+    app_link:
+      type: object
+      properties:
+        source:
+          type: string
+          example: user-001
+        target:
+          type: string
+          example: web-002
+        category:
+          type: string
+          example: cgy-001
+        value:
+          type: integer
+    app_node:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: Jane Doe
+    app_stats:
+      type: object
+      properties:
+        type:
+          type: string
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/app_stats_item'
+    app_stats_item:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Social media'
+        count:
+          type: integer
+    approval_record:
+      type: object
+      required:
+        - state
+        - history
+      properties:
+        state:
+          $ref: '#/components/schemas/approval_state'
+        history:
+          $ref: '#/components/schemas/update_history'
+    approval_state:
+      type: string
+      enum:
+        - hold
+        - rejected
+        - approved
+        - pending
+        - unknown
+    approve_params:
+      type: object
+      required:
+        - id_list
+        - set_state
+        - note
+      properties:
+        id_list:
+          $ref: '#/components/schemas/id_list'
+        set_state:
+          $ref: '#/components/schemas/approval_state'
+        note:
+          type: string
+          description:  reason of reject
+    attribute:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          type: string
+        value:
+          type: array
+          items:
+            type: string
+    attribute_list:
+      type: array
+      description: attributes in key value list
+      items:
+        $ref: '#/components/schemas/attribute'
+    auth_token:
+      description: token and its status
+      type: object
+      properties:
+        token:
+          type: string
+        status:
+          type: string
+          enum:
+           - unconfirmed
+           - rejected
+           - approved
+    bad_request:
+      type: object
+      description: bad request from client
+      properties:
+        error_code:
+          type: string
+          enum:
+            # Keep alphabatical order.
+            - err_authentication_failed
+            - err_bad_params
+            - err_bad_user_info
+            - err_bad_user_profile
+            - err_company_configuration_not_exists
+            - err_company_exists
+            - err_company_name_not_available
+            - err_company_namespace_not_available
+            - err_company_not_exists
+            - err_company_registration_exists
+            - err_company_registration_not_exists
+            - err_device_exists
+            - err_device_not_exists
+            - err_email_exists
+            - err_email_invalid
+            - err_email_registered
+            - err_friend_request_exists
+            - err_friend_request_not_exists
+            - err_gmail_registered
+            - err_invalid_password_history
+            - err_invalid_sms_code
+            - err_label_exists
+            - err_label_not_exists
+            - err_meeting_config_invalid
+            - err_meeting_exists
+            - err_meeting_host_code_not_exists
+            - err_meeting_not_exists
+            - err_meeting_participant_exists
+            - err_meeting_participant_not_exists
+            - err_meeting_password_invalid
+            - err_not_admin_user
+            - err_one_time_code_invalid
+            - err_operation_not_supported
+            - err_operation_not_authorized
+            - err_password_policy_not_met
+            - err_phone_registered
+            - err_phone_unregistered
+            - err_phone_unfinished
+            - err_phone_invalid
+            - err_phone_not_approved
+            - err_policy_exists
+            - err_policy_not_exists
+            - err_policy_not_supported
+            - err_policy_target_exists
+            - err_policy_target_in_use
+            - err_policy_target_not_exists
+            - err_qr_code_expired
+            - err_qr_code_not_confirmed
+            - err_qr_code_not_scanned
+            - err_registered
+            - err_request_has_been_sent
+            - err_same_password
+            - err_same_username
+            - err_target_exists
+            - err_target_not_exists
+            - err_token_invalid
+            - err_unauthorized
+            - err_update_info_failed
+            - err_user_bound_already
+            - err_user_exists
+            - err_user_not_exists
+            - err_user_login_exists
+            - err_user_profile_not_exists
+            - err_user_registered
+            - err_username_invalid
+            - err_username_registered
+            - err_wechat_registered
+            - err_wechat_not_binding
+        error_message:
+          type: string
+    change_password:
+      type: object
+      description: password change information
+      properties:
+        new_password:
+          type: string
+          description: if not set, backend will generate a new password.
+        login_name:
+          type: string
+        login_type:
+          $ref: '#/components/schemas/login_type'
+    device:
+      type: object
+      required:
+        - type
+        - namespace
+        - id
+        - user_id
+        - name
+      properties:
+        type:
+          type: string
+          enum: [pc,laptop, mobile, pad, server, printer, camera, other]
+        id:
+          type: string
+          format: uuid
+        namespace:
+          type: string
+        device_approval_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        user_short_info:
+          $ref: '#/components/schemas/user_short_info'
+        name:
+          type: string
+          example: macbook-pro
+        name_alias:
+          type: string
+          example: macbook-pro
+        network_domain:
+          type: string
+        wg_info:
+          $ref: '#/components/schemas/wg_device'
+        pop:
+          $ref: '#/components/schemas/pop'
+        fw_stats:
+          $ref: '#/components/schemas/firewall_stats'
+        used_traffic:
+          type: number
+          format: float
+          example: 28
+          description: unit MB
+        host_ip:
+          description: device IP seen by cylonix-manager
+          type: string
+        host_ip_cloud:
+          description: the cloud name of the device ip
+          type: string
+        labels:
+          $ref: '#/components/schemas/label_list'
+        vpn_labels:
+          $ref: '#/components/schemas/label_list'
+        capabilities:
+          type: array
+          items:
+            type: string
+        intercept_record:
+          type: number
+          example: 12
+        rx_bytes:
+          type: integer
+          format: uint64
+        tx_bytes:
+          type: integer
+          format: uint64
+        rx_bytes_delta:
+          type: integer
+          format: uint64
+        tx_bytes_delta:
+          type: integer
+          format: uint64
+        last_seen:
+          type: integer
+          format: int64
+    device_approval_record:
+      type: object
+      required:
+        - approval_id
+        - user_id
+        - reference_id
+        - username
+        - hostname
+        - os
+        - note
+      properties:
+        approval_record:
+          $ref: '#/components/schemas/approval_record'
+        approval_id:
+          type: string
+          format: uuid
+        reference_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        note:
+          type: string
+        hostname:
+          type: string
+        os:
+          type: string
+    device_list:
+      type: object
+      required:
+        - total
+        - devices
+      properties:
+        total:
+          type: integer
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/device'
+    device_summary_item:
+      type: object
+      properties:
+        traffic_stats:
+           $ref: '#/components/schemas/traffic_stats'
+    device_summary:
+      type: object
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        device_name:
+          type: string
+        ip:
+          type: string
+          description: device ip
+        label_count:
+          type: integer
+        policy_count:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/device_summary_item'
+    device_traffic_stats:
+      type: object
+      required:
+        - device_id
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        device_name:
+          type: string
+        ip:
+          type: string
+        wg_stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/wg_traffic_stats'
+    device_update:
+      type: object
+      properties:
+        set_name:
+          type: boolean
+        name:
+          type: string
+        set_approval_state:
+          type: boolean
+        approval_state:
+          $ref: "#/components/schemas/approval_state"
+        set_advertise_default_route:
+          type: boolean
+        advertise_default_route:
+          type: boolean
+        set_advertise_dns_set:
+          type: boolean
+        advertise_dns_set:
+          type: boolean
+        add_capability:
+          type: string
+        del_capability:
+          type: string
+        name_alias:
+          type: string
+        add_labels:
+          $ref: '#/components/schemas/label_list'
+        del_labels:
+          $ref: '#/components/schemas/label_list'
+        set_name_alias:
+          type: boolean
+    duration:
+      type: object
+      description: time duration format
+      required:
+        - from
+        - to
+      properties:
+        from:
+          description: start time
+          type: integer
+          format: int64
+        to:
+          description: end time
+          type: integer
+          format: int64
+    firewall_stats:
+      type: object
+      properties:
+        allowed_rx:
+          type: integer
+          format: uint64
+        allowed_tx:
+          type: integer
+          format: uint64
+        denied_rx:
+          type: integer
+          format: uint64
+        denied_tx:
+          type: integer
+          format: uint64
+        dropped_rx:
+          type: integer
+          format: uint64
+        dropped_tx:
+          type: integer
+          format: uint64
+        allowed_rx_bytes:
+          type: integer
+          format: uint64
+        allowed_tx_bytes:
+          type: integer
+          format: uint64
+        denied_rx_bytes:
+          type: integer
+          format: uint64
+        denied_tx_bytes:
+          type: integer
+          format: uint64
+        dropped_rx_bytes:
+          type: integer
+          format: uint64
+        dropped_tx_bytes:
+          type: integer
+          format: uint64
+    error:
+      type: string
+    fqdn_rule:
+      description: fqdn classification
+      type: object
+      required:
+        - match_type
+        - match_value
+      properties:
+        match_type:
+          $ref: '#/components/schemas/match_type'
+        match_value:
+          type: string
+          description: |
+            host domain name, domain name, category name, and pac content
+            pac: when it is 'WellknownDomesticDomains', it will use the
+            internal pac file of domestic domains
+    friend_request:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: assigned by back end
+        state:
+          $ref: '#/components/schemas/approval_state'
+        from_user_id:
+          type: string
+          format: uuid
+        from_username:
+          type: string
+        to_username:
+          type: string
+        to_user_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+    friend_request_list:
+      type: array
+      items:
+        $ref: '#/components/schemas/friend_request'
+    health_status:
+      type: object
+      properties:
+        status:
+          type: boolean
+    id_list:
+      description: id list
+      type: array
+      items:
+        type: string
+        format: uuid
+    label:
+      type: object
+      required:
+        - namespace
+        - id
+        - name
+        - description
+      properties:
+        namespace:
+          type: string
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        scope:
+          type: string
+          format: uuid
+        color:
+          type: string
+        category:
+          $ref: '#/components/schemas/label_category'
+        star:
+          type: boolean
+        description:
+          type: string
+    label_category:
+      type: string
+      enum: [policy, vpn]
+    label_list:
+      type: array
+      items:
+        $ref: '#/components/schemas/label'
+    log:
+      type: object
+      properties:
+        source:
+          type: string
+        namespace:
+          type: string
+        level:
+          $ref: '#/components/schemas/notice_level'
+        log:
+          type: string
+          description: log in json format.
+        syslog:
+          type: string
+          description: log in syslog format instead of json format.
+        timestamp:
+          type: string
+          format: datetime
+    log_list:
+      type: array
+      items:
+        $ref: '#/components/schemas/log'
+    login_success:
+      type: object
+      required:
+        - api_key
+        - login
+        - user
+        - tenant
+      properties:
+        api_key:
+          type: string
+        api_key_ttl:
+          type: integer
+        access_point:
+          $ref: '#/components/schemas/access_point'
+        login:
+          $ref: '#/components/schemas/user_login'
+        user:
+          $ref: '#/components/schemas/user'
+        tenant:
+          $ref: '#/components/schemas/tenant'
+        vpn_api_key:
+          type: string
+        vpn_auth_key:
+          type: string
+        confirm_session:
+          $ref: '#/components/schemas/login_confirm_session'
+    login_confirm_session:
+      type: object
+      required:
+        - session_id
+        - device_name
+        - device_os
+        - device_os_version
+        - device_model
+        - node_key
+        - machine_key
+        - network_domain
+      properties:
+        session_id:
+          type: string
+        device_name:
+          type: string
+        device_model:
+          type: string
+        device_os:
+          type: string
+        device_os_version:
+          type: string
+        node_key:
+          type: string
+        machine_key:
+          type: string
+        network_domain:
+          type: string
+    login_type:
+      type: string
+      enum: [access_key, email, apple, github, google, keycloak, microsoft, phone, scan, unknown, username, wechat]
+    match_type:
+      type: string
+      enum: [exact, pattern, category, pac]
+    mesh_vpn_mode:
+      type: string
+      enum: [single, tenant, policy]
+      description: |-
+        - single (default) - all device in the same user sharing mesh vpn;
+        - tenant - all devices in same tenant sharing same mesh vpn;
+        - policy - base on labels added to the user or device
+    meeting:
+      type: object
+      required:
+        - id
+        - config
+      properties:
+        id:
+          type: string
+          format: uuid
+        config:
+          $ref: '#/components/schemas/meeting_config'
+        history:
+          $ref: '#/components/schemas/update_history'
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/meeting_participant'
+    meeting_config:
+      type: object
+      required:
+        - meeting_number
+      properties:
+        meeting_number:
+          type: string
+        server:
+          type: string
+        start:
+          type: integer
+          format: int64
+        end:
+          type: integer
+          format: int64
+        title:
+          type: string
+        host_user_id:
+          type: string
+          format: uuid
+          description: meeting host user ID
+        host_display_name:
+          type: string
+          description: meeting host user name
+        invitation_code:
+          type: string
+        host_code:
+          type: string
+        password:
+          type: string
+    meeting_list:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/meeting'
+    meeting_participant:
+      type: object
+      required:
+        - id
+        - meeting_id
+      properties:
+        meeting_id:
+          type: string
+          format: uuid
+          description: the meeting record ID i.e. not the meeting number.
+        display_name:
+          type: string
+        namespace:
+          type: string
+        id:
+          type: string
+          format: uuid
+          description: participant ID
+        user_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        phone:
+          type: string
+        is_internal_user:
+          type: boolean
+        is_host:
+          type: boolean
+        invitation_code:
+          type: string
+        host_code:
+          type: string
+        history:
+          $ref: '#/components/schemas/update_history'
+    meeting_participant_list:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/meeting_participant'
+    meeting_update:
+      type: object
+      properties:
+        password:
+          type: string
+        start:
+          type: integer
+          format: int64
+        end:
+          type: integer
+          format: int64
+        title:
+          type: string
+        server:
+          type: string
+        set_start:
+          type: boolean
+        set_end:
+          type: boolean
+        set_title:
+          type: boolean
+        set_server:
+          type: boolean
+        set_password:
+          type: boolean
+        add_participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/meeting_participant'
+        del_participants:
+          $ref: '#/components/schemas/id_list'
+    mfa_type:
+      type: string
+      enum: [email, sms, authenticator]
+    monitor_flow_filter:
+      type: object
+      description: Monitor flow filter item
+      properties:
+        type:
+          type: string
+          enum: [L7, L3_L4]
+        l7_type:
+          type: string
+          enum: [DNS_TYPE, HTTP_TYPE, KAFKA_TYPE]
+        verdict:
+          type: string
+        src_identity:
+          type: integer
+          format: int64
+        dst_identity:
+          type: integer
+          format: int64
+        src_label:
+          type: string
+        dst_label:
+          type: string
+        src_ip:
+          type: string
+        dst_ip:
+          type: string
+        src_tcp_port:
+          type: integer
+        dst_tcp_port:
+          type: integer
+        src_udp_port:
+          type: integer
+        dst_udp_port:
+          type: integer
+    monitor_flow_list:
+      type: object
+      description: Monitor flow list.
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            type: string
+            description: |
+              Flow information.
+              TODO: change flow to an object.
+    network_topo:
+      type: object
+      required:
+        - id
+        - name
+        - city
+        - lat
+        - lng
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: 'sf'
+        city:
+          type: string
+        lng:
+          type: number
+          format: float
+        lat:
+          type: number
+          format: float
+        online_users:
+          type: integer
+        offline_users:
+          type: integer
+        bandwidth:
+          type: integer
+        bandwidth_in_use:
+          type: integer
+        intercept_stop:
+          type: integer
+        policy_count:
+          type: integer
+        status:
+          type: string
+          enum: [Start, Offline, Online, Warning, Error]
+        links:
+          type: array
+          description: neighbor node id list for this node
+          example: ['uuid-1234', 'uuid-1235']
+          items:
+            type: string
+    notice:
+      type: object
+      required:
+        - id
+        - namespace
+        - type
+        - state
+        - history
+      properties:
+        id:
+          type: string
+          format: uuid
+        namespace:
+          type: string
+        type:
+          $ref: '#/components/schemas/notice_type'
+        message:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+        updated_at:
+          type: integer
+          format: int64
+        state:
+          $ref: '#/components/schemas/notice_state'
+        network_domain:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        device_id:
+          type: string
+          format: uuid
+        reference_id:
+          type: string
+          format: uuid
+        level:
+          $ref: '#/components/schemas/notice_level'
+        history:
+          $ref: '#/components/schemas/update_history'
+    notice_category:
+      type: string
+      enum: [alert, alarm]
+    notice_level:
+      type: string
+      enum: [critical, major, error, warning, info, minor]
+    notice_list:
+      type: object
+      required:
+        - total
+        - unread
+      properties:
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/notice'
+        total:
+          type: integer
+        unread:
+          type: integer
+    notice_state:
+      type: string
+      enum: [read, unread]
+    notice_type:
+      type: string
+      enum:
+        - tenant_approval
+        - user_approval
+        - device_approval
+        - alarm
+    notice_update:
+      type: object
+      required:
+        - id_list
+        - state
+      properties:
+        id_list:
+          $ref: '#/components/schemas/id_list'
+        state:
+          $ref: '#/components/schemas/notice_state'
+    oauth_login_info:
+      type: object
+      properties:
+        provider:
+          type: string
+        state:
+          type: string
+        code:
+          type: string
+    one_time_code_check:
+      type: object
+      required:
+        - email_or_phone
+        - is_phone
+        - code
+      properties:
+        email_or_phone:
+          type: string
+        is_phone:
+          type: boolean
+        code:
+          type: string
+    one_time_code_send_result:
+        type: object
+        required:
+          - send_again_too_soon
+        properties:
+          from:
+            description: from email for email otp.
+            type: string
+          send_again_too_soon:
+            description: send again too soon
+            type: boolean
+    pac_file_list:
+      description: Proxy auto config file list
+      type: array
+      items:
+        $ref: '#/components/schemas/tag'
+    path_select:
+      type: object
+      description: >-
+        Traffic diversion points typically the exit points to the
+        public Internet on the pop instances.
+      required:
+        - id
+        - name
+        - description
+        - pop_name
+        - pop_id
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: GigabitEthernet7/1/0
+        description:
+          type: string
+          example: Exit to the Interent
+        pop_name:
+          type: string
+          description: name of the pop instance
+        pop_id:
+          type: string
+          description: id of the pop instance
+    path_select_list:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/path_select'
+    policy:
+      type: object
+      description: user policy.
+      required:
+        - id
+        - name
+        - sources
+        - duration
+        - action
+        - policy_type
+        - match_all
+        - read_only
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: policy name
+        read_only:
+          type: boolean
+        match_all:
+          type: boolean
+        policy_type:
+          $ref: '#/components/schemas/policy_type'
+        sources:
+          $ref: '#/components/schemas/label_list'
+        duration:
+          $ref: '#/components/schemas/duration'
+          description: Define the schedle for this policy, it may be per day, per week.
+        action:
+          $ref: '#/components/schemas/policy_action'
+        target_id:
+          type: string
+          format: uuid
+          description: define the policy's action target
+        path_select:
+           $ref: '#/components/schemas/path_select'
+           description: define the path selection resource id
+    policy_action:
+      type: string
+      enum: [permit, deny, divert]
+      description: policy action, define the the policy action if the policy matches
+    policy_list:
+      description: user policy list.
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/policy'
+    policy_target:
+      type: object
+      description: |
+        Policy target to define the policy's L3/L4/L7 filter.
+      required:
+        - id
+        - name
+        - read_only
+        - type
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: policy target name
+        read_only:
+          type: boolean
+          description: is target read only
+        type:
+          $ref: '#/components/schemas/policy_target_type'
+        label:
+          $ref: '#/components/schemas/label'
+          description: Set if policy type is web/department.
+        value:
+          type: string
+          description: Set if policy type is web/cidr
+        department_list:
+          $ref: '#/components/schemas/label_list'
+        cidr_list:
+          type: array
+          description: Set if policy type is 'cidr'.
+          items:
+            type: string
+        fqdn_rule_list:
+          type: array
+          description: Set if policy type is 'fqdn', 'pac' or 'l7'
+          items:
+            $ref: '#/components/schemas/fqdn_rule'
+        port_policy_list:
+          type: array
+          description: Set if policy type is 'port' or 'l7'
+          items:
+            $ref: '#/components/schemas/port_policy'
+    policy_target_list:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/policy_target'
+    policy_target_type:
+      type: string
+      enum: [all, department, cidr, fqdn, pac, port, l7]
+      description: |-
+        all:        can access all resource
+        department: filter by the department with label
+        cidr:       filter by the cidr value
+        fqdn:       filter by domain name
+        pac:        filter by pac file
+        port:       filter by port, domain, http protocol
+        l7:         filter by layer 7 information
+    policy_template:
+      type: object
+      description: policy template
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Deny policies
+    policy_template_list:
+      type: object
+      description: policy template list
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/policy_template'
+    policy_type:
+      type: string
+      enum: [network, monitor, security]
+    pop:
+      type: object
+      description: POP info contains with name and id.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    port_policy:
+      type: object
+      required:
+        - ports
+        - rules
+        - with_tls
+      properties:
+        ports:
+          type: array
+          items:
+            $ref: '#/components/schemas/port_protocol'
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/port_rule'
+        with_tls:
+          type: boolean
+    port_protocol:
+      description: network protocol and port combo
+      type: object
+      required:
+        - protocol
+        - port
+      properties:
+        port:
+          type: integer
+        protocol:
+          type: string
+          enum: [UDP, TCP, ANY]
+    port_rule:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [dns, http]
+        domain_name:
+          type: string
+        http_method:
+          type: string
+          enum: [GET, HEAD, POST, OPTIONS, PUT,  DELETE, TRACE, CONNECT]
+        http_path:
+          type: string
+    qr_code_requester:
+      description: qr code requester information
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        hostname:
+          type: string
+        user_agent:
+          type: string
+          description: only populated if generated in a browser
+        timestamp:
+          type: integer
+          format: int64
+        want_vpn_auth_key:
+          type: boolean
+    qr_code_token_data:
+      type: object
+      description: qr code token data
+      required:
+        - state
+      properties:
+        requester:
+          $ref: '#/components/schemas/qr_code_requester'
+        redirect_url:
+          type: string
+        scanned_by:
+          type: string
+        state:
+          type: string
+          enum:
+            - created
+            - scanned
+            - confirmed
+            - rejected
+            - expired
+        login_type:
+          $ref: '#/components/schemas/login_type'
+        tenant:
+          $ref: '#/components/schemas/tenant'
+        user:
+          $ref: '#/components/schemas/user'
+        api_key:
+          $ref: '#/components/schemas/api_key'
+        vpn_auth_key:
+          type: string
+    qr_code_type:
+      type: string
+      enum:
+        - 'auth_request'
+        - 'auth_grant'
+        - 'add_friend'
+    redirect_url_config:
+      type: object
+      properties:
+        encoded_redirect_url:
+          type: string
+          description: fully encoded url with client id and state information
+        redirect_uri:
+          type: string
+          description: base redirect uri without client id and state information
+        is_direct_login_with_password:
+          type: boolean
+          description: whether the redirect uri is a direct login with password
+        client_id:
+          type: string
+        state:
+          type: string
+        cookie:
+          type: string
+    reset_password:
+      type: object
+      description: reset_password with username or email
+      required:
+        - one_time_code_check
+        - new_password
+        - login_name
+        - namespace
+      properties:
+        one_time_code_check:
+          $ref: '#/components/schemas/one_time_code_check'
+        new_password:
+          type: string
+        login_name:
+          type: string
+        namespace:
+          type: string
+    role:
+      type: object
+      required:
+        - id
+        - name
+        - description
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+    predefined_roles:
+      type: string
+      enum:
+        - network-admin
+    rx_tx_bytes:
+      type: object
+      properties:
+        rx:
+          type: integer
+          format: uint64
+          description: received traffic in bytes
+        tx:
+          type: integer
+          format: uint64
+          description: tranmitted traffic in bytes
+    summary_stats:
+      type: object
+      properties:
+        device_count:
+          type: integer
+        user_count:
+          type: integer
+        online_user_count:
+          type: integer
+        online_device_count:
+          type: integer
+        label_count:
+          type: integer
+        policy_count:
+          type: integer
+        alarm_unread:
+          type: integer
+        alarm_count:
+          type: integer
+        traffic_stats:
+          $ref: '#/components/schemas/traffic_stats'
+        timestamp:
+          type: integer
+          format: int64
+    summary_stats_list:
+      type: array
+      items:
+        $ref: '#/components/schemas/summary_stats'
+    tag:
+      type: object
+      description: tag info with tag name and tag id
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          example: tag-0001
+        name:
+          type: string
+          example: IT
+    tag_list:
+      type: array
+      items:
+        $ref: '#/components/schemas/tag'
+    tenant:
+      type: object
+      description: >
+        A tenant of the sase network. i.e. a company. For personal users, it is
+        a special tenant with a fixed namespace.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: full name of the company
+        namespace:
+          type: string
+          description: a shorten or translated name of the tenant name.
+        tenant_id:
+          type: string
+          format: uuid
+          description: assigned by the backend
+    tenant_config:
+      type: object
+      required:
+        - id
+        - name
+        - namespace
+        - email
+        - phone
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: assigned by backend
+        user_tier_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        namespace:
+          type: string
+        network_domain:
+          type: string
+          description: network domain name for the tenant
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        auto_approve_device:
+          type: boolean
+        auto_accept_routes:
+          type: boolean
+        welcome_email_sent:
+          type: boolean
+    tenant_approval:
+      type: object
+      required:
+        - id
+        - email
+        - phone
+        - code
+        - is_sms_code
+        - namespace
+        - company_name
+        - contact_name
+        - username
+        - password
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: assigned in backend
+        contact_name:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        code:
+          type: string
+        is_sms_code:
+          type: boolean
+        namespace:
+          type: string
+          description: preferred company handle e.g. google
+        company_name:
+          type: string
+          description: e.g. Google Inc.
+        approval_record:
+          $ref: '#/components/schemas/approval_record'
+    token:
+      description: token
+      type: object
+      properties:
+        token:
+          type: string
+        type:
+          type: string
+        hostname:
+          type: string
+    top_user_flows:
+      type: object
+      required:
+        - nodes
+        - links
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/app_node'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/app_link'
+    traffic_stats:
+      type: object
+      properties:
+        rx_bytes:
+          type: integer
+          format: uint64
+        tx_bytes:
+          type: integer
+          format: uint64
+        rx_speed:
+          type: integer
+          format: uint64
+        tx_speed:
+          type: integer
+          format: uint64
+    update_history:
+      type: array
+      items:
+        $ref: '#/components/schemas/update_history_entry'
+    update_history_entry:
+      type: object
+      required:
+        - id
+        - timestamp
+        - updater_id
+        - updater_name
+        - note
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: entry id
+        timestamp:
+          type: integer
+          format: int64
+        updater_id:
+          type: string
+          format: uuid
+        updater_name:
+          type: string
+        network_domain:
+          type: string
+          description: network domain
+        note:
+          type: string
+    user:
+      type: object
+      required:
+        - namespace
+        - user_id
+        - display_name
+        - email
+        - phone
+        - is_admin
+        - is_sys_admin
+        - roles
+        - logins
+        - auto_accept_routes
+        - auto_approve_device
+      properties:
+        namespace:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+          description: user ID assigned by the backend
+        display_name:
+          type: string
+          description: user name for display from one of it is login methods.
+          example: 'John Doe'
+        email:
+          type: string
+        phone:
+          type: string
+        profile_pic_url:
+          type: string
+        last_seen:
+          type: integer
+          format: int64
+          description: unix time to be convert by the client to date time
+        labels:
+          $ref: '#/components/schemas/label_list'
+        roles:
+          type: array
+          items:
+            type: string
+        is_admin:
+          type: boolean
+        is_sys_admin:
+          type: boolean
+        admin-namespaces:
+          type: array
+          items:
+            type: string
+        auto_approve_device:
+          type: boolean
+        auto_accept_routes:
+          type: boolean
+        attributes:
+          $ref: '#/components/schemas/attribute_list'
+        network_setting:
+          $ref: '#/components/schemas/user_network_setting'
+        rx_tx_bytes:
+          $ref: '#/components/schemas/rx_tx_bytes'
+        firewall_stats:
+          $ref: '#/components/schemas/firewall_stats'
+        logins:
+          type: array
+          items:
+            $ref: '#/components/schemas/user_login'
+        network_domain:
+          type: string
+          description: network domain name for the tenant
+        user_tier:
+          $ref: '#/components/schemas/user_tier'
+    user_friends:
+      type: object
+      properties:
+        friend_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/user_short_info'
+        friend_request_list:
+          $ref: '#/components/schemas/friend_request_list'
+    user_id_token:
+      type: object
+      properties:
+        display_name:
+          type: string
+        profile_pic_url:
+           type: string
+        tenant_name:
+          type: string
+    user_list:
+      type: object
+      required:
+        - total
+        - users
+      properties:
+        total:
+          type: integer
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/user'
+    user_login:
+      type: object
+      required:
+        - login_id
+        - login_type
+        - login
+      properties:
+        login_id:
+          type: string
+          format: uuid
+          description: assigned by backend
+        login_type:
+          $ref: '#/components/schemas/login_type'
+        provider:
+          type: string
+        login:
+          type: string
+          description: login username, phone number etc.
+        credential:
+          type: string
+          description: password, sms code etc.
+        display_name:
+          type: string
+        profile_pic_url:
+          type: string
+          description: user profile image
+    user_network_setting:
+      type: object
+      properties:
+        wg_enabled:
+          type: boolean
+          description: if vpn is enabled
+        mesh_vpn_mode:
+          $ref: '#/components/schemas/mesh_vpn_mode'
+        advertise_default_route:
+          type: boolean
+          description: if to advertise default route to the devices of user
+    user_profile:
+      description: tenant user profile stored with base64
+      type: object
+      required:
+        - base64_image
+      properties:
+        base64_image:
+          type: string
+    user_approval_info:
+      type: object
+      required:
+        - id
+        - login
+        - is_admin
+        - namespace
+        - code
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: uuid assigned by the backend.
+        is_admin:
+          description: if registrating a new admin user.
+          type: boolean
+        namespace:
+          type: string
+        login:
+          $ref: '#/components/schemas/user_login'
+        email:
+          type: string
+        phone:
+          type: string
+        code:
+          type: string
+          description: otp code sent via email or sms code sent via phone
+        roles:
+          type: array
+          description: roles of the user to be registered.
+          items:
+            type: string
+        attributes:
+            $ref: '#/components/schemas/attribute_list'
+        approval_record:
+          $ref: '#/components/schemas/approval_record'
+    user_short_info:
+      type: object
+      required:
+        - user_id
+        - display_name
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: uuid assigned by the backend
+        display_name:
+          type: string
+        profile_pic_url:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+    user_update_info:
+      type: object
+      properties:
+        one_time_code_check:
+          $ref: '#/components/schemas/one_time_code_check'
+        username:
+          type: string
+        set_username:
+          type: boolean
+        set_password:
+          type: boolean
+        set_password_for_email:
+          type: string
+        password:
+          type: string
+        add_email:
+          type: string
+        del_email:
+          type: string
+        display_name:
+          type: string
+        set_display_name:
+          type: boolean
+        add_role:
+          $ref: '#/components/schemas/predefined_roles'
+        del_role:
+          $ref: '#/components/schemas/predefined_roles'
+        del_labels:
+           $ref: '#/components/schemas/label_list'
+        add_labels:
+          $ref: '#/components/schemas/label_list'
+        mesh_vpn_mode:
+          $ref: '#/components/schemas/mesh_vpn_mode'
+        advertise_default_route:
+          type: boolean
+        wg_enabled:
+          type: boolean
+        auto_approve_device:
+          type: boolean
+        auto_accept_routes:
+          type: boolean
+        add_phone:
+          type: string
+        del_phone:
+          type: string
+        add_oauth_login:
+          $ref: '#/components/schemas/oauth_login_info'
+        del_oauth_login:
+          type: string
+          description: oauth login ID.
+    user_tier:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - max_user_count
+        - max_device_count
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        max_user_count:
+          type: integer
+        max_device_count:
+          type: integer
+        max_bandwidth:
+          type: integer
+    web_category:
+      description: the web category
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: category name
+        number:
+          description: fqdn name number
+          type: integer
+        id:
+          type: string
+        data:
+          description: |
+            Base64 encoded XOR filter format. The format is described in the
+            protobuf file.
+          type: string
+    web_category_list:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/web_category'
+    wg_device:
+      type: object
+      required:
+        - user_id
+        - device_id
+        - wg_id
+        - name
+        - namespace
+        - public_key
+        - addresses
+        - allowed_ips
+        - labels
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: user uuid
+        device_id:
+          description: device uuid
+          format: uuid
+          type: string
+        wg_id:
+          description: wg agent ID
+          type: string
+        wg_version:
+          type: integer
+        is_gateway:
+          type: boolean
+        wg_name:
+          description: wg node name
+          type: string
+        name:
+          type: string
+        namespace:
+          type: string
+        public_key:
+          type: string
+        last_seen:
+          type: integer
+          format: int64
+        used_traffic:
+          type: number
+          format: float
+        addresses:
+          type: array
+          items:
+            type: string
+        allowed_ips:
+          type: array
+          items:
+            type: string
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/tag'
+    wg_device_list:
+      type: object
+      required:
+        - total
+        - online
+        - devices
+      properties:
+        total:
+          type: integer
+        online:
+          type: integer
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/wg_device'
+    wg_node:
+      type: object
+      required:
+        - id
+        - name
+        - namespace
+        - public_key
+        - addresses
+        - allowed_ips
+        - endpoints
+        - online
+      properties:
+        id:
+          description: wg agent ID
+          type: string
+          format: uuid
+        name:
+          description: wg node name
+          type: string
+        namespace:
+          type: string
+        public_key:
+          type: string
+        last_seen:
+          type: integer
+          format: int64
+        online:
+          type: boolean
+        addresses:
+          type: array
+          items:
+            type: string
+        allowed_ips:
+          type: array
+          items:
+            type: string
+        endpoints:
+          type: array
+          items:
+            type: string
+    wg_traffic_stats:
+      type: object
+      required:
+        - wg_server
+        - updated_at
+        - traffic_stats
+      properties:
+        wg_server:
+          type: string
+        updated_at:
+          type: integer
+          format: int64
+        traffic_stats:
+          $ref: '#/components/schemas/traffic_stats'
+
+  parameters:
+    access_key_id:
+      in: path
+      name: access_key_id
+      schema:
+        type: string
+      required: true
+    approval_state_in_query:
+      name: approval_state
+      in: query
+      schema:
+        type: string
+    approval_state_in_query_required:
+      name: approval_state
+      in: query
+      schema:
+        type: string
+      required: true
+    code_in_query:
+      name: code
+      in: query
+      schema:
+        type: string
+    code_in_query_required:
+      name: code
+      in: query
+      schema:
+        type: string
+      required: true
+    company_name_in_query:
+      name: company_name
+      description: company name
+      in: query
+      schema:
+        type: string
+    contain:
+      in: query
+      description: typically used to filter any field that contains a string
+      name: contain
+      schema:
+        type: string
+    days_in_query:
+      in: query
+      name: days
+      schema:
+        type: integer
+      required: false
+      description: 0 means latest data
+    device_id:
+      in: query
+      name: device_id
+      schema:
+        type: string
+        description: uuid string
+    device_id_in_path_required:
+      name: device_id
+      in: path
+      schema:
+        type: string
+      required: true
+    email_in_query:
+      name: email
+      in: query
+      schema:
+        type: string
+    end_time_in_query:
+      in: query
+      name: end_time
+      schema:
+        type: integer
+        format: int64
+    filter_by:
+      in: query
+      schema:
+        type: string
+      description: filter by which field name
+      name: filter_by
+    filter_value:
+      in: query
+      schema:
+        type: string
+      description: filter with the value of the field
+      name: filter_value
+    login_type_in_query_required:
+      in: query
+      name: login_type
+      schema:
+        $ref: '#/components/schemas/login_type'
+      required: true
+    is_admin_in_query:
+      in: query
+      name: is_admin
+      schema:
+        type: boolean
+    meeting_id_in_path_required:
+      in: path
+      name: meeting_id
+      schema:
+        type: string
+      required: true
+    name_in_query:
+      in: query
+      name: name
+      schema:
+        type: string
+    namespace_in_query:
+      in: query
+      name: namespace
+      schema:
+        type: string
+    namespace_in_query_required:
+      in: query
+      name: namespace
+      schema:
+        type: string
+      required: true
+    note_in_query:
+      in: query
+      name: note
+      schema:
+        type: string
+    note_in_query_required:
+      in: query
+      name: note
+      schema:
+        type: string
+      required: true
+    notice_category_in_path_required:
+      in: path
+      name: category
+      required: true
+      schema:
+        $ref: '#/components/schemas/notice_category'
+    notice_level_in_query:
+      in: query
+      name: level
+      schema:
+        $ref: '#/components/schemas/notice_level'
+    notice_state_in_query:
+      in: query
+      name: state
+      schema:
+        $ref: '#/components/schemas/notice_state'
+    notice_type_in_query:
+      in: query
+      name: type
+      schema:
+        $ref: '#/components/schemas/notice_type'
+    oauth_state_in_query:
+      in: query
+      name: state
+      schema:
+        type: string
+      required: false
+    page:
+      in: query
+      name: page
+      schema:
+        type: integer
+    page_size:
+      in: query
+      name: page_size
+      schema:
+        type: integer
+    page_required:
+      in: query
+      name: page
+      schema:
+        type: integer
+      required: true
+    page_size_required:
+      in: query
+      name: page_size
+      schema:
+        type: integer
+      required: true
+    phone_num_in_query:
+      name: phone_num
+      in: query
+      schema:
+        type: string
+    phone_num_in_query_required:
+      name: phone_num
+      in: query
+      schema:
+        type: string
+      required: true
+    policy_id_in_path_required:
+      in: path
+      name: policy_id
+      description: the policy uuid
+      required: true
+      schema:
+        type: string
+    policy_target_id_in_path_required:
+      name: target_id
+      in: path
+      description: the policy target uuid
+      required: true
+      schema:
+        type: string
+    qr_code_token_in_path_required:
+      in: path
+      name: qr_code_token
+      schema:
+        type: string
+      required: true
+      description: the QR code value
+    qr_code_type_in_query_required:
+      in: query
+      name: qr_code_type
+      schema:
+        $ref: '#/components/schemas/qr_code_type'
+      required: true
+    redirect_url:
+      in: query
+      name: redirect_url
+      schema:
+        type: string
+    sort_by:
+      in: query
+      schema:
+        type: string
+      name: sort_by
+      required: false
+    sort_desc:
+      in: query
+      schema:
+        type: string
+      name: sort_desc
+      required: false
+    start_time_in_query:
+      in: query
+      name: start_time
+      schema:
+        type: integer
+        format: int64
+    user_id_in_path_required:
+      name: user_id
+      in: path
+      schema:
+        type: string
+      required: true
+    user_id_in_query:
+      in: query
+      name: user_id
+      schema:
+        type: string
+    username_in_query:
+      name: username
+      in: query
+      schema:
+        type: string
+    username_in_query_required:
+      name: username
+      in: query
+      schema:
+        type: string
+      required: true
+    want_vpn_auth_key_in_query:
+      in: query
+      name: want_vpn_auth_key
+      description: send the vpn api key for mesh vpn pre-auth registration
+      schema:
+        type: boolean
+
+  requestBodies:
+    friend_requests_update_info:
+      description: update info for friend requests
+      required: true
+      content:
+         application/json:
+          schema:
+            type: object
+            required:
+              - update
+              - id_list
+            properties:
+              update:
+                $ref: '#/components/schemas/friend_request'
+              id_list:
+                $ref: '#/components/schemas/id_list'
+    id_list:
+      description: id list
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/id_list'
+    id_token:
+      description: oidc raw ID token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/token'
+      required: true
+    label_list:
+      description: label list
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/label_list'
+    meeting_config_params:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/meeting_config'
+    meeting_update_params:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/meeting_update'
+    meeting_participant_add_params:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/meeting_participant'
+    meeting_participant_update_params:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/meeting_participant'
+    monitor_flow_filter:
+      description: monitor flow filter in the body
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/monitor_flow_filter'
+    notice_update_params:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/notice_update'
+    one_time_token:
+      description: qr code login, mobile authorize
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/token'
+      required: true
+    qr_code_token:
+      description: token to generate QR code
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/token'
+      required: true
+    tenant_registration_params:
+      description: tenant registration information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/tenant_approval'
+    user_access_point:
+      description: access point in the body
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/access_point'
+    user_profile:
+      description: user profile stored base64
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user_profile'
+    user_approval_info:
+      description: user registration information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user_approval_info'
+    user_update_params:
+      description: update user parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user_update_info'
+
+  responses:
+    OK:
+      description: success
+      content:
+        text/plain:
+          schema:
+            type: string
+    approval_state_response:
+      description: approval state
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/approval_state'
+    auth_token:
+      description: get the token that's type is one of unconfirmed, rejected, or approved
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/auth_token'
+    bad_request:
+      description: bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/bad_request'
+    cookie:
+      description: http cookie in the response header
+      headers:
+        Set-Cookie:
+          schema:
+            type: string
+          description: cookie string
+      content:
+        application/json:
+          schema:
+            type: string
+    found:
+      description: found
+      headers:
+        X-API-KEY:
+          schema:
+            type: string
+          description: API key for backend and frontend
+        X-API-KEY-TTL:
+          schema:
+            type: integer
+          description: key timeout value in seconds
+        Location:
+          schema:
+            type: 'string'
+        Set-Cookie:
+          schema:
+            type: array
+            items:
+              type: string
+        Clear-Site-Data:
+          schema:
+            type: 'string'
+    found_with_login_success:
+      description: found
+      headers:
+        X-API-KEY:
+          schema:
+            type: string
+          description: API key for backend and frontend
+        X-API-KEY-TTL:
+          schema:
+            type: integer
+          description: key timeout value in seconds
+        Location:
+          schema:
+            type: 'string'
+        Set-Cookie:
+          schema:
+            type: array
+            items:
+              type: string
+        Clear-Site-Data:
+          schema:
+            type: 'string'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/login_success'
+    internal_error:
+      description: internal error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    login_success:
+      description: login success response
+      headers:
+        Set-Cookie:
+          schema:
+            type: array
+            items:
+              type: string
+        X-API-KEY:
+          schema:
+            type: string
+          description: API key for backend and frontend
+        X-API-KEY-TTL:
+          schema:
+            type: integer
+          description: key timeout value in seconds
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/login_success'
+    oauth_logins:
+      description: list of oauth providers
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - logins
+            properties:
+              logins:
+                type: array
+                items:
+                  $ref: '#/components/schemas/login_type'
+    one_time_token:
+      description: user token to login
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/token'
+    qr_code_requester:
+      description: qr code reqeust information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/qr_code_requester'
+    qr_code_token:
+      description: token for the generated QR code
+      content:
+        text/plain:
+          schema:
+            type: string
+    qr_code_token_data:
+      description: response with current qr code token data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/qr_code_token_data'
+    see_other:
+      description: |
+        303 see other. e.g. not authorized to login but redirect to show user
+        approval status.
+      headers:
+        Location:
+          schema:
+            type: 'string'
+      content:
+        application/json:
+          schema:
+            type: 'string'
+    unauthorized_error:
+      description: API key is missing or invalid
+      headers:
+        Set-Cookie:
+          schema:
+            type: string
+          description: cookie string
+        Www_authenticate:
+          schema:
+            type: string
+
+servers:
+  - url: https://saseapi.cylonix.io/manager/api/v2

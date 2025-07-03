@@ -1,0 +1,1467 @@
+openapi: 3.0.1
+info:
+  title: serverpb/server.proto
+  version: version not set
+servers:
+- url: /
+tags:
+- name: NetworkServiceV0
+- name: IPServiceV0
+- name: PoolServiceV0
+paths:
+  /api/v0/{namespace}/drawip:
+    get:
+      operationId: NetworkServiceV0_DrawIPEstimatingNetwork
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: poolTag.key
+        schema:
+          type: string
+      - in: query
+        name: poolTag.value
+        schema:
+          type: string
+      - in: query
+        name: temporaryReserved
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbDrawIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+  /api/v0/{namespace}/ip/list:
+    get:
+      operationId: IPServiceV0_ListIP
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbListIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - IPServiceV0
+  /api/v0/{namespace}/ip/temporary_reserved/list:
+    get:
+      operationId: IPServiceV0_ListTemporaryReservedIP
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbListTemporaryReservedIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - IPServiceV0
+  /api/v0/{namespace}/ip/{ip}/activate:
+    post:
+      operationId: IPServiceV0_ActivateIP
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IPServiceV0ActivateIPBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbCreateIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - IPServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/ip/{ip}/create:
+    post:
+      operationId: IPServiceV0_CreateIP
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IPServiceV0CreateIPBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbCreateIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - IPServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/ip/{ip}/deactivate:
+    post:
+      operationId: IPServiceV0_DeactivateIP
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbDeactivateIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - IPServiceV0
+  /api/v0/{namespace}/ip/{ip}/network:
+    get:
+      operationId: IPServiceV0_GetNetworkIncludingIP
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbGetNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - IPServiceV0
+  /api/v0/{namespace}/ip/{ip}/update:
+    post:
+      operationId: IPServiceV0_UpdateIP
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IPServiceV0UpdateIPBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbUpdateIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - IPServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/network:
+    get:
+      operationId: NetworkServiceV0_GetEstimatedNetwork
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbGetNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+  /api/v0/{namespace}/network/update:
+    post:
+      operationId: NetworkServiceV0_UpdateNetwork
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkServiceV0UpdateNetworkBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbUpdateNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/network/{ip}/{mask}:
+    get:
+      operationId: NetworkServiceV0_GetNetwork
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: mask
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbGetNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+  /api/v0/{namespace}/network/{ip}/{mask}/create:
+    post:
+      operationId: NetworkServiceV0_CreateNetwork
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: mask
+        required: true
+        schema:
+          format: int32
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkServiceV0CreateNetworkBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbCreateNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/network/{ip}/{mask}/delete:
+    post:
+      operationId: NetworkServiceV0_DeleteNetwork
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: mask
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbDeleteNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+  /api/v0/{namespace}/network/{ip}/{mask}/drawip:
+    post:
+      operationId: NetworkServiceV0_DrawIP
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - description: The ip address wanted or the network to draw ip from. Optional.
+        in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: mask
+        required: true
+        schema:
+          format: int32
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkServiceV0DrawIPBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbDrawIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/network/{ip}/{mask}/pool/create:
+    post:
+      operationId: NetworkServiceV0_CreatePool
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: mask
+        required: true
+        schema:
+          format: int32
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkServiceV0CreatePoolBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbCreatePoolResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/network/{ip}/{mask}/pools:
+    get:
+      operationId: NetworkServiceV0_GetPoolsInNetwork
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: ip
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: mask
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbGetPoolsInNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+  /api/v0/{namespace}/network/{name}:
+    get:
+      operationId: NetworkServiceV0_GetNetwork2
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: ip
+        schema:
+          type: string
+      - in: query
+        name: mask
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbGetNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+  /api/v0/{namespace}/network/{name}/drawip:
+    post:
+      operationId: NetworkServiceV0_DrawIP2
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkServiceV0DrawIPBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbDrawIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/networks:
+    get:
+      operationId: NetworkServiceV0_ListNetwork
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbListNetworkResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+  /api/v0/{namespace}/pool/list:
+    get:
+      operationId: PoolServiceV0_ListPool
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbListPoolResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - PoolServiceV0
+  /api/v0/{namespace}/pool/{rangeStart}/{rangeEnd}/delete:
+    post:
+      operationId: PoolServiceV0_DeletePool
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: rangeStart
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: rangeEnd
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbDeletePoolResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - PoolServiceV0
+  /api/v0/{namespace}/pool/{rangeStart}/{rangeEnd}/drawip:
+    post:
+      operationId: NetworkServiceV0_DrawIP3
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: rangeStart
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: rangeEnd
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkServiceV0DrawIPBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbDrawIPResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - NetworkServiceV0
+      x-codegen-request-body-name: body
+  /api/v0/{namespace}/pool/{rangeStart}/{rangeEnd}/ip:
+    get:
+      operationId: PoolServiceV0_GetIPInPool
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: rangeStart
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: rangeEnd
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbGetIPInPoolResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - PoolServiceV0
+  /api/v0/{namespace}/pool/{start}/{end}/update:
+    post:
+      operationId: PoolServiceV0_UpdatePool
+      parameters:
+      - in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: start
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: end
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PoolServiceV0UpdatePoolBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverpbUpdatePoolResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      tags:
+      - PoolServiceV0
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    IPServiceV0ActivateIPBody:
+      example:
+        uuid: uuid
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        uuid:
+          type: string
+      type: object
+    IPServiceV0CreateIPBody:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+        uuid: uuid
+        status: 0
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        status:
+          $ref: '#/components/schemas/modelIPAddrStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        lastModifiedAt:
+          format: date-time
+          type: string
+        uuid:
+          type: string
+      type: object
+    IPServiceV0UpdateIPBody:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+        uuid: uuid
+        status: 0
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        status:
+          $ref: '#/components/schemas/modelIPAddrStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        lastModifiedAt:
+          format: date-time
+          type: string
+        uuid:
+          type: string
+      type: object
+    NetworkServiceV0CreateNetworkBody:
+      example:
+        defaultGateways:
+        - defaultGateways
+        - defaultGateways
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+        status: 0
+      properties:
+        defaultGateways:
+          items:
+            type: string
+          type: array
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        status:
+          $ref: '#/components/schemas/modelNetworkStatus'
+      type: object
+    NetworkServiceV0CreatePoolBody:
+      example:
+        pool:
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          start: start
+          namespace: namespace
+          end: end
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+      properties:
+        pool:
+          $ref: '#/components/schemas/modelPool'
+      type: object
+    NetworkServiceV0DrawIPBody:
+      example:
+        ip: ip
+        name: name
+        temporaryReserved: true
+        poolTag:
+          value: value
+          key: key
+        uuid: uuid
+        mustHaveWantIp: true
+        mask: 0
+      properties:
+        ip:
+          description: The ip address wanted or the network to draw ip from. Optional.
+          type: string
+        mask:
+          format: int32
+          type: integer
+        poolTag:
+          $ref: '#/components/schemas/modelTag'
+        name:
+          type: string
+        temporaryReserved:
+          type: boolean
+        uuid:
+          type: string
+        mustHaveWantIp:
+          type: boolean
+      type: object
+    NetworkServiceV0UpdateNetworkBody:
+      example:
+        broadcast: broadcast
+        gateways:
+        - gateways
+        - gateways
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+        netmask: netmask
+        prefix: prefix
+        status: 0
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        prefix:
+          type: string
+        gateways:
+          items:
+            type: string
+          type: array
+        broadcast:
+          type: string
+        netmask:
+          type: string
+        status:
+          $ref: '#/components/schemas/modelNetworkStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        lastModifiedAt:
+          format: date-time
+          type: string
+      type: object
+    PoolServiceV0UpdatePoolBody:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+        status: 0
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        status:
+          $ref: '#/components/schemas/modelPoolStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        lastModifiedAt:
+          format: date-time
+          type: string
+      type: object
+    googlerpcStatus:
+      example:
+        code: 0
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/protobufAny'
+          type: array
+      type: object
+    modelIPAddr:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+        ip: ip
+        namespace: namespace
+        uuid: uuid
+        status: 0
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        ip:
+          type: string
+        status:
+          $ref: '#/components/schemas/modelIPAddrStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        lastModifiedAt:
+          format: date-time
+          type: string
+        uuid:
+          type: string
+        namespace:
+          type: string
+      type: object
+    modelIPAddrStatus:
+      default: 0
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      format: int32
+      type: integer
+    modelNetwork:
+      example:
+        broadcast: broadcast
+        gateways:
+        - gateways
+        - gateways
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+        netmask: netmask
+        prefix: prefix
+        namespace: namespace
+        status: 0
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        prefix:
+          type: string
+        gateways:
+          items:
+            type: string
+          type: array
+        broadcast:
+          type: string
+        netmask:
+          type: string
+        status:
+          $ref: '#/components/schemas/modelNetworkStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        lastModifiedAt:
+          format: date-time
+          type: string
+        namespace:
+          type: string
+      type: object
+    modelNetworkStatus:
+      default: 0
+      enum:
+      - 0
+      - 1
+      - 2
+      format: int32
+      type: integer
+    modelPool:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+        start: start
+        namespace: namespace
+        end: end
+        status: 0
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        start:
+          type: string
+        end:
+          type: string
+        status:
+          $ref: '#/components/schemas/modelPoolStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        lastModifiedAt:
+          format: date-time
+          type: string
+        namespace:
+          type: string
+      type: object
+    modelPoolStatus:
+      default: 0
+      enum:
+      - 0
+      - 1
+      - 2
+      format: int32
+      type: integer
+    modelTag:
+      example:
+        value: value
+        key: key
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      type: object
+    protobufAny:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    serverpbCreateIPResponse:
+      type: object
+    serverpbCreateNetworkResponse:
+      type: object
+    serverpbCreatePoolResponse:
+      type: object
+    serverpbDeactivateIPResponse:
+      type: object
+    serverpbDeleteNetworkResponse:
+      type: object
+    serverpbDeletePoolResponse:
+      type: object
+    serverpbDrawIPResponse:
+      example:
+        ip: ip
+        message: message
+      properties:
+        ip:
+          type: string
+        message:
+          type: string
+      type: object
+    serverpbGetIPInPoolResponse:
+      example:
+        pool:
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          start: start
+          namespace: namespace
+          end: end
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+        ips:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          ip: ip
+          namespace: namespace
+          uuid: uuid
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          ip: ip
+          namespace: namespace
+          uuid: uuid
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+      properties:
+        pool:
+          $ref: '#/components/schemas/modelPool'
+        ips:
+          items:
+            $ref: '#/components/schemas/modelIPAddr'
+          type: array
+      type: object
+    serverpbGetNetworkResponse:
+      example:
+        broadcast: broadcast
+        netmask: netmask
+        defaultGateways:
+        - defaultGateways
+        - defaultGateways
+        network: network
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        network:
+          type: string
+        defaultGateways:
+          items:
+            type: string
+          type: array
+        broadcast:
+          type: string
+        netmask:
+          type: string
+        tags:
+          items:
+            $ref: '#/components/schemas/modelTag'
+          type: array
+      type: object
+    serverpbGetPoolsInNetworkResponse:
+      example:
+        pools:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          start: start
+          namespace: namespace
+          end: end
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          start: start
+          namespace: namespace
+          end: end
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+      properties:
+        pools:
+          items:
+            $ref: '#/components/schemas/modelPool'
+          type: array
+      type: object
+    serverpbListIPResponse:
+      example:
+        ips:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          ip: ip
+          namespace: namespace
+          uuid: uuid
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          ip: ip
+          namespace: namespace
+          uuid: uuid
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+      properties:
+        ips:
+          items:
+            $ref: '#/components/schemas/modelIPAddr'
+          type: array
+      type: object
+    serverpbListNetworkResponse:
+      example:
+        networks:
+        - broadcast: broadcast
+          gateways:
+          - gateways
+          - gateways
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          netmask: netmask
+          prefix: prefix
+          namespace: namespace
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+        - broadcast: broadcast
+          gateways:
+          - gateways
+          - gateways
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          netmask: netmask
+          prefix: prefix
+          namespace: namespace
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+      properties:
+        networks:
+          items:
+            $ref: '#/components/schemas/modelNetwork'
+          type: array
+      type: object
+    serverpbListPoolResponse:
+      example:
+        pools:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          start: start
+          namespace: namespace
+          end: end
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          start: start
+          namespace: namespace
+          end: end
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+      properties:
+        pools:
+          items:
+            $ref: '#/components/schemas/modelPool'
+          type: array
+      type: object
+    serverpbListTemporaryReservedIPResponse:
+      example:
+        ips:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          ip: ip
+          namespace: namespace
+          uuid: uuid
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+          ip: ip
+          namespace: namespace
+          uuid: uuid
+          status: 0
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+      properties:
+        ips:
+          items:
+            $ref: '#/components/schemas/modelIPAddr'
+          type: array
+      type: object
+    serverpbUpdateIPResponse:
+      type: object
+    serverpbUpdateNetworkResponse:
+      type: object
+    serverpbUpdatePoolResponse:
+      type: object
+x-original-swagger-version: "2.0"
