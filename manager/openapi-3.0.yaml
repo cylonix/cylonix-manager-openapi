@@ -4993,6 +4993,15 @@ components:
           type: boolean
         welcome_email_sent:
           type: boolean
+        max_device_count:
+          type: integer
+          description: maximum device count for the tenant
+        max_user_count:
+          type: integer
+          description: maximum user count for the tenant
+        max_device_per_user:
+          type: integer
+          description: maximum device count per user for the tenant
     tenant_approval:
       type: object
       required:
