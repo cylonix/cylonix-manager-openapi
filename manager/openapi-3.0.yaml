@@ -832,7 +832,6 @@ paths:
           description: |
             multi-factor-auth type. for sms code, use the credential parameter
             instead.
-        - $ref: '#/components/parameters/want_vpn_auth_key_in_query'
       responses:
         200:
           $ref: '#/components/responses/login_success'
@@ -1087,7 +1086,6 @@ paths:
         - login
       parameters:
         - $ref: '#/components/parameters/namespace_in_query'
-        - $ref: '#/components/parameters/want_vpn_auth_key_in_query'
         - in: query
           name: provider
           schema:
@@ -4143,8 +4141,6 @@ components:
           $ref: '#/components/schemas/tenant'
         vpn_api_key:
           type: string
-        vpn_auth_key:
-          type: string
         confirm_session:
           $ref: '#/components/schemas/login_confirm_session'
     login_confirm_session:
@@ -4794,8 +4790,6 @@ components:
         timestamp:
           type: integer
           format: int64
-        want_vpn_auth_key:
-          type: boolean
     qr_code_token_data:
       type: object
       description: qr code token data
@@ -4824,8 +4818,6 @@ components:
           $ref: '#/components/schemas/user'
         api_key:
           $ref: '#/components/schemas/api_key'
-        vpn_auth_key:
-          type: string
     qr_code_type:
       type: string
       enum:
@@ -5796,12 +5788,6 @@ components:
       schema:
         type: string
       required: true
-    want_vpn_auth_key_in_query:
-      in: query
-      name: want_vpn_auth_key
-      description: send the vpn api key for mesh vpn pre-auth registration
-      schema:
-        type: boolean
 
   requestBodies:
     friend_requests_update_info:
