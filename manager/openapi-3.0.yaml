@@ -4170,6 +4170,7 @@ components:
         - emails
         - send_email
         - internal_user
+        - role
       properties:
         emails:
           type: array
@@ -4185,6 +4186,8 @@ components:
           description: |
             whether the user is internal user or not so that the
             email content can be different.
+        role:
+          $ref: '#/components/schemas/predefined_roles'
     label:
       type: object
       required:
@@ -4997,6 +5000,7 @@ components:
       type: string
       enum:
         - network-admin
+        - member
     rx_tx_bytes:
       type: object
       properties:
