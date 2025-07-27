@@ -5320,6 +5320,7 @@ components:
         - namespace
         - network_domain
         - code
+        - role
         - invited_by
         - created_at
       properties:
@@ -5342,6 +5343,9 @@ components:
             type: string
             format: email
             description: user email address
+        role:
+          type: string
+          description: role of the user to be registered.
         invited_by:
           $ref: '#/components/schemas/user_short_info'
         created_at:
