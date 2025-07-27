@@ -792,6 +792,11 @@ paths:
             type: string
           description: session id for login used for client app login
         - in: query
+          name: invitation_code
+          schema:
+            type: string
+          description: invitation code to join a network domain.
+        - in: query
           name: credential
           schema:
             type: string
@@ -1045,6 +1050,11 @@ paths:
           schema:
             type: string
           description: session id for login used for client app login
+        - in: query
+          name: invitation_code
+          schema:
+            type: string
+          description: invitation code to join a network domain.
         - in: query
           name: login_as_admin
           schema:
@@ -2710,6 +2720,96 @@ paths:
         500:
           $ref: '#/components/responses/internal_error'
 
+  /user/invite:
+    delete:
+      operationId: delete_user_invite
+      summary: delete user invite
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      operationId: invite_user
+      summary: invite a user to join the system
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/invite_user_params'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/invite/list:
+    get:
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      summary: get user invite list
+      operationId: get_user_invite_list
+      description: >
+        Get user invite list with various filtering, sorting and paging options.
+      parameters:
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                properties:
+                  total:
+                    type: integer
+                    description: total available to fetch from the database.
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/user_invite'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
   /user/network-domain:
     get:
       operationId: generate_network_domain
@@ -4064,6 +4164,27 @@ components:
       items:
         type: string
         format: uuid
+    invite_user_params:
+      type: object
+      required:
+        - emails
+        - send_email
+        - internal_user
+      properties:
+        emails:
+          type: array
+          items:
+            type: string
+            format: email
+            description: user email address
+        send_email:
+          type: boolean
+          description: send email to the invited user
+        internal_user:
+          type: boolean
+          description: |
+            whether the user is internal user or not so that the
+            email content can be different.
     label:
       type: object
       required:
@@ -5191,6 +5312,42 @@ components:
            type: string
         tenant_name:
           type: string
+    user_invite:
+      type: object
+      required:
+        - id
+        - emails
+        - namespace
+        - network_domain
+        - code
+        - invited_by
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: assigned in backend
+        namespace:
+          type: string
+          description: preferred company handle e.g. google
+        network_domain:
+          type: string
+          description: network domain name for the user
+        code:
+          type: string
+          description: code to be used by the invited user to register
+        emails:
+          type: array
+          items:
+            type: string
+            format: email
+            description: user email address
+        invited_by:
+          $ref: '#/components/schemas/user_short_info'
+        created_at:
+          type: integer
+          format: int64
+          description: unix time to be convert by the client to date time
     user_list:
       type: object
       required:
