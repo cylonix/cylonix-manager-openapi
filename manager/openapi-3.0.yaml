@@ -2780,6 +2780,7 @@ paths:
       description: >
         Get user invite list with various filtering, sorting and paging options.
       parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
         - $ref: '#/components/parameters/filter_by'
         - $ref: '#/components/parameters/filter_value'
         - $ref: '#/components/parameters/sort_by'
