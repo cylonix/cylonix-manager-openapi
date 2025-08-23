@@ -3984,7 +3984,7 @@ definitions:
         type: integer
       pop:
         description: the pop which the wg connected to
-        example: pop-hz-1
+        example: pop-ny-1
         type: string
       conn:
         description: the restapi connection string of wg instance, supervisor connects the wg via conn string
@@ -4057,8 +4057,8 @@ definitions:
         description: the version of the wg server, it is better to use integer than string
         type: integer
       pop:
-        description: the pop which the wg connected to
-        example: pop-hz-1
+        description: the pop which the wg connected to, optional
+        example: pop-ny-1
         type: string
       conn:
         description: the restapi connection string of wg instance, supervisor connects the wg via conn string
@@ -4077,10 +4077,10 @@ definitions:
           type: string
       default_interface:
         type: string
-        description: the default interface for underlay vxlan tunnel
+        description: the default interface for underlay vxlan tunnel, optional
       default_gateway:
         type: string
-        description: the default gateway for underlay vxlan tunnel
+        description: the default gateway for underlay vxlan tunnel, optional
       host_name:
         type: string
         description: the host name of the server which deploy the wg
@@ -4091,7 +4091,7 @@ definitions:
     properties:
       pop:
         description: the pop which the wg connected to
-        example: pop-hz-1
+        example: pop-ny-1
         type: string
       pop_set:
         description: pop only can be updated when it is set to true
@@ -5212,7 +5212,7 @@ definitions:
           description: Customer Relays, we support user to provide their relay servers.
           items:
             type: string
-            description: derper region code, such as "hz", "sh", "hk" and etc.
+            description: derper region code, such as "la", "ny", "hk" and etc.
         features:
           type: object
           $ref: "#/definitions/FeatureConfig"
@@ -5266,7 +5266,7 @@ definitions:
         items:
           type: string
           minItems: 1
-          description: derper region code, such as "hz", "sh", "hk" and etc.
+          description: derper region code, such as "ca", "ny", "hk" and etc.
 
   NamespaceInstanceUpdate:
     type: object
@@ -6233,7 +6233,7 @@ definitions:
           format: int32
         tunnelId:
           type: integer
-          description: The ID allocated in ipdrawer by the name (pop-hz-1_pop-sz-1), which is identited by the name.
+          description: The ID allocated in ipdrawer by the name (pop-ny-1_pop-ca-1), which is identited by the name.
         createTime:
           type: string
           format: datetime
