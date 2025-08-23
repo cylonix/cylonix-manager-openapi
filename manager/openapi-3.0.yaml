@@ -5001,6 +5001,7 @@ components:
       type: string
       enum:
         - network-admin
+        - network-owner
         - member
     rx_tx_bytes:
       type: object
