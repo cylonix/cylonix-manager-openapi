@@ -30,6 +30,11 @@ paths:
         name: temporaryReserved
         schema:
           type: boolean
+      - description: Default false i.e. randomized
+        in: query
+        name: sequential
+        schema:
+          type: boolean
       responses:
         "200":
           content:
@@ -937,6 +942,7 @@ components:
       type: object
     NetworkServiceV0DrawIPBody:
       example:
+        sequential: true
         ip: ip
         name: name
         temporaryReserved: true
@@ -962,6 +968,9 @@ components:
         uuid:
           type: string
         mustHaveWantIp:
+          type: boolean
+        sequential:
+          title: Default false i.e. randomized
           type: boolean
       type: object
     NetworkServiceV0UpdateNetworkBody:
