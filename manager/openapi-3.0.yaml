@@ -372,6 +372,8 @@ paths:
         - AdminAPIKey: []
       parameters:
         - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/username_in_query'
+        - $ref: '#/components/parameters/online_only_in_query'
         - $ref: '#/components/parameters/device_id'
         - in: query
           description: filter base on device capability
@@ -2304,6 +2306,8 @@ paths:
         parameter to a single user ID list. A non-admin user can only get its
         own record.
       parameters:
+        - $ref: '#/components/parameters/username_in_query'
+        - $ref: '#/components/parameters/online_only_in_query'
         - $ref: '#/components/parameters/filter_by'
         - $ref: '#/components/parameters/filter_value'
         - $ref: '#/components/parameters/sort_by'
@@ -3191,7 +3195,7 @@ paths:
         - user
       summary: register a new user
       description: >
-        Registrer a new user. Security check depends on tenant. e.g. community
+        Register a new user. Security check depends on tenant. e.g. community
         user may be able to register or add directly but enterprise tenant may
         only be able to be added by the admin user.
       operationId: register_user
@@ -5003,6 +5007,7 @@ components:
         - network-admin
         - network-owner
         - member
+        - namespace-admin
     rx_tx_bytes:
       type: object
       properties:
@@ -5013,7 +5018,7 @@ components:
         tx:
           type: integer
           format: uint64
-          description: tranmitted traffic in bytes
+          description: transmitted traffic in bytes
     summary_stats:
       type: object
       properties:
@@ -5771,13 +5776,13 @@ components:
       in: query
       schema:
         type: string
-      description: filter by which field name
+      description: filter by which field name, multiple fields are separated by comma
       name: filter_by
     filter_value:
       in: query
       schema:
         type: string
-      description: filter with the value of the field
+      description: filter with the value of the field, multiple values are separated by comma
       name: filter_value
     login_type_in_query_required:
       in: query
@@ -5850,6 +5855,11 @@ components:
       schema:
         type: string
       required: false
+    online_only_in_query:
+      in: query
+      name: online_only
+      schema:
+        type: boolean
     page:
       in: query
       name: page
@@ -5921,12 +5931,14 @@ components:
         type: string
       name: sort_by
       required: false
+      description: sort by which field name, multiple fields are separated by comma
     sort_desc:
       in: query
       schema:
         type: string
       name: sort_desc
       required: false
+      description: sort direction for the fields, can be 'asc' or 'desc', multiple values are separated by comma
     start_time_in_query:
       in: query
       name: start_time
