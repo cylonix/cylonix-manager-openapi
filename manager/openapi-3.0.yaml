@@ -5407,6 +5407,9 @@ components:
         wg_enabled:
           type: boolean
           description: if vpn is enabled
+        gateway_enabled:
+          type: boolean
+          description: if gateway mode is enabled
         mesh_vpn_mode:
           $ref: '#/components/schemas/mesh_vpn_mode'
         advertise_default_route:
@@ -5510,6 +5513,8 @@ components:
         advertise_default_route:
           type: boolean
         wg_enabled:
+          type: boolean
+        gateway_enabled:
           type: boolean
         auto_approve_device:
           type: boolean
