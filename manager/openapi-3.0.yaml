@@ -3360,6 +3360,12 @@ paths:
         List all the devices in the wireguard VPN domain. To list a single
         device simply passing in a single ID id-list parameter.
       parameters:
+        - in: query
+          name: is_wireguard_only
+          schema:
+            type: boolean
+          description: |
+              whether to only list the wireguard only devices.
         - $ref: '#/components/parameters/contain'
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/page_size'
@@ -3418,6 +3424,28 @@ paths:
       description: Crete a vpn device.
       parameters:
         - $ref: '#/components/parameters/user_id_in_query'
+        - in: query
+          name: generate_wg_client_config
+          schema:
+            type: boolean
+          description: |
+            Whether to return the wg client config txt as a string. Typically
+            used when a user is creating a device to connect to a gateway
+            instead of joining the mesh with other devices.
+            Specify the gateway's wg-id in the request body.
+        - in: query
+          name: dns_servers
+          schema:
+            type: string
+          description: |
+            Only used to specify DNS servers when generating wg client config.
+            Use comma to separate multiple DNS servers.
+        - in: query
+          name: mtu
+          schema:
+            type: integer
+          description: |
+            Only used to specify MTU when generating wg client config.
       requestBody:
         required: true
         content:
@@ -3426,7 +3454,7 @@ paths:
               $ref: '#/components/schemas/wg_device'
       responses:
         200:
-          description: success
+          $ref: '#/components/responses/OK'
         400:
           $ref: '#/components/responses/bad_request'
         401:
@@ -3462,6 +3490,7 @@ paths:
       operationId: list_wg_nodes
       security:
         - AdminAPIKey: []
+        - UserAPIKey: [] # For a user to list gateways in the user's vpn domain
       description: List wireguard gateways.
       parameters:
         - $ref: '#/components/parameters/page'
@@ -5315,6 +5344,14 @@ components:
           description: network domain name for the tenant
         user_tier:
           $ref: '#/components/schemas/user_tier'
+        created_at:
+          type: integer
+          format: int64
+          description: unix time to be convert by the client to date time
+        updated_at:
+          type: integer
+          format: int64
+          description: unix time to be convert by the client to date time
     user_friends:
       type: object
       properties:
@@ -5626,6 +5663,9 @@ components:
           type: string
         namespace:
           type: string
+        node_id:
+          type: integer
+          format: int64
         public_key:
           type: string
         last_seen:
