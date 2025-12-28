@@ -1463,9 +1463,17 @@ paths:
           schema:
             type: boolean
           name: want_registration_state
+        - in: query
+          schema:
+            type: boolean
+          name: want_new_code
       responses:
         200:
-          $ref: '#/components/responses/approval_state_response'
+          description: approval state or new code in response
+          content:
+            text/plain:
+              schema:
+                type: string
         400:
           $ref: '#/components/responses/bad_request'
         500:
@@ -6149,12 +6157,6 @@ components:
         text/plain:
           schema:
             type: string
-    approval_state_response:
-      description: approval state
-      content:
-        text/plain:
-          schema:
-            $ref: '#/components/schemas/approval_state'
     auth_token:
       description: get the token that's type is one of unconfirmed, rejected, or approved
       content:
