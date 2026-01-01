@@ -3326,6 +3326,39 @@ paths:
         500:
           $ref: '#/components/responses/internal_error'
 
+  /user/summary/multi-user-network:
+    get:
+      tags:
+        - user
+      security:
+        - SysAPIKey: []
+      summary: get user multi-user network summary
+      operationId: get_user_multi_user_network_summary
+      description: |
+        Get multi-user network summary data.
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_multi_user_networks:
+                    type: integer
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/user'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
   /user/summary/device:
     get:
       tags:
@@ -3375,8 +3408,12 @@ paths:
           description: |
               whether to only list the wireguard only devices.
         - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
       requestBody:
         $ref: '#/components/requestBodies/id_list'
       responses:
