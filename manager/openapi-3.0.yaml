@@ -2742,6 +2742,34 @@ paths:
           $ref: '#/components/responses/internal_error'
 
   /user/invite:
+    get:
+      operationId: get_user_invite
+      summary: get user invite
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - in: query
+          name: invite_code
+          schema:
+            type: string
+          description: invite code to get the invite info
+          required: true
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_invite'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
     delete:
       operationId: delete_user_invite
       summary: delete user invite
@@ -2750,6 +2778,14 @@ paths:
         - UserAPIKey: []
       tags:
         - user
+      parameters:
+        - in: query
+          name: revoke_shared_node
+          schema:
+            type: boolean
+          description: |
+            if also to revoke the sharing of a node. only applicable if the
+            invite is sharing a node.
       requestBody:
         required: true
         content:
@@ -2788,6 +2824,42 @@ paths:
           $ref: '#/components/responses/unauthorized_error'
         500:
           $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_user_invite
+      summary: accept or reject an invite
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - in: query
+          name: invite_code
+          schema:
+            type: string
+          description: invite code to update the invite status
+          required: true
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: new status of the invite (e.g., accepted, rejected)
+          required: true
+        - in: query
+          name: user_email
+          schema:
+            type: string
+          description: email of the user accepting or rejecting the invite
+          required: true
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
 
   /user/invite/list:
     get:
@@ -2802,6 +2874,12 @@ paths:
         Get user invite list with various filtering, sorting and paging options.
       parameters:
         - $ref: '#/components/parameters/namespace_in_query'
+        - in: query
+          name: share_node
+          schema:
+            type: integer
+            format: int64
+          description: list share node invites of a node
         - $ref: '#/components/parameters/filter_by'
         - $ref: '#/components/parameters/filter_value'
         - $ref: '#/components/parameters/sort_by'
@@ -2825,6 +2903,33 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/user_invite'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/invite/send/{id}:
+    get:
+      operationId: send_user_invite
+      summary: send user invite
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: invite ID to send the invite
+          required: true
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
         400:
           $ref: '#/components/responses/bad_request'
         401:
@@ -4270,6 +4375,17 @@ components:
         send_email:
           type: boolean
           description: send email to the invited user
+        share_node:
+          type: integer
+          format: int64
+          description: |
+            Optional. Instead of inviting the user to join the network,
+            share the node with the invited user. The value is the
+            id of vpn node to share with the invited user.
+            user must have admin permission to the node.
+        share_node_name:
+          type: string
+          description: name of the vpn node to share with the invited user.
         internal_user:
           type: boolean
           description: |
@@ -5449,8 +5565,22 @@ components:
         role:
           type: string
           description: role of the user to be registered.
+        share_node:
+          type: integer
+          format: int64
+          description: |
+            Optional. Instead of inviting the user to join the network,
+            share the node with the invited user. The value is the
+            id of vpn node to share with the invited user.
+            user must have admin permission to the node.
+        share_node_name:
+          type: string
+          description: name of the vpn node to share with the invited user.
         invited_by:
           $ref: '#/components/schemas/user_short_info'
+        link:
+          type: string
+          description: invitation link for the user to register
         created_at:
           type: integer
           format: int64
