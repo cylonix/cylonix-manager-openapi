@@ -946,6 +946,7 @@ components:
         ip: ip
         name: name
         temporaryReserved: true
+        exclude: exclude
         poolTag:
           value: value
           key: key
@@ -972,6 +973,10 @@ components:
         sequential:
           title: Default false i.e. randomized
           type: boolean
+        exclude:
+          description: "IPv4 prefix to exclude from allocation (e.g., \"10.0.0.0/24\"\
+            ). Optional."
+          type: string
       type: object
     NetworkServiceV0UpdateNetworkBody:
       example:

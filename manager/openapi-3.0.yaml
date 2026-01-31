@@ -1021,6 +1021,91 @@ paths:
           $ref: '#/components/responses/oauth_logins'
         500:
           $ref: '#/components/responses/internal_error'
+    post:
+      operationId: add_oauth_provider
+      summary: add oauth provider
+      description: add oauth provider using web finger for validation
+      security:
+        - NoAuth: []
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/redirect_url'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/oauth_provider'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        409:
+          $ref: '#/components/responses/conflict_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login/oauth/providers:
+    get:
+      operationId: list_oauth_providers
+      summary: list of custom oauth providers
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:          
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                  - oauthProviders
+                properties:
+                  total:
+                    type: integer
+                  oauthProviders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/oauth_provider'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_oauth_providers
+      summary: delete custom oauth providers
+      description: delete custom oauth providers
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - login
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
 
   /login/oauth/redirect-url:
     get:
@@ -3977,7 +4062,7 @@ components:
         error_code:
           type: string
           enum:
-            # Keep alphabatical order.
+            # Keep alphabetical order.
             - err_authentication_failed
             - err_bad_params
             - err_bad_user_info
@@ -4303,7 +4388,13 @@ components:
           type: integer
           format: uint64
     error:
-      type: string
+      type: object
+      description: error response from server
+      properties:
+        error_code:
+          type: string
+        error_message:
+          type: string
     fqdn_rule:
       description: fqdn classification
       type: object
@@ -4502,7 +4593,11 @@ components:
           type: string
     login_type:
       type: string
-      enum: [access_key, email, apple, github, google, keycloak, microsoft, phone, scan, unknown, username, wechat]
+      enum: [
+          access_key, email, apple, github, google, keycloak,
+          microsoft, phone, scan, unknown, username, wechat,
+          custom_oidc,
+        ]
     match_type:
       type: string
       enum: [exact, pattern, category, pac]
@@ -4835,6 +4930,45 @@ components:
           type: string
         code:
           type: string
+    oauth_provider:
+      type: object
+      required:
+        - domain
+        - web_finger_url
+        - admin_email
+        - client_id
+        - client_secret
+      properties:
+        namespace:
+          type: string
+        id:
+          type: string
+          format: uuid
+        domain:
+          type: string
+          description: domain name that can be validated by the web finger url
+        web_finger_url:
+          type: string
+        admin_email:
+          type: string
+          description: admin email for web finger domain
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        provider:
+          type: string
+        issuer_url:
+          type: string
+        scopes:
+          type: string
+          description: oauth scopes separated by space
+        created_at:
+          type: integer
+          format: int64
+        updated_at:
+          type: integer
+          format: int64
     one_time_code_check:
       type: object
       required:
@@ -6336,6 +6470,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/bad_request'
+    conflict_error:
+      description: conflict error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     cookie:
       description: http cookie in the response header
       headers:
