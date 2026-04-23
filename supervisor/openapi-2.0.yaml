@@ -4009,6 +4009,15 @@ definitions:
       host_name:
         type: string
         description: the host name of the server which deploy the wg
+      admin_down:
+        type: boolean
+        description: the wg instance is administratively shut down
+      admin_down_time:
+        type: string
+        format: date-time
+        description: the time when the wg instance was last set admin down or up
+      status:
+        $ref: "#/definitions/Status"
       create_time:
         type: string
         format: date-time
@@ -4084,6 +4093,9 @@ definitions:
       host_name:
         type: string
         description: the host name of the server which deploy the wg
+      admin_down:
+        type: boolean
+        description: create the wg instance in administratively shut down state
 
   WgInstanceModify:
     type: object
@@ -4143,6 +4155,12 @@ definitions:
       host_name_set:
         description: host_name only can be updated when it is set to true
         type: boolean
+      admin_down:
+        type: boolean
+        description: the wg instance is administratively shut down
+      admin_down_set:
+        type: boolean
+        description: admin_down only can be updated when it is set to true
 
   FwConfig:
     description: |
