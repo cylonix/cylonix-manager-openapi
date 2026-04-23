@@ -372,6 +372,8 @@ paths:
         - AdminAPIKey: []
       parameters:
         - $ref: '#/components/parameters/user_id_in_query'
+        - $ref: '#/components/parameters/username_in_query'
+        - $ref: '#/components/parameters/online_only_in_query'
         - $ref: '#/components/parameters/device_id'
         - in: query
           description: filter base on device capability
@@ -918,6 +920,8 @@ paths:
       operationId: confirm_session
       summary: confirm a login session for an app client session.
       security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
         - UserAPIKey: []
       description: |
         When app needs to login and connect a device, the user will first login
@@ -1015,6 +1019,91 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/oauth_logins'
+        500:
+          $ref: '#/components/responses/internal_error'
+    post:
+      operationId: add_oauth_provider
+      summary: add oauth provider
+      description: add oauth provider using web finger for validation
+      security:
+        - NoAuth: []
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/redirect_url'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/oauth_provider'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        409:
+          $ref: '#/components/responses/conflict_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /login/oauth/providers:
+    get:
+      operationId: list_oauth_providers
+      summary: list of custom oauth providers
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - login
+      parameters:
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        200:          
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total
+                  - oauthProviders
+                properties:
+                  total:
+                    type: integer
+                  oauthProviders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/oauth_provider'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+    delete:
+      operationId: delete_oauth_providers
+      summary: delete custom oauth providers
+      description: delete custom oauth providers
+      security:
+        - SysAPIKey: []
+        - AdminAPIKey: []
+      tags:
+        - login
+      requestBody:
+        $ref: '#/components/requestBodies/id_list'
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
         500:
           $ref: '#/components/responses/internal_error'
 
@@ -1174,6 +1263,7 @@ paths:
         Push logs to sase-manager to save it in DB and send to subscribers.
       security:
         - SysAPIKey: []
+        - AdminAPIKey: []
         - UserAPIKey: []
       tags:
         - tenant
@@ -1341,7 +1431,7 @@ paths:
       security:
         - UserAPIKey: []
         - AdminAPIKey: []
-      description: add meeting particpant
+      description: add meeting participant
       tags:
         - meet
       parameters:
@@ -1458,9 +1548,17 @@ paths:
           schema:
             type: boolean
           name: want_registration_state
+        - in: query
+          schema:
+            type: boolean
+          name: want_new_code
       responses:
         200:
-          $ref: '#/components/responses/approval_state_response'
+          description: approval state or new code in response
+          content:
+            text/plain:
+              schema:
+                type: string
         400:
           $ref: '#/components/responses/bad_request'
         500:
@@ -2304,6 +2402,8 @@ paths:
         parameter to a single user ID list. A non-admin user can only get its
         own record.
       parameters:
+        - $ref: '#/components/parameters/username_in_query'
+        - $ref: '#/components/parameters/online_only_in_query'
         - $ref: '#/components/parameters/filter_by'
         - $ref: '#/components/parameters/filter_value'
         - $ref: '#/components/parameters/sort_by'
@@ -2562,6 +2662,7 @@ paths:
       tags:
         - user
       security:
+        - AdminAPIKey: []
         - UserAPIKey: []
       summary: List friends
       operationId: list_friend
@@ -2583,6 +2684,7 @@ paths:
       tags:
         - user
       security:
+        - AdminAPIKey: []
         - UserAPIKey: []
       summary: Delete friends
       operationId: delete_friends
@@ -2604,6 +2706,7 @@ paths:
       tags:
         - user
       security:
+        - AdminAPIKey: []
         - UserAPIKey: []
       summary: list friend request
       operationId: list_friend_requests
@@ -2627,6 +2730,7 @@ paths:
       tags:
         - user
       security:
+        - AdminAPIKey: []
         - UserAPIKey: []
       summary: Create friend request
       operationId: create_friend_request
@@ -2650,6 +2754,7 @@ paths:
       tags:
         - user
       security:
+        - AdminAPIKey: []
         - UserAPIKey: []
       summary: delete request info
       operationId: delete_friend_requests
@@ -2676,6 +2781,7 @@ paths:
       tags:
         - user
       security:
+        - AdminAPIKey: []
         - UserAPIKey: []
       summary: update friend_requests
       operationId: update_friend_requests
@@ -2721,6 +2827,34 @@ paths:
           $ref: '#/components/responses/internal_error'
 
   /user/invite:
+    get:
+      operationId: get_user_invite
+      summary: get user invite
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - in: query
+          name: invite_code
+          schema:
+            type: string
+          description: invite code to get the invite info
+          required: true
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_invite'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
     delete:
       operationId: delete_user_invite
       summary: delete user invite
@@ -2729,6 +2863,14 @@ paths:
         - UserAPIKey: []
       tags:
         - user
+      parameters:
+        - in: query
+          name: revoke_shared_node
+          schema:
+            type: boolean
+          description: |
+            if also to revoke the sharing of a node. only applicable if the
+            invite is sharing a node.
       requestBody:
         required: true
         content:
@@ -2767,6 +2909,42 @@ paths:
           $ref: '#/components/responses/unauthorized_error'
         500:
           $ref: '#/components/responses/internal_error'
+    put:
+      operationId: update_user_invite
+      summary: accept or reject an invite
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - in: query
+          name: invite_code
+          schema:
+            type: string
+          description: invite code to update the invite status
+          required: true
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: new status of the invite (e.g., accepted, rejected)
+          required: true
+        - in: query
+          name: user_email
+          schema:
+            type: string
+          description: email of the user accepting or rejecting the invite
+          required: true
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
 
   /user/invite/list:
     get:
@@ -2781,6 +2959,12 @@ paths:
         Get user invite list with various filtering, sorting and paging options.
       parameters:
         - $ref: '#/components/parameters/namespace_in_query'
+        - in: query
+          name: share_node
+          schema:
+            type: integer
+            format: int64
+          description: list share node invites of a node
         - $ref: '#/components/parameters/filter_by'
         - $ref: '#/components/parameters/filter_value'
         - $ref: '#/components/parameters/sort_by'
@@ -2804,6 +2988,33 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/user_invite'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
+  /user/invite/send/{id}:
+    get:
+      operationId: send_user_invite
+      summary: send user invite
+      security:
+        - AdminAPIKey: []
+        - UserAPIKey: []
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: invite ID to send the invite
+          required: true
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
         400:
           $ref: '#/components/responses/bad_request'
         401:
@@ -2967,7 +3178,8 @@ paths:
         only exact match is returned. Admin user should use the list user
         API to search instead.
       security:
-         - UserAPIKey: []
+        - UserAPIKey: []
+        - AdminAPIKey: []
       tags:
         - user
       parameters:
@@ -3191,7 +3403,7 @@ paths:
         - user
       summary: register a new user
       description: >
-        Registrer a new user. Security check depends on tenant. e.g. community
+        Register a new user. Security check depends on tenant. e.g. community
         user may be able to register or add directly but enterprise tenant may
         only be able to be added by the admin user.
       operationId: register_user
@@ -3304,6 +3516,39 @@ paths:
         500:
           $ref: '#/components/responses/internal_error'
 
+  /user/summary/multi-user-network:
+    get:
+      tags:
+        - user
+      security:
+        - SysAPIKey: []
+      summary: get user multi-user network summary
+      operationId: get_user_multi_user_network_summary
+      description: |
+        Get multi-user network summary data.
+      parameters:
+        - $ref: '#/components/parameters/namespace_in_query'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_multi_user_networks:
+                    type: integer
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/user'
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
   /user/summary/device:
     get:
       tags:
@@ -3346,9 +3591,19 @@ paths:
         List all the devices in the wireguard VPN domain. To list a single
         device simply passing in a single ID id-list parameter.
       parameters:
+        - in: query
+          name: is_wireguard_only
+          schema:
+            type: boolean
+          description: |
+              whether to only list the wireguard only devices.
         - $ref: '#/components/parameters/contain'
+        - $ref: '#/components/parameters/filter_by'
+        - $ref: '#/components/parameters/filter_value'
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/sort_by'
+        - $ref: '#/components/parameters/sort_desc'
       requestBody:
         $ref: '#/components/requestBodies/id_list'
       responses:
@@ -3404,6 +3659,28 @@ paths:
       description: Crete a vpn device.
       parameters:
         - $ref: '#/components/parameters/user_id_in_query'
+        - in: query
+          name: generate_wg_client_config
+          schema:
+            type: boolean
+          description: |
+            Whether to return the wg client config txt as a string. Typically
+            used when a user is creating a device to connect to a gateway
+            instead of joining the mesh with other devices.
+            Specify the gateway's wg-id in the request body.
+        - in: query
+          name: dns_servers
+          schema:
+            type: string
+          description: |
+            Only used to specify DNS servers when generating wg client config.
+            Use comma to separate multiple DNS servers.
+        - in: query
+          name: mtu
+          schema:
+            type: integer
+          description: |
+            Only used to specify MTU when generating wg client config.
       requestBody:
         required: true
         content:
@@ -3412,7 +3689,7 @@ paths:
               $ref: '#/components/schemas/wg_device'
       responses:
         200:
-          description: success
+          $ref: '#/components/responses/OK'
         400:
           $ref: '#/components/responses/bad_request'
         401:
@@ -3448,6 +3725,7 @@ paths:
       operationId: list_wg_nodes
       security:
         - AdminAPIKey: []
+        - UserAPIKey: [] # For a user to list gateways in the user's vpn domain
       description: List wireguard gateways.
       parameters:
         - $ref: '#/components/parameters/page'
@@ -3784,7 +4062,7 @@ components:
         error_code:
           type: string
           enum:
-            # Keep alphabatical order.
+            # Keep alphabetical order.
             - err_authentication_failed
             - err_bad_params
             - err_bad_user_info
@@ -4110,7 +4388,13 @@ components:
           type: integer
           format: uint64
     error:
-      type: string
+      type: object
+      description: error response from server
+      properties:
+        error_code:
+          type: string
+        error_message:
+          type: string
     fqdn_rule:
       description: fqdn classification
       type: object
@@ -4182,6 +4466,17 @@ components:
         send_email:
           type: boolean
           description: send email to the invited user
+        share_node:
+          type: integer
+          format: int64
+          description: |
+            Optional. Instead of inviting the user to join the network,
+            share the node with the invited user. The value is the
+            id of vpn node to share with the invited user.
+            user must have admin permission to the node.
+        share_node_name:
+          type: string
+          description: name of the vpn node to share with the invited user.
         internal_user:
           type: boolean
           description: |
@@ -4298,7 +4593,11 @@ components:
           type: string
     login_type:
       type: string
-      enum: [access_key, email, apple, github, google, keycloak, microsoft, phone, scan, unknown, username, wechat]
+      enum: [
+          access_key, email, apple, github, google, keycloak,
+          microsoft, phone, scan, unknown, username, wechat,
+          custom_oidc,
+        ]
     match_type:
       type: string
       enum: [exact, pattern, category, pac]
@@ -4631,6 +4930,45 @@ components:
           type: string
         code:
           type: string
+    oauth_provider:
+      type: object
+      required:
+        - domain
+        - web_finger_url
+        - admin_email
+        - client_id
+        - client_secret
+      properties:
+        namespace:
+          type: string
+        id:
+          type: string
+          format: uuid
+        domain:
+          type: string
+          description: domain name that can be validated by the web finger url
+        web_finger_url:
+          type: string
+        admin_email:
+          type: string
+          description: admin email for web finger domain
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        provider:
+          type: string
+        issuer_url:
+          type: string
+        scopes:
+          type: string
+          description: oauth scopes separated by space
+        created_at:
+          type: integer
+          format: int64
+        updated_at:
+          type: integer
+          format: int64
     one_time_code_check:
       type: object
       required:
@@ -5003,6 +5341,7 @@ components:
         - network-admin
         - network-owner
         - member
+        - namespace-admin
     rx_tx_bytes:
       type: object
       properties:
@@ -5013,7 +5352,7 @@ components:
         tx:
           type: integer
           format: uint64
-          description: tranmitted traffic in bytes
+          description: transmitted traffic in bytes
     summary_stats:
       type: object
       properties:
@@ -5300,6 +5639,14 @@ components:
           description: network domain name for the tenant
         user_tier:
           $ref: '#/components/schemas/user_tier'
+        created_at:
+          type: integer
+          format: int64
+          description: unix time to be convert by the client to date time
+        updated_at:
+          type: integer
+          format: int64
+          description: unix time to be convert by the client to date time
     user_friends:
       type: object
       properties:
@@ -5352,8 +5699,22 @@ components:
         role:
           type: string
           description: role of the user to be registered.
+        share_node:
+          type: integer
+          format: int64
+          description: |
+            Optional. Instead of inviting the user to join the network,
+            share the node with the invited user. The value is the
+            id of vpn node to share with the invited user.
+            user must have admin permission to the node.
+        share_node_name:
+          type: string
+          description: name of the vpn node to share with the invited user.
         invited_by:
           $ref: '#/components/schemas/user_short_info'
+        link:
+          type: string
+          description: invitation link for the user to register
         created_at:
           type: integer
           format: int64
@@ -5402,6 +5763,9 @@ components:
         wg_enabled:
           type: boolean
           description: if vpn is enabled
+        gateway_enabled:
+          type: boolean
+          description: if gateway mode is enabled
         mesh_vpn_mode:
           $ref: '#/components/schemas/mesh_vpn_mode'
         advertise_default_route:
@@ -5506,6 +5870,8 @@ components:
           type: boolean
         wg_enabled:
           type: boolean
+        gateway_enabled:
+          type: boolean
         auto_approve_device:
           type: boolean
         auto_accept_routes:
@@ -5606,6 +5972,9 @@ components:
           type: string
         namespace:
           type: string
+        node_id:
+          type: integer
+          format: int64
         public_key:
           type: string
         last_seen:
@@ -5771,13 +6140,13 @@ components:
       in: query
       schema:
         type: string
-      description: filter by which field name
+      description: filter by which field name, multiple fields are separated by comma
       name: filter_by
     filter_value:
       in: query
       schema:
         type: string
-      description: filter with the value of the field
+      description: filter with the value of the field, multiple values are separated by comma
       name: filter_value
     login_type_in_query_required:
       in: query
@@ -5850,6 +6219,11 @@ components:
       schema:
         type: string
       required: false
+    online_only_in_query:
+      in: query
+      name: online_only
+      schema:
+        type: boolean
     page:
       in: query
       name: page
@@ -5921,12 +6295,14 @@ components:
         type: string
       name: sort_by
       required: false
+      description: sort by which field name, multiple fields are separated by comma
     sort_desc:
       in: query
       schema:
         type: string
       name: sort_desc
       required: false
+      description: sort direction for the fields, can be 'asc' or 'desc', multiple values are separated by comma
     start_time_in_query:
       in: query
       name: start_time
@@ -6082,12 +6458,6 @@ components:
         text/plain:
           schema:
             type: string
-    approval_state_response:
-      description: approval state
-      content:
-        text/plain:
-          schema:
-            $ref: '#/components/schemas/approval_state'
     auth_token:
       description: get the token that's type is one of unconfirmed, rejected, or approved
       content:
@@ -6100,6 +6470,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/bad_request'
+    conflict_error:
+      description: conflict error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     cookie:
       description: http cookie in the response header
       headers:
