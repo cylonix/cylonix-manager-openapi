@@ -3775,6 +3775,42 @@ paths:
         500:
           $ref: '#/components/responses/internal_error'
 
+  /vpn/wg/{wg_id}/admin-state:
+    post:
+      tags:
+        - vpn
+      summary: set the admin state of a wg gateway
+      operationId: set_wg_node_admin_state
+      security:
+        - AdminAPIKey: []
+      description: |
+        Administratively shut down or bring up a wg gateway. When shut down,
+        the supervisor stops polling the gateway and surfaces it as Admin in
+        status listings; devices cannot connect to it until it is brought
+        back up. Namespace admins may only operate on gateways in their own
+        namespace; sys admins may operate on any gateway.
+      parameters:
+        - name: wg_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/wg_admin_state'
+      responses:
+        200:
+          description: success
+        400:
+          $ref: '#/components/responses/bad_request'
+        401:
+          $ref: '#/components/responses/unauthorized_error'
+        500:
+          $ref: '#/components/responses/internal_error'
+
 components:
   securitySchemes:
     AdminAPIKey:
@@ -6064,6 +6100,14 @@ components:
           format: int64
         traffic_stats:
           $ref: '#/components/schemas/traffic_stats'
+    wg_admin_state:
+      type: object
+      required:
+        - state
+      properties:
+        state:
+          type: string
+          enum: [up, down]
 
   parameters:
     access_key_id:
