@@ -765,7 +765,7 @@ paths:
           $ref: '#/components/responses/internal_error'
 
   /login:
-    get:
+    post:
       operationId: login
       summary: direct login i.e. not through 3rd party provider/oauth.
       security:
@@ -774,71 +774,57 @@ paths:
         - NoAuth: []
       description: |
         Direct login with username/password, phone/sms-code, token/otp et al.
+        Body-based to keep credentials out of URL query strings / access logs.
       tags:
         - login
-      parameters:
-        - in: query
-          name: login_as_admin
-          schema:
-            type: boolean
-        - $ref: '#/components/parameters/namespace_in_query'
-        - $ref: '#/components/parameters/login_type_in_query_required'
-        - in: query
-          name: login_id
-          schema:
-            type: string
-          description: login id e.g. username, email, phone number, otp token et al.
-        - in: query
-          name: session_id
-          schema:
-            type: string
-          description: session id for login used for client app login
-        - in: query
-          name: invitation_code
-          schema:
-            type: string
-          description: invitation code to join a network domain.
-        - in: query
-          name: credential
-          schema:
-            type: string
-          description: password, sms code, otp code et al.
-        - in: query
-          name: redirect_url
-          schema:
-            type: string
-          description: redirect url after login
-        - in: query
-          name: access_point
-          schema:
-            type: string
-          description: current access point ID
-        - in: query
-          name: access_point_name
-          schema:
-            type: string
-          description: current access point name
-        - in: query
-          name: assign_ip
-          schema:
-            type: string
-          description: |-
-            Assign the specify the ip address to the device. Note this may
-            block device from registering if the ip address is not available.
-        - in: query
-          schema:
-            type: string
-          name: mfa_one_time_code
-          description: |
-            multi-factor-auth one time code. for sms code, use the credential
-            parameter instead.
-        - in: query
-          name: mfa_type
-          schema:
-            $ref: '#/components/schemas/mfa_type'
-          description: |
-            multi-factor-auth type. for sms code, use the credential parameter
-            instead.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login_type
+              properties:
+                login_type:
+                  $ref: '#/components/schemas/login_type'
+                login_as_admin:
+                  type: boolean
+                namespace:
+                  type: string
+                login_id:
+                  type: string
+                  description: login id e.g. username, email, phone number, otp token et al.
+                session_id:
+                  type: string
+                  description: session id for login used for client app login
+                invitation_code:
+                  type: string
+                  description: invitation code to join a network domain.
+                credential:
+                  type: string
+                  description: password, sms code, otp code et al.
+                redirect_url:
+                  type: string
+                  description: redirect url after login
+                access_point:
+                  type: string
+                  description: current access point ID
+                access_point_name:
+                  type: string
+                  description: current access point name
+                assign_ip:
+                  type: string
+                  description: |-
+                    Assign the specify the ip address to the device. Note this may
+                    block device from registering if the ip address is not available.
+                mfa_one_time_code:
+                  type: string
+                  description: |
+                    multi-factor-auth one time code. for sms code, use the credential
+                    parameter instead.
+                mfa_type:
+                  $ref: '#/components/schemas/mfa_type'
       responses:
         200:
           $ref: '#/components/responses/login_success'
@@ -879,6 +865,7 @@ paths:
                 type: 'string'
         500:
           $ref: '#/components/responses/internal_error'
+  /login/add:
     post:
       operationId: add_login
       summary: Add a new login to the current user.
